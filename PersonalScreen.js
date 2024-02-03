@@ -3,14 +3,20 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Avatar, List } from 'react-native-paper';
 import ProfileEdit from './account_files/profileEdit';
+import { useNavigation } from '@react-navigation/native';
 
+    
 
 
 const PersonalScreen = () => {
+    const navigation = useNavigation();
+
     return (
         <View style={styles.container}>
-            <View style={styles.header}
-                >
+            <TouchableOpacity 
+            style={styles.header} 
+            onPress={() => navigation.navigate('ProfileEdit')}
+            activeOpacity={1} >
                 <Avatar.Image
                     size={80}
                     source={require('./img/account-box-plus-outline.png')}
@@ -18,13 +24,11 @@ const PersonalScreen = () => {
                 <View style={styles.userInfo}>
                     <Text style={styles.userName}>User Name</Text>
                 </View>
-                <TouchableOpacity onPress={() => console.log('Edit profile')}>
-                    <List.Icon icon="pencil" />
-                </TouchableOpacity>
-            </View>
+                <List.Icon icon="pencil" />
+            </TouchableOpacity>
             <List.Section style={styles.selection}>
                 <List.Item
-                    title="Medical Record"
+                    title="Your Medical Record"
                     right={() => <List.Icon icon="chevron-right" />}
                     onPress={() => console.log('Edit profile')}
                 />

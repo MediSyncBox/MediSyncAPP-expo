@@ -7,12 +7,11 @@ import App from './App';
 
 const theme = {
   ...DefaultTheme,
-  // Specify custom property
-  myOwnProperty: true,
-  // Specify custom property in nested object
   colors: {
     ...DefaultTheme.colors,
-    myOwnColor: '#BADA55',
+    primary: '#4E7D96', // Dark blue color
+    accent: '#E3EDF2', // Light blue color
+    // ... other colors
   },
 };
 

@@ -5,9 +5,6 @@ import { Avatar, List } from 'react-native-paper';
 import ProfileEdit from './account_files/profileEdit';
 import { useNavigation } from '@react-navigation/native';
 
-    
-
-
 const PersonalScreen = () => {
     const navigation = useNavigation();
 

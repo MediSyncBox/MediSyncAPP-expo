@@ -10,8 +10,8 @@ const ScheduleRoute = () => <Text> </Text>;
 const MainScreen = () => {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: 'home', title: 'Home', focusedIcon: 'home', unfocusedIcon: 'home-outline' },
     { key: 'schedule', title: 'Schedule', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
+    { key: 'home', title: 'Home', focusedIcon: 'home', unfocusedIcon: 'home-outline' },
     { key: 'personal', title: 'Personal', focusedIcon: 'account', unfocusedIcon: 'account-outline' },
   ]);
 

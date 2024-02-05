@@ -4,8 +4,8 @@ import { BottomNavigation, Text } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import PersonalScreen from './PersonalScreen';
 
-const HomeRoute = () => <Text>Music</Text>;
-const ScheduleRoute = () => <Text>Recents</Text>;
+const HomeRoute = () => <Text> </Text>;
+const ScheduleRoute = () => <Text> </Text>;
 
 const MainScreen = () => {
   const [index, setIndex] = React.useState(0);

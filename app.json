@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "medi-expo",
-    "slug": "medi-expo",
+    "slug": "medi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0465dc22-56f0-46c8-98cf-34f68164d9c2"
+      }
+    },
+    "owner": "mathilda33"
   }
 }

@@ -28,7 +28,7 @@ const PersonalScreen = () => {
             </TouchableOpacity>
             <List.Section style={styles.selection}>
                 <List.Item
-                    title="Your Medical Record"
+                    title="My Medical Record"
                     right={() => <List.Icon icon="chevron-right" />}
                     onPress={() => console.log('Edit profile')}
                 />

@@ -11,3 +11,4 @@ to set up dependencies
 How to start APP:
 - npx expo start
 - then open the virtual phone and press a in terminal
+- for Android, run: expo start --tunnel

@@ -1,8 +1,8 @@
 // AppNavigator.js
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import MainScreen from './MainScreen'; // 主屏幕，包含底部导航
-import ProfileEdit from './account_files/profileEdit'; // 引入其他页面如果需要
+import MainScreen from './MainScreen'; 
+import ProfileEdit from './account_files/profileEdit'; 
 
 const Stack = createNativeStackNavigator();
 

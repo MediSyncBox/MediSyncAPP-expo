@@ -2,7 +2,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainScreen from './MainScreen'; 
-import ProfileEdit from './account_files/profileEdit'; 
+import ProfileEdit from './account_files/personal/profileEdit';
 
 const Stack = createNativeStackNavigator();
 

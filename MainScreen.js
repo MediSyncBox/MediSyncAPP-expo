@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { BottomNavigation, Text } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import PersonalScreen from './PersonalScreen';
+import PersonalScreen from './account_files/personal/PersonalScreen';
 
 const HomeRoute = () => <Text> </Text>;
 const ScheduleRoute = () => <Text> </Text>;

@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Avatar, List } from 'react-native-paper';
-import ProfileEdit from './account_files/profileEdit';
+import ProfileEdit from './profileEdit';
 import { useNavigation } from '@react-navigation/native';
 
 const PersonalScreen = () => {

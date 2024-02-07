@@ -6,7 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 const ProfileEdit = () => {
   const navigation = useNavigation();
 
-
   const userInfo = {
     avatar: 'path-to-avatar',
     name: 'Mathilda',
@@ -25,44 +24,43 @@ const ProfileEdit = () => {
     navigation.navigate('EditGender', { gender: userInfo.gender });
   };
 
+  const ListItemWithDescription = ({ title, description, onPress }) => (
+    <List.Item
+      title={(
+        <View style={styles.listItemRow}>
+          <Text style={styles.listItemTitle}>{title}</Text>
+          <Text style={styles.listItemDescription}>{description}</Text>
+        </View>
+      )}
+      right={() => <List.Icon icon="chevron-right" />}
+      onPress={onPress}
+      titleNumberOfLines={2}
+      style={styles.listItem}
+    />
+  );
+
   return (
     <View style={styles.container}>
       <List.Section style={styles.selection}>
-        <List.Item
+        <ListItemWithDescription
           title="Your Avatar"
-          description={() => (
-            <View style={styles.listItemDescription}>
-              <Text style={styles.listItemText}>{userInfo.name}</Text>
-            </View>
-          )}
-          right={() => <List.Icon icon="chevron-right" />}
+          description={userInfo.avatar}
           onPress={handleAvatarPress}
         />
-        <List.Item
+        <ListItemWithDescription
           title="Your Name"
-          description={() => (
-            <View style={styles.listItemDescription}>
-              <Text style={styles.listItemText}>{userInfo.name}</Text>
-            </View>
-          )}
-          right={() => <List.Icon icon="chevron-right" />}
+          description={userInfo.name}
           onPress={handleNamePress}
         />
-        <List.Item
+        <ListItemWithDescription
           title="Your Gender"
-          description={() => (
-            <View style={styles.listItemDescription}>
-              <Text style={styles.listItemText}>{userInfo.name}</Text>
-            </View>
-          )}
-          right={() => <List.Icon icon="chevron-right" />}
+          description={userInfo.gender}
           onPress={handleGenderPress}
         />
       </List.Section>
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -91,8 +89,26 @@ const styles = StyleSheet.create({
   selection: {
     paddingLeft: 20,
     paddingRight: 20,
-  }
+  },
+  listItemRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  listItemTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  listItemDescription: {
+    fontSize: 16,
+    color: 'grey',
+  },
+  listItem: {
+    paddingVertical: 15,
+  },
 
 });
 
 export default ProfileEdit;
+

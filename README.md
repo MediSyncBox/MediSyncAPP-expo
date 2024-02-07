@@ -12,3 +12,5 @@ How to start APP:
 - npx expo start
 - then open the virtual phone and press a in terminal
 - for Android, run: expo start --tunnel
+- before running, add expo-cli
+- new dependence: npm i metro-react-native-babel-preset --save-dev

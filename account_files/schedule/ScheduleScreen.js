@@ -9,6 +9,7 @@ interface State {
 
 export default class AgendaScreen extends Component<State> {
   state: State = {
+//  initially have no entries until they are loaded dynamically.
     items: undefined
   };
 
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginRight: 10,
-    marginTop: 17
+    marginTop: 170
   },
   emptyDate: {
     height: 15,

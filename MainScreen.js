@@ -3,7 +3,8 @@ import * as React from 'react';
 import { BottomNavigation, Text } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import PersonalScreen from './account_files/personal/PersonalScreen';
-import ScheduleScreen from './account_files/Schedule/ScheduleScreen';
+import ScheduleScreen from './account_files/schedule/ScheduleScreen';
+import HomeScreen from './account_files/home/home';
 
 const HomeRoute = () => <Text> </Text>;
 //const ScheduleRoute = () => <Text> </Text>;
@@ -17,7 +18,7 @@ const MainScreen = () => {
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
-    home: HomeRoute,
+    home: HomeScreen,
     schedule: ScheduleScreen,
     personal: PersonalScreen,
   });

@@ -1,28 +1,61 @@
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import React, {useState} from 'react';
+import {Alert, Modal, StyleSheet, Text, Pressable, View} from 'react-native';
 
-export default function CircleButton({ onPress }) {
-  const buttonClickedHandler = () => {
-    alert('You pressed a button.')
-  };
+export default function PopupWindow({ onPress }) {
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <View style={styles.screen}>
-      <TouchableOpacity
-        onPress={buttonClickedHandler}
-        style={styles.roundButton1}>
-        <Text>+</Text>
-      </TouchableOpacity>
+    <View style={styles.centeredView}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Hello World!</Text>
+            <Pressable
+              style={styles.closebutton}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text>close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+      <Pressable
+        style={styles.roundButton}
+        onPress={() => setModalVisible(true)}>
+        <Text style={styles.textStyle}>+</Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: {
+  centeredView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 22,
   },
-  roundButton1: {
+  modalView: {
+    // margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    // shadowColor: '#000',
+    elevation: 5,
+  },
+  closebutton: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  roundButton: {
     borderWidth: 1, 
     borderColor: '#43515c', 
     alignItems: 'center', 
@@ -32,6 +65,15 @@ const styles = StyleSheet.create({
     left: 140, 
     height: 40, 
     borderRadius: 100, 
-    backgroundColor: '#43515c',
+    backgroundColor: '#000',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
   },
 });

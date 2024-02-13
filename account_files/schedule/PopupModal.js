@@ -1,17 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Alert, Modal, StyleSheet, Text, Pressable, View} from 'react-native';
 
-export default function PopupModal({ onPress }) {
-  const [modalVisible, setModalVisible] = useState(false);
-
+export default function PopupModal({ modalVisible, setModalVisible }) {
   return (
     <View style={styles.centeredView}>
-      <Pressable
-        style={styles.roundButton}
-        onPress={() => setModalVisible(true)}>
-        <Text style={styles.textStyle}>+</Text>
-      </Pressable>
-
       <Modal
         animationType="slide"
         transparent={true}
@@ -60,23 +52,6 @@ const styles = StyleSheet.create({
     // width: 30, 
     // height: 30, 
     alignItems: 'center',
-  },
-  roundButton: {
-    borderWidth: 1, 
-    borderColor: '#43515c', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    width: 40, 
-    bottom: 40, 
-    left: 140, 
-    height: 40, 
-    borderRadius: 100, 
-    backgroundColor: '#000',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   titleText: {
     marginBottom: 15,

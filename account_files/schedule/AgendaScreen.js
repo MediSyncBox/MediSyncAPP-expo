@@ -1,8 +1,9 @@
-import React, { Component } from "react"
+import React, { Component } from 'react'
 import { Alert, StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import { Agenda } from "react-native-calendars"
 import testIDs from "./testIDs"
-import PopupWindow from "./PlusButton"
+import PlusButton from "./PlusButton"
+import PopupModal from "./PopupModal"
 // import {PopupWindow} from "./PopupWindow"
 
 export default class AgendaScreen extends Component {
@@ -25,7 +26,7 @@ export default class AgendaScreen extends Component {
           showClosingKnob={true}
         />
         <View style={styles.footerContainer}>
-          <PopupWindow label="buuuuuuuuu"/>
+          <PlusButton/>
         </View>
       </View>
     )

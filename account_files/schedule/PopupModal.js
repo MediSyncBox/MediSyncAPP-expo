@@ -1,11 +1,17 @@
 import React, {useState} from 'react';
 import {Alert, Modal, StyleSheet, Text, Pressable, View} from 'react-native';
 
-export default function PopupWindow({ onPress }) {
+export default function PopupModal({ onPress }) {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={styles.centeredView}>
+      <Pressable
+        style={styles.roundButton}
+        onPress={() => setModalVisible(true)}>
+        <Text style={styles.textStyle}>+</Text>
+      </Pressable>
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -16,7 +22,11 @@ export default function PopupWindow({ onPress }) {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
+            <Text style={styles.titleText}>New Schedule</Text>
+            <Text style={styles.modalText}>Medicine: </Text>
+            <Text style={styles.modalText}>How many times per day: </Text>
+            <Text style={styles.modalText}>Dose: </Text>
+            <Text style={styles.modalText}>Dose: </Text>
             <Pressable
               style={styles.closebutton}
               onPress={() => setModalVisible(!modalVisible)}>
@@ -25,11 +35,6 @@ export default function PopupWindow({ onPress }) {
           </View>
         </View>
       </Modal>
-      <Pressable
-        style={styles.roundButton}
-        onPress={() => setModalVisible(true)}>
-        <Text style={styles.textStyle}>+</Text>
-      </Pressable>
     </View>
   );
 }
@@ -39,21 +44,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
   },
   modalView: {
-    // margin: 20,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 20,
-    alignItems: 'center',
-    // shadowColor: '#000',
+    // alignItems: 'center',
     elevation: 5,
   },
   closebutton: {
-    borderRadius: 20,
+    marginTop: 16,
+    borderRadius: 100,
     padding: 10,
     elevation: 2,
+    // width: 30, 
+    // height: 30, 
+    alignItems: 'center',
   },
   roundButton: {
     borderWidth: 1, 
@@ -72,8 +78,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  modalText: {
+  titleText: {
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: 'left',
+    // fontWeight: 'bold',
+    fontSize: 18
   },
+  modalText: {
+    fontSize: 16,
+    textAlign: 'left',
+  }
 });

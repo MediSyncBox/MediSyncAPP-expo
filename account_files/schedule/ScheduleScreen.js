@@ -1,6 +1,6 @@
 import * as React from 'react';
 import AgendaScreen from './AgendaScreen';
-import PopupWindow from './PopupWindow';
+import PopupWindow from './PlusButton';
 // import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 const ScheduleScreen = () => {

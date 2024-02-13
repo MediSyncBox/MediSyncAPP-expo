@@ -9,8 +9,13 @@ import PopupModal from "./PopupModal"
 export default class AgendaScreen extends Component {
   state = {
     //  initially have no entries until they are loaded dynamically.
-    items: undefined
+    items: undefined,
+    modalVisible: false,
   }
+
+  setModalVisible = (visible) => {
+    this.setState({ modalVisible: visible });
+  };
 
   render() {
     return (
@@ -20,13 +25,19 @@ export default class AgendaScreen extends Component {
           items={this.state.items}
           loadItemsForMonth={this.loadItems}
           //        selected={'2024-02-07'}
+          // have two modal, for edit is one, another is for showing
           renderItem={this.renderItem}
           renderEmptyDate={this.renderEmptyDate}
           rowHasChanged={this.rowHasChanged}
           showClosingKnob={true}
         />
+        
         <View style={styles.footerContainer}>
           <PlusButton/>
+        </View>
+        
+        <View>
+          <PopupModal modalVisible={this.state.modalVisible} setModalVisible={this.setModalVisible} />
         </View>
       </View>
     )
@@ -79,7 +90,7 @@ export default class AgendaScreen extends Component {
       <TouchableOpacity
         testID={testIDs.agenda.ITEM}
         style={[styles.item, { height: reservation.height }]}
-        onPress={() => Alert.alert(reservation.name)}
+        onPress={() => this.setModalVisible(true)}
       >
         <Text style={{ fontSize, color }}>{reservation.name}</Text>
       </TouchableOpacity>
@@ -128,6 +139,7 @@ const styles = StyleSheet.create({
   },
   footerContainer: {
     // flex: 1 / 3,
+    // marginBottom: 100,
     alignItems: 'center',
   },
 })

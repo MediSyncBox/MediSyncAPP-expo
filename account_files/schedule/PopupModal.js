@@ -14,7 +14,7 @@ export default function PopupModal({ modalVisible, setModalVisible }) {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.titleText}>New Schedule</Text>
+            <Text style={styles.titleText}>Schedule</Text>
             <Text style={styles.modalText}>Medicine: </Text>
             <Text style={styles.modalText}>How many times per day: </Text>
             <Text style={styles.modalText}>Dose: </Text>

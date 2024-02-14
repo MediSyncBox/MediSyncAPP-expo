@@ -1,91 +1,195 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet, Image } from 'react-native';
-import { Text, Card, Button } from '@rneui/themed';
-import Icon from 'react-native-vector-icons/FontAwesome5';
-const users = [
-{
-  name: 'brynn',
-  avatar: 'https://uifaces.co/our-content/donated/1H_7AxP0.jpg',
-},
-];
+import React, { useState } from 'react';
+import { Button, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { Text } from 'react-native-paper';
+import { Appbar } from 'react-native-paper';
 
-type CardsComponentsProps = {};
+const HomeScreen = () => {
 
-const HomeScreen: React.FunctionComponent<CardsComponentsProps> = () => {
-return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Card>
-          <Card.Title>CARD WITH DIVIDER</Card.Title>
-          <Card.Divider />
-          {users.map((u, i) => {
-            return (
-              <View key={i} style={styles.user}>
-                <Icon 
-                name="pills"
-                />
-                <Text style={styles.name}>{u.name}</Text>
-              </View>
-            );
-          })}
-        </Card>
-        
-        <Card>
-          <Card.Title>HELLO WORLD</Card.Title>
-          <Card.Divider />
-          <Card.Image
-            style={{ padding: 0 }}
-            source={{
-              uri:
-                'https://awildgeographer.files.wordpress.com/2015/02/john_muir_glacier.jpg',
-            }}
-          />
-          <Text style={{ marginBottom: 10 }}>
-            The idea with React Native Elements is more about component
-            structure than actual design.
-          </Text>
-          <Button
-            icon={
-              <Icon
-                name="code"
-                color="#ffffff"
-                iconStyle={{ marginRight: 10 }}
+  const options = ['BOX1', 'BOX2', 'BOX3', 'BOX4', 'BOX5'];
+  const [selectedOption, setSelectedOption] = useState(options[0]);
+
+  const [visible, setVisible] = useState(false);
+  const [boxId, setBoxId] = useState('');
+  const [name, setName] = useState('');
+
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+
+
+  return (
+
+    <View style={styles.container}>
+      <Appbar.Header>
+        <Appbar.Content title="Your Medical Boxes" />
+        <Appbar.Action icon="plus-box-outline" onPress={showModal} />
+      </Appbar.Header>
+
+      <Modal
+        visible={visible}
+        onRequestClose={hideModal}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TouchableOpacity style={styles.closeButton} onPress={hideModal}>
+              <Text style={styles.closeButtonText}>×</Text>
+            </TouchableOpacity>
+            <View style={styles.inputGroup}>
+              <Text style={styles.textLabel}>BOX ID:</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter Box ID"
+                value={boxId}
+                onChangeText={setBoxId}
               />
-            }
-            buttonStyle={{
-              borderRadius: 0,
-              marginLeft: 0,
-              marginRight: 0,
-              marginBottom: 0,
-            }}
-            title="VIEW NOW"
-          />
-        </Card>
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.textLabel}>Name:</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter Name"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+
+            <Button
+              title="Submit"
+              onPress={() => {
+                // Handle the submit action
+                console.log('Submitted:', { boxId, name });
+                hideModal(); // Optionally close the modal after submit
+              }}
+            />
+          </View>
+        </View>
+      </Modal>
+
+
+
+
+      <View style={styles.scroll}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {options.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.option, selectedOption === option && styles.selectedOption]}
+              onPress={() => setSelectedOption(option)}
+            >
+              <Text style={styles.optionText}>{option}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
-    </ScrollView>
-);
+      <View style={styles.information}>
+        <Text variant="headlineSmall" style={styles.headline}>Temperature</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>20°C</Text>
+        </View>
+        <Text variant="headlineSmall" style={styles.headline}>Humidity</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>20rh</Text>
+        </View>
+        <Text variant="headlineSmall" style={styles.headline}>Pills</Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>Paracetamol</Text>
+        </View>
+
+
+
+      </View>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-container: {
-  flex: 1,
-},
-fonts: {
-  marginBottom: 8,
-},
-user: {
-  flexDirection: 'row',
-  marginBottom: 6,
-},
-image: {
-  width: 30,
-  height: 30,
-  marginRight: 10,
-},
-name: {
-  fontSize: 16,
-  marginTop: 5,
-},
+  container: {
+    paddingTop: 5
+  },
+  scroll: {
+    paddingTop: 10
+  },
+  option: {
+    padding: 20,
+    marginHorizontal: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 20,
+  },
+  selectedOption: {
+    backgroundColor: '#E8DEF8',
+  },
+  optionText: {
+    color: 'black',
+  },
+  textContainer: {
+    width: '90%',
+    borderWidth: 1,
+    borderColor: '#E8DEF8',
+    backgroundColor: '#E8DEF8',
+    borderRadius: 10,
+    padding: 10,
+    marginTop: 20,
+    marginBottom: 20,
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 16,
+    color: '#000',
+  },
+  information: {
+    marginTop: 20,
+  },
+  headline: {
+    marginLeft: 10,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'flex-start',
+    width: '80%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  closeButton: {
+    alignSelf: 'flex-end',
+  },
+  closeButtonText: {
+    fontSize: 24,
+    lineHeight: 30,
+  },
+  inputGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  textLabel: {
+    flex: 1,
+    marginRight: 10,
+  },
+  textInput: {
+    flex: 3,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+
 });
 
 export default HomeScreen;

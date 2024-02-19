@@ -5,16 +5,28 @@ import { Appbar } from 'react-native-paper';
 
 const HomeScreen = () => {
 
-  const options = ['BOX1', 'BOX2', 'BOX3', 'BOX4', 'BOX5'];
-  const [selectedOption, setSelectedOption] = useState(options[0]);
+  const [options, setOptions] = useState([]);
+  const addOption = (newOption) => {
+    setOptions(prevOptions => {
+      const updatedOptions = [...prevOptions, newOption];
+      if (updatedOptions.length === 1) {
+        setSelectedOption(newOption);
+      }
+      return updatedOptions;
+    });
+  };
+  const [selectedOption, setSelectedOption] = useState('');
 
   const [visible, setVisible] = useState(false);
   const [boxId, setBoxId] = useState('');
   const [name, setName] = useState('');
 
   const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
-
+  const hideModal = () => {
+    setVisible(false);
+    setBoxId('');
+    setName('');
+  };
 
   return (
 
@@ -59,7 +71,9 @@ const HomeScreen = () => {
                 style={styles.submitButton}
                 onPress={() => {
                   console.log('Submitted:', { boxId, name });
-                  hideModal(); 
+                  addOption(name);
+                  hideModal();
+
                 }}
               >
                 <Text style={styles.submitButtonText}>Submit</Text>
@@ -209,10 +223,10 @@ const styles = StyleSheet.create({
 
   buttonContainer: {
     alignItems: 'center',
-    width: '100%', 
-    marginTop: 20, 
+    width: '100%',
+    marginTop: 20,
   },
-  
+
 
 
 });

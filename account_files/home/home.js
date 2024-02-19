@@ -6,6 +6,8 @@ import { Appbar } from 'react-native-paper';
 const HomeScreen = () => {
 
   const [options, setOptions] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+
   const addOption = (newOption) => {
     setOptions(prevOptions => {
       const updatedOptions = [...prevOptions, newOption];
@@ -26,6 +28,7 @@ const HomeScreen = () => {
     setVisible(false);
     setBoxId('');
     setName('');
+    setErrorMessage('');
   };
 
   return (
@@ -67,13 +70,18 @@ const HomeScreen = () => {
             </View>
 
             <View style={styles.buttonContainer}>
+              {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
               <TouchableOpacity
                 style={styles.submitButton}
                 onPress={() => {
-                  console.log('Submitted:', { boxId, name });
-                  addOption(name);
-                  hideModal();
-
+                  if (!name || !boxId) {
+                    setErrorMessage('Please fill in both fields');
+                  } else {
+                    setErrorMessage('');
+                    console.log('Submitted:', { boxId, name });
+                    addOption(name);
+                    hideModal();
+                  }
                 }}
               >
                 <Text style={styles.submitButtonText}>Submit</Text>
@@ -113,9 +121,6 @@ const HomeScreen = () => {
         <View style={styles.textContainer}>
           <Text style={styles.text}>Paracetamol</Text>
         </View>
-
-
-
       </View>
     </View>
   );
@@ -227,6 +232,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 
+  errorText: {
+    color: 'red', 
+    marginBottom: 10,
+  },
 
 
 });

@@ -54,14 +54,18 @@ const HomeScreen = () => {
               />
             </View>
 
-            <Button
-              title="Submit"
-              onPress={() => {
-                // Handle the submit action
-                console.log('Submitted:', { boxId, name });
-                hideModal(); // Optionally close the modal after submit
-              }}
-            />
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={() => {
+                  console.log('Submitted:', { boxId, name });
+                  hideModal(); 
+                }}
+              >
+                <Text style={styles.submitButtonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+
           </View>
         </View>
       </Modal>
@@ -189,6 +193,27 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
   },
+  submitButton: {
+    backgroundColor: '#E8DEF8',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    color: '#000000',
+    fontSize: 16,
+
+  },
+
+  buttonContainer: {
+    alignItems: 'center',
+    width: '100%', 
+    marginTop: 20, 
+  },
+  
+
 
 });
 

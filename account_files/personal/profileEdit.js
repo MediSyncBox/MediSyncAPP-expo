@@ -109,7 +109,7 @@ const ProfileEdit = () => {
           onPress={handleGenderPress}
         />
       </List.Section>
-      
+
       {renderAvatarModal()}
     </View>
   );
@@ -193,7 +193,12 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "bold",
     textAlign: "center"
-  }
+  },
+  separator: {
+    height: 1,
+    width: "100%",
+    backgroundColor: "#e0e0e0", // 灰色分隔线
+  },
 
 });
 

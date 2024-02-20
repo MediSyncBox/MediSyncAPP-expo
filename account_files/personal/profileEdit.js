@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     width: "100%",
-    backgroundColor: "#e0e0e0", // 灰色分隔线
+    backgroundColor: "#e0e0e0", 
   },
 
 });

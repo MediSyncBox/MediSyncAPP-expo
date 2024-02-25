@@ -26,6 +26,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
       : [];
   });
   
+  // how many times per day for pills
   const handleTimesPerDayChange = (value) => {
     const newTimes = parseInt(value, 10);
     // valid and >=1 and <= 5
@@ -44,7 +45,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
       }
     }
   };
-  
+
   const showTimePicker = (index) => {
     setShowPickers(showPickers.map((item, idx) => (idx === index ? true : item)));
   };
@@ -56,6 +57,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     }
   };
 
+  // the block for each time take pills
   const renderTimePickerControls = () => {
     return doseTimes.map((time, index) => (
       <View key={index}>
@@ -76,7 +78,6 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     ));
   };
   
-
   // manage form submit
   const handleSubmit = () => {
     // TODO: need to fill with database?
@@ -104,20 +105,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
               value={medicine}
               placeholder="Enter Medicine Name"
             />
-            <TextInput
-              style={styles.input}
-              onChangeText={setTimesPerDay}
-              value={timesPerDay}
-              placeholder="How many times per day"
-              keyboardType="numeric"
-            />
-            <TextInput
-              style={styles.input}
-              onChangeText={setDose}
-              value={dose}
-              placeholder="Enter Dose"
-              keyboardType="numeric"
-            />
+            
             <TextInput
               style={styles.input}
               onChangeText={handleTimesPerDayChange}
@@ -125,6 +113,13 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
               placeholder="How many times per day"
               keyboardType="numeric"
               maxLength={1}
+            />
+            <TextInput
+              style={styles.input}
+              onChangeText={setDose}
+              value={dose}
+              placeholder="Enter Dose"
+              keyboardType="numeric"
             />
             {renderTimePickerControls()}
             {showPicker && (

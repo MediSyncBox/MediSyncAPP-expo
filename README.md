@@ -14,3 +14,4 @@ How to start APP:
 - for Android, run: expo start --tunnel
 - before running, add expo-cli
 - new dependence: npm i metro-react-native-babel-preset --save-dev
+- time picker: expo install @react-native-community/datetimepicker

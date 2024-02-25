@@ -3,7 +3,7 @@ import { Alert, StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import { Agenda } from "react-native-calendars"
 import testIDs from "./testIDs"
 import PlusButton from "./PlusButton"
-import PopupModal from "./PopupModal"
+import PopupModal from "./EditModal"
 // import {PopupWindow} from "./PopupWindow"
 
 export default class AgendaScreen extends Component {

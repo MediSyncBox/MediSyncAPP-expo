@@ -9,52 +9,49 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   // initialise doseTimes avoid logic conflict
   const [doseTimes, setDoseTimes] = useState(() => {
     if (initialData && Array.isArray(initialData.doseTimes)) {
-      return initialData.doseTimes; // valid initialData
+      return initialData.doseTimes;
     }
-    return Array(defaultTimesPerDay).fill(null);
+    return Array(defaultTimesPerDay).fill(null); // 默认值
   });
-  const [showPicker, setShowPicker] = useState(false); // use state control DateTimePicker
-  const [currentPickerIndex, setCurrentPickerIndex] = useState(null);
-  const [timesPerDay, setTimesPerDay] = useState(initialData ? initialData.timesPerDay.toString() : '1');
-  // const [doseTimes, setDoseTimes] = useState(initialData ? initialData.doseTimes : Array(parseInt(timesPerDay, 10)).fill(new Date()));
-  // const [showPickers, setShowPickers] = useState(Array(parseInt(timesPerDay, 10)).fill(false));
-  const [showPickers, setShowPickers] = useState(() => {
-    // similar to doseTimes
-    const initialTimes = parseInt(timesPerDay, 10);
-    return !isNaN(initialTimes) && initialTimes > 0 && initialTimes <= 5
-      ? Array(initialTimes).fill(false)
-      : [];
-  });
+  // const [timesPerDay, setTimesPerDay] = useState(initialData ? initialData.timesPerDay.toString() : '1');
+  // const [showPickers, setShowPickers] = useState(() => {
+  //   // similar to doseTimes
+  //   const initialTimes = parseInt(timesPerDay, 10);
+  //   return !isNaN(initialTimes) && initialTimes > 0 && initialTimes <= 5
+  //     ? Array(initialTimes).fill(false)
+  //     : [];
+  // });
+  const [showPickers, setShowPickers] = useState(() => doseTimes.map(() => false));
   
   // how many times per day for pills
   const handleTimesPerDayChange = (value) => {
+    // empty input or 0 input
+    if (value.trim() === '' || value === '0') {
+      setDoseTimes([]); // clean array
+      return;
+    }
+  
     const newTimes = parseInt(value, 10);
-    // valid and >=1 and <= 5
-    if (!isNaN(newTimes) && newTimes > 0 && newTimes <= 5) {
-      setTimesPerDay(value);
-      setDoseTimes(Array(newTimes).fill(null).map((_, index) =>
-        doseTimes[index] || new Date() // curr time
-      ));
-      setShowPickers(Array(newTimes).fill(false)); // new showPickers state array
+    if (!isNaN(newTimes) && newTimes >= 1 && newTimes <= 5) {
+      const newDoseTimes = Array(newTimes).fill(null).map((_, index) =>
+        doseTimes[index] || new Date()
+      );
+      setDoseTimes(newDoseTimes);
     } else {
-      // invalid then reset
-      if(value.trim() === '') {
-        setTimesPerDay('');
-        setDoseTimes([]);
-        setShowPickers([]);
-      }
+      return;
     }
   };
 
   const showTimePicker = (index) => {
-    setShowPickers(showPickers.map((item, idx) => (idx === index ? true : item)));
+    setShowPickers(showPickers.map((item, idx) => idx === index));
   };
 
   const handleTimeChange = (index, event, selectedTime) => {
-    if (selectedTime) {
-      setDoseTimes(doseTimes.map((item, idx) => (idx === index ? selectedTime : item)));
-      setShowPickers(showPickers.map((item, idx) => (idx === index ? false : item)));
-    }
+    const updatedDoseTimes = doseTimes.map((item, idx) => 
+      idx === index ? selectedTime || item : item // Retain the time or update if selected
+    );
+    setDoseTimes(updatedDoseTimes);
+    setShowPickers(showPickers.map((item, idx) => idx === index ? false : item));
   };
 
   // the block for each time take pills
@@ -67,7 +64,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
         />
         {showPickers[index] && (
           <DateTimePicker
-            value={time || new Date()} // if time null then use curr time
+            value={time || new Date()} // If time is null then use current time
             mode="time"
             is24Hour={true}
             display="default"
@@ -80,8 +77,8 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   
   // manage form submit
   const handleSubmit = () => {
-    // TODO: need to fill with database?
-    submitForm({ medicine, timesPerDay, dose });
+    // TODO: Implement submission logic, possibly involving a database
+    submitForm({ medicine, timesPerDay: doseTimes.length, dose, doseTimes });
     setModalVisible(false);
   };
 
@@ -109,11 +106,12 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
             <TextInput
               style={styles.input}
               onChangeText={handleTimesPerDayChange}
-              value={timesPerDay}
+              value={doseTimes.length > 0 ? doseTimes.length.toString() : ''}
               placeholder="How many times per day"
               keyboardType="numeric"
               maxLength={1}
             />
+
             <TextInput
               style={styles.input}
               onChangeText={setDose}
@@ -122,15 +120,6 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
               keyboardType="numeric"
             />
             {renderTimePickerControls()}
-            {showPicker && (
-              <DateTimePicker
-                value={doseTimes[currentPickerIndex] || new Date()}
-                mode="time"
-                is24Hour={true}
-                display="default"
-                onChange={handleTimeChange}
-              />
-            )}
             
             <Pressable
               style={[styles.button, styles.buttonClose]}

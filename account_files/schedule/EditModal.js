@@ -5,7 +5,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 export default function EditModal({ modalVisible, setModalVisible, mode, submitForm, initialData }) {
   const [medicine, setMedicine] = useState(initialData ? initialData.medicine : '');
   const [dose, setDose] = useState(initialData ? initialData.dose : '');
-  const [timesPerDay, setTimesPerDay] = useState(initialData ? initialData.timesPerDay.toString() : '1');
   const defaultTimesPerDay = 1;
   // initialise doseTimes avoid logic conflict
   const [doseTimes, setDoseTimes] = useState(() => {
@@ -16,39 +15,67 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   });
   const [showPicker, setShowPicker] = useState(false); // use state control DateTimePicker
   const [currentPickerIndex, setCurrentPickerIndex] = useState(null);
-
-
+  const [timesPerDay, setTimesPerDay] = useState(initialData ? initialData.timesPerDay.toString() : '1');
+  // const [doseTimes, setDoseTimes] = useState(initialData ? initialData.doseTimes : Array(parseInt(timesPerDay, 10)).fill(new Date()));
+  // const [showPickers, setShowPickers] = useState(Array(parseInt(timesPerDay, 10)).fill(false));
+  const [showPickers, setShowPickers] = useState(() => {
+    // similar to doseTimes
+    const initialTimes = parseInt(timesPerDay, 10);
+    return !isNaN(initialTimes) && initialTimes > 0 && initialTimes <= 5
+      ? Array(initialTimes).fill(false)
+      : [];
+  });
+  
   const handleTimesPerDayChange = (value) => {
     const newTimes = parseInt(value, 10);
-    setTimesPerDay(value);
-    if (!isNaN(newTimes) && newTimes > 0) {
-      setDoseTimes(Array(newTimes).fill(null));
-    } else if (value === '') {
-      setDoseTimes(Array(defaultTimesPerDay).fill(null)); // null input
+    // valid and >=1 and <= 5
+    if (!isNaN(newTimes) && newTimes > 0 && newTimes <= 5) {
+      setTimesPerDay(value);
+      setDoseTimes(Array(newTimes).fill(null).map((_, index) =>
+        doseTimes[index] || new Date() // curr time
+      ));
+      setShowPickers(Array(newTimes).fill(false)); // new showPickers state array
+    } else {
+      // invalid then reset
+      if(value.trim() === '') {
+        setTimesPerDay('');
+        setDoseTimes([]);
+        setShowPickers([]);
+      }
     }
-  };  
-
-  const renderTimePickerButtons = () => {
-    // only when doseTimes have a value
-    return doseTimes.length > 0 ? doseTimes.map((_, index) => (
-      <Button
-        key={index}
-        title={doseTimes[index] ? doseTimes[index].toLocaleTimeString() : "Select time"}
-        onPress={() => {
-          setCurrentPickerIndex(index);
-          setShowPicker(true);
-        }}
-      />
-    )) : null; // else null no button
   };
   
-
-  const handleTimeChange = (event, selectedTime) => {
-    const newDoseTimes = [...doseTimes];
-    newDoseTimes[currentPickerIndex] = selectedTime || doseTimes[currentPickerIndex];
-    setDoseTimes(newDoseTimes);
-    setShowPicker(false);
+  const showTimePicker = (index) => {
+    setShowPickers(showPickers.map((item, idx) => (idx === index ? true : item)));
   };
+
+  const handleTimeChange = (index, event, selectedTime) => {
+    if (selectedTime) {
+      setDoseTimes(doseTimes.map((item, idx) => (idx === index ? selectedTime : item)));
+      setShowPickers(showPickers.map((item, idx) => (idx === index ? false : item)));
+    }
+  };
+
+  const renderTimePickerControls = () => {
+    return doseTimes.map((time, index) => (
+      <View key={index}>
+        <Button
+          title={time ? time.toLocaleTimeString() : "Select time"}
+          onPress={() => showTimePicker(index)}
+        />
+        {showPickers[index] && (
+          <DateTimePicker
+            value={time || new Date()} // if time null then use curr time
+            mode="time"
+            is24Hour={true}
+            display="default"
+            onChange={(event, selectedTime) => handleTimeChange(index, event, selectedTime)}
+          />
+        )}
+      </View>
+    ));
+  };
+  
 
   // manage form submit
   const handleSubmit = () => {
@@ -97,8 +124,9 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
               value={timesPerDay}
               placeholder="How many times per day"
               keyboardType="numeric"
+              maxLength={1}
             />
-            {renderTimePickerButtons()}
+            {renderTimePickerControls()}
             {showPicker && (
               <DateTimePicker
                 value={doseTimes[currentPickerIndex] || new Date()}

@@ -22,6 +22,43 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   //     : [];
   // });
   const [showPickers, setShowPickers] = useState(() => doseTimes.map(() => false));
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+
+  const handleStartPress = () => {
+    setShowStartDatePicker(true);
+  };
+  
+  const handleEndPress = () => {
+    setShowEndDatePicker(true);
+  };
+
+  const handleStartDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || startDate;
+    setShowStartDatePicker(false);
+    setStartDate(currentDate);
+  };
+  
+  // logic of end date earlier than start date
+  const [showWarning, setShowWarning] = useState(false);
+  const handleEndDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || endDate;
+    setShowEndDatePicker(false);
+    if (currentDate < startDate) {
+      setShowWarning(true);
+    } else {
+      // hide warning and show date
+      setShowWarning(false);
+      setEndDate(currentDate);
+    }
+  };
+  // for showing data
+  const formatDate = (date) => {
+    return date.toLocaleDateString();
+  };
+  
   
   // how many times per day for pills
   const handleTimesPerDayChange = (value) => {
@@ -77,10 +114,10 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   
   // manage form submit
   const handleSubmit = () => {
-    // TODO: Implement submission logic, possibly involving a database
-    submitForm({ medicine, timesPerDay: doseTimes.length, dose, doseTimes });
+    submitForm({ medicine, timesPerDay: doseTimes.length, dose, doseTimes, startDate, endDate });
     setModalVisible(false);
   };
+  
 
   return (
     <View style={styles.centeredView}>
@@ -89,7 +126,6 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}>
         <View style={styles.centeredView}>
@@ -120,6 +156,42 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
               keyboardType="numeric"
             />
             {renderTimePickerControls()}
+
+            <View>
+              <Button onPress={handleStartPress} title="Select Start Date" />
+              {showStartDatePicker && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={startDate}
+                  mode="date"
+                  display="default"
+                  onChange={handleStartDateChange}
+                />
+              )}
+              <Text>Start Date: {formatDate(startDate)}</Text>
+            </View>
+
+            <View>
+              <Button onPress={handleEndPress} title="Select End Date" />
+              {showEndDatePicker && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={endDate}
+                  mode="date"
+                  display="default"
+                  onChange={handleEndDateChange}
+                />
+              )}
+              <Text>End Date: {formatDate(endDate)}</Text>
+            </View>
+            {/* warning of the end date */}
+            {showWarning && (
+              <View style={styles.warningContainer}>
+                <Text style={styles.warningText}>
+                  End date must be later than start date. Please choose a different end date.
+                </Text>
+              </View>
+            )}
             
             <Pressable
               style={[styles.button, styles.buttonClose]}
@@ -199,5 +271,15 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center"
-  }
+  },
+  warningContainer: {
+    backgroundColor: '#FFCCCC',
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 20,
+  },
+  warningText: {
+    color: '#CC0000',
+    textAlign: 'center',
+  },
 });

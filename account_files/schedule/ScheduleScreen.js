@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import AgendaScreen from './AgendaScreen';
+import PopupWindow from './PlusButton';
+// import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 const ScheduleScreen = () => {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
-    </View>
+    <AgendaScreen />
   );
-}
+};
+
 export default ScheduleScreen;

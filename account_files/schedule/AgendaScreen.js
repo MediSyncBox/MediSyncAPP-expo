@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { Alert, StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import { Agenda } from "react-native-calendars"
-import testIDs from "./testIDs"
+import example from "./testIDs"
 import PlusButton from "./PlusButton"
-import EditModal from "./EditModal"
+import DisplayModal from './DisplayModal'
+// import ExditModal from "./EditModal"
 // import {PopupWindow} from "./PopupWindow"
 
 export default class AgendaScreen extends Component {
@@ -21,7 +22,7 @@ export default class AgendaScreen extends Component {
     return (
       <View style={{ paddingTop: 25, flex: 1 }}>
         <Agenda
-          testID={testIDs.agenda.CONTAINER}
+          // testID={testIDs.agenda.CONTAINER}
           items={this.state.items}
           loadItemsForMonth={this.loadItems}
           //        selected={'2024-02-07'}
@@ -37,7 +38,11 @@ export default class AgendaScreen extends Component {
         </View>
         
         <View>
-          <EditModal modalVisible={this.state.modalVisible} setModalVisible={this.setModalVisible} />
+          <DisplayModal modalVisible={this.state.modalVisible} 
+            setModalVisible={this.setModalVisible} 
+            initialData={example.exampleSchedule}
+            // onEditPress={handleEditPress}
+          />
         </View>
       </View>
     )
@@ -88,7 +93,7 @@ export default class AgendaScreen extends Component {
 
     return (
       <TouchableOpacity
-        testID={testIDs.agenda.ITEM}
+        // testID={testIDs.agenda.ITEM}
         style={[styles.item, { height: reservation.height }]}
         onPress={() => this.setModalVisible(true)}
       >

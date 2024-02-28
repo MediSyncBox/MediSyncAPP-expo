@@ -5,7 +5,6 @@ import example from "./testIDs"
 import PlusButton from "./PlusButton"
 import DisplayModal from "./DisplayModal"
 import EditModal from "./EditModal"
-// import {PopupWindow} from "./PopupWindow"
 
 export default class AgendaScreen extends Component {
   state = {
@@ -56,8 +55,8 @@ export default class AgendaScreen extends Component {
             modalVisible={this.state.editModalVisible}
             setModalVisible={this.setEditModalVisible}
             mode="edit"
-            submitForm={this.handleEditSubmit} // 您需要实现这个方法来处理编辑提交
-            initialData={example.exampleSchedule} // 假设您已经有了一个方法来设置当前选中的项
+            submitForm={this.handleEditSubmit}
+            initialData={example.exampleSchedule}
           />
         </View>
 

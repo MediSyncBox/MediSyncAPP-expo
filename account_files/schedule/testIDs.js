@@ -2,11 +2,16 @@ export default {
   exampleSchedule: {
     medicine: "Ibuprofen",
     dose: "200mg",
-    timesPerDay: 3,
-    startDate: "2023-10-01",
-    endDate: "2023-10-14"
+    doseTimes: [
+      new Date(new Date().setHours(8, 0, 0, 0)),
+      new Date(new Date().setHours(14, 0, 0, 0)),
+      new Date(new Date().setHours(20, 0, 0, 0)),
+    ],
+    startDate: new Date("2023-10-01"),
+    endDate: new Date("2023-10-14"),
   }
-}
+};
+
 // const exampleSchedule = {
 //   medicine: "Ibuprofen",
 //   dose: "200mg",

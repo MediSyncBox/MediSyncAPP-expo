@@ -11,7 +11,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     if (initialData && Array.isArray(initialData.doseTimes)) {
       return initialData.doseTimes;
     }
-    return Array(defaultTimesPerDay).fill(null); // 默认值
+    return Array(defaultTimesPerDay).fill(null);
   });
   // const [timesPerDay, setTimesPerDay] = useState(initialData ? initialData.timesPerDay.toString() : '1');
   // const [showPickers, setShowPickers] = useState(() => {
@@ -22,8 +22,8 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   //     : [];
   // });
   const [showPickers, setShowPickers] = useState(() => doseTimes.map(() => false));
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(initialData ? initialData.startDate : new Date());
+  const [endDate, setEndDate] = useState(initialData ? initialData.endDate : new Date());
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 

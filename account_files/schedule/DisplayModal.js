@@ -3,16 +3,14 @@ import { Modal, StyleSheet, Text, View, Pressable } from 'react-native';
 import EditModal from './EditModal';
 
 export default function DisplayModal({ modalVisible, setModalVisible, initialData, setEditModalVisible}) {
-  
+
   const formatDate = (date) => {
     const dateObj = new Date(date);
     return dateObj.toLocaleDateString();
   };
 
   const handleEditPress = () => {
-    // 先关闭显示模态窗口
     setModalVisible(false);
-    // 然后通知父组件打开编辑模态窗口
     setEditModalVisible(true);
   };
   
@@ -34,7 +32,7 @@ export default function DisplayModal({ modalVisible, setModalVisible, initialDat
               <View>
                 <Text style={styles.detailsText}>Medicine: {initialData.medicine}</Text>
                 <Text style={styles.detailsText}>Dose: {initialData.dose}</Text>
-                <Text style={styles.detailsText}>Times per day: {initialData.timesPerDay}</Text>
+                <Text style={styles.detailsText}>Times per day: {initialData.doseTimes.length}</Text>
                 <Text style={styles.detailsText}>Start Date: {formatDate(initialData.startDate)}</Text>
                 <Text style={styles.detailsText}>End Date: {formatDate(initialData.endDate)}</Text>
               </View>

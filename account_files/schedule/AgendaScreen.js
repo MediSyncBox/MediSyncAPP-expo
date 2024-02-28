@@ -3,8 +3,8 @@ import { Alert, StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import { Agenda } from "react-native-calendars"
 import example from "./testIDs"
 import PlusButton from "./PlusButton"
-import DisplayModal from './DisplayModal'
-// import ExditModal from "./EditModal"
+import DisplayModal from "./DisplayModal"
+import EditModal from "./EditModal"
 // import {PopupWindow} from "./PopupWindow"
 
 export default class AgendaScreen extends Component {
@@ -12,10 +12,15 @@ export default class AgendaScreen extends Component {
     //  initially have no entries until they are loaded dynamically.
     items: undefined,
     modalVisible: false,
+    editModalVisible: false,
   }
 
   setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
+  };
+
+  setEditModalVisible = (visible) => {
+    this.setState({ editModalVisible: visible });
   };
 
   render() {
@@ -42,8 +47,20 @@ export default class AgendaScreen extends Component {
             setModalVisible={this.setModalVisible} 
             initialData={example.exampleSchedule}
             // onEditPress={handleEditPress}
+            setEditModalVisible={this.setEditModalVisible}
           />
         </View>
+
+        <View>
+          <EditModal
+            modalVisible={this.state.editModalVisible}
+            setModalVisible={this.setEditModalVisible}
+            mode="edit"
+            submitForm={this.handleEditSubmit} // 您需要实现这个方法来处理编辑提交
+            initialData={example.exampleSchedule} // 假设您已经有了一个方法来设置当前选中的项
+          />
+        </View>
+
       </View>
     )
   }
@@ -87,6 +104,7 @@ export default class AgendaScreen extends Component {
     return <View style={styles.dayItem} />
   }
 
+  // TODO: change the logic, if hasRenderItem then show else empty
   renderItem = (reservation, isFirst) => {
     const fontSize = isFirst ? 16 : 14
     const color = isFirst ? "black" : "#43515c"

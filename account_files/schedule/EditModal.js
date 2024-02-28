@@ -158,7 +158,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
             {renderTimePickerControls()}
 
             <View>
-              <Button onPress={handleStartPress} title="Select Start Date" />
+              <Button style={styles.button} onPress={handleStartPress} title="Select Start Date" />
               {showStartDatePicker && (
                 <DateTimePicker
                   testID="dateTimePicker"
@@ -172,7 +172,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
             </View>
 
             <View>
-              <Button onPress={handleEndPress} title="Select End Date" />
+              <Button style={styles.button} onPress={handleEndPress} title="Select End Date" />
               {showEndDatePicker && (
                 <DateTimePicker
                   testID="dateTimePicker"
@@ -216,59 +216,62 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
   modalView: {
+    margin: 20,
     backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
+    width: '80%',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowRadius: 4,
     elevation: 5,
   },
-  closebutton: {
-    backgroundColor: '#2196F3',
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-    marginTop: 15,
-  },
-  titleText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 20,
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
+  textStyle: {
+    color: 'black', 
     fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
+  warningContainer: {
+    backgroundColor: '#FFCCCC',
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 20,
+  },
+  warningText: {
+    color: '#CC0000',
+    textAlign: 'center',
   },
   input: {
     height: 40,
     margin: 12,
+    width: '100%',
     borderWidth: 1,
+    borderColor: '#ccc', 
     padding: 10,
     borderRadius: 5,
-    // width: '80%',
   },
   button: {
+    backgroundColor: '#E8DEF8', 
     borderRadius: 20,
     padding: 10,
     elevation: 2,
     marginTop: 15,
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#E8DEF8',
   },
   textStyle: {
-    color: "white",
+    color: "black",
     fontWeight: "bold",
     textAlign: "center"
   },

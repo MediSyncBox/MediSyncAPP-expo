@@ -7,6 +7,7 @@ const ProfileEdit = () => {
   const navigation = useNavigation();
 
   const [avatarModalVisible, setAvatarModalVisible] = useState(false);
+  const [nameModalVisible, setNameModalVisible] = useState(false);
 
 
   const userInfo = {
@@ -61,6 +62,20 @@ const ProfileEdit = () => {
     );
   };
 
+  const renderNameModal = () => {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={nameModalVisible}
+        onRequestClose={() => {
+          setNameModalVisible(!nameModalVisible);
+        }}
+      >
+        <Text >BOX ID:</Text>
+      </Modal>
+    );
+  };
 
 
   const handleAvatarPress = () => {
@@ -68,7 +83,7 @@ const ProfileEdit = () => {
   };
 
   const handleNamePress = () => {
-    // navigation.navigate('EditName', { name: userInfo.name });
+    setNameModalVisible(true);
   };
 
   const handleGenderPress = () => {
@@ -111,6 +126,7 @@ const ProfileEdit = () => {
       </List.Section>
 
       {renderAvatarModal()}
+      {renderNameModal()}
     </View>
   );
 };
@@ -197,7 +213,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     width: "100%",
-    backgroundColor: "#e0e0e0", 
+    backgroundColor: "#e0e0e0",
   },
 
 });

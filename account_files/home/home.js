@@ -24,6 +24,7 @@ const HomeScreen = () => {
   const [name, setName] = useState('');
   const [pillName, setpillName] = useState('');
   const [pillNumber, setpillNumber] = useState('');
+  const [pillTank, setpillTank] = useState('');
   const [pillvisible, setPillVisible] = useState(false);
   const [pills, setPills] = useState([]);
 
@@ -39,8 +40,6 @@ const HomeScreen = () => {
   const showPillModal = () => setPillVisible(true);
   const hidePillModal = () => {
     setPillVisible(false);
-    setpillName('');
-    setpillNumber('');
     setErrorMessage('');
   };
 
@@ -50,10 +49,11 @@ const HomeScreen = () => {
       setErrorMessage('Please fill in both fields');
     } else {
       // Add the new pill to the list of pills
-      setPills([...pills, { name: pillName, number: pillNumber }]);
+      setPills([...pills, { name: pillName, number: pillNumber, tank: pillTank}]);
       // Reset the pill name and number
       setpillName('');
       setpillNumber('');
+      setpillTank('');
       // Hide the modal
       hidePillModal();
     }
@@ -150,6 +150,15 @@ const HomeScreen = () => {
                 onChangeText={setpillNumber}
               />
             </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.textLabel}>Place of Pills:</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter the tank number (1, 2, or 3)"
+                value={pillTank}
+                onChangeText={setpillTank}
+              />
+            </View>
 
             <View style={styles.buttonContainer}>
               {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
@@ -196,7 +205,7 @@ const HomeScreen = () => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View style={styles.pillContainer}>
-              <Text style={styles.text}>{`${item.name} - ${item.number}`}</Text>
+              <Text style={styles.text}>{`${item.name} - ${item.number} - ${item.tank}`}</Text>
             </View>
           )}
         />

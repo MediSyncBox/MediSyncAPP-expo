@@ -45,18 +45,21 @@ const HomeScreen = () => {
 
 
   const addPill = () => {
-    if (!pillName || !pillNumber) {
-      setErrorMessage('Please fill in both fields');
+    if (!pillName || !pillNumber || !pillTank) {
+      setErrorMessage('Please fill in all fields');
+    } else if (pillTank != 1 && pillTank != 2 && pillTank != 3) {
+      setErrorMessage('The tank number must be 1, 2, or 3');
     } else {
       // Add the new pill to the list of pills
-      setPills([...pills, { name: pillName, number: pillNumber, tank: pillTank}]);
-      // Reset the pill name and number
+      setPills([...pills, { name: pillName, number: pillNumber, tank: pillTank }]);
+      // Reset the pill name, number, and tank
       setpillName('');
       setpillNumber('');
       setpillTank('');
       // Hide the modal
       hidePillModal();
     }
+    
   };
 
 

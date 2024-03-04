@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { Text } from 'react-native-paper';
-import { Appbar } from 'react-native-paper';
+import { Text, Appbar } from 'react-native-paper';
 
 const HomeScreen = () => {
 
@@ -13,12 +12,37 @@ const HomeScreen = () => {
       const updatedOptions = [...prevOptions, newOption];
       if (updatedOptions.length === 1) {
         setSelectedOption(newOption);
+        fetchBoxDetails(newOption);
       }
       return updatedOptions;
     });
   };
-  const [selectedOption, setSelectedOption] = useState('');
 
+  // const fetchBoxData = (boxId) => {
+  //   const boxData = getBoxData(boxId);
+  //   setTemperature(boxData.temperature);
+  //   setHumidity(boxData.humidity);
+  // };
+
+  // const handleSelectBox = (option) => {
+  //   setSelectedOption(option);
+  //   fetchBoxData(option.id);
+  // };
+
+  const fetchBoxDetails = (boxName) => {
+    const boxDetails = {
+      temperature: '25',
+      humidity: '50',
+    };
+
+    setTemperature(boxDetails.temperature);
+    setHumidity(boxDetails.humidity);
+  };
+
+
+  const [temperature, setTemperature] = useState(null);
+  const [humidity, setHumidity] = useState(null);
+  const [selectedOption, setSelectedOption] = useState('');
   const [visible, setVisible] = useState(false);
   const [boxId, setBoxId] = useState('');
   const [name, setName] = useState('');
@@ -35,8 +59,6 @@ const HomeScreen = () => {
     setName('');
     setErrorMessage('');
   };
-
-
   const showPillModal = () => setPillVisible(true);
   const hidePillModal = () => {
     setPillVisible(false);
@@ -59,7 +81,7 @@ const HomeScreen = () => {
       // Hide the modal
       hidePillModal();
     }
-    
+
   };
 
 
@@ -193,14 +215,29 @@ const HomeScreen = () => {
         </ScrollView>
       </View>
       <View style={styles.information}>
-        <Text variant="headlineSmall" style={styles.headline}>Temperature</Text>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>20°C</Text>
-        </View>
-        <Text variant="headlineSmall" style={styles.headline}>Humidity</Text>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>20rh</Text>
-        </View>
+
+
+        {selectedOption && temperature && (
+          <View>
+            <Text variant="headlineSmall" style={styles.headline}>Temperature</Text>
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>{temperature}</Text>
+            </View>
+          </View>
+        )}
+
+
+        {selectedOption && humidity && (
+          <View>
+            <Text variant="headlineSmall" style={styles.headline}>Humidity</Text>
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>Humidity: {humidity}rh</Text>
+            </View>
+          </View>
+        )}
+
+
+
         <Text variant="headlineSmall" style={styles.headline}>Pills</Text>
         <View style={styles.placeholder}></View>
         <FlatList
@@ -352,12 +389,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#E8DEF8',
     borderRadius: 10,
     padding: 10,
-    
+
     marginBottom: 20,
     alignSelf: 'center',
     alignItems: 'center',
   },
-  placeholder:{
+  placeholder: {
     marginTop: 20,
 
   }

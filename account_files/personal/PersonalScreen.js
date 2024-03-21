@@ -1,5 +1,5 @@
 // PersonalScreen.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Avatar, List } from 'react-native-paper';
 import ProfileEdit from './profileEdit';
@@ -7,13 +7,32 @@ import { useNavigation } from '@react-navigation/native';
 
 const PersonalScreen = () => {
     const navigation = useNavigation();
+    const [boxes, setBoxes] = useState([]);
+    useEffect(() => {
+        fetch('https://medisyncconnection1.azurewebsites.net/api/boxes')
+            .then((response) => response.json())
+            .then((data) => setBoxes(data))
+            .catch((error) => console.error('Error:', error));
+    }, []); 
 
     return (
+
+
         <View style={styles.container}>
-            <TouchableOpacity 
-            style={styles.header} 
-            onPress={() => navigation.navigate('ProfileEdit')}
-            activeOpacity={1} >
+            <List.Section style={styles.selection}>
+                {boxes.map((box, index) => (
+                    <List.Item
+                        key={index}
+                        title={box.patient_id} 
+                        right={() => <List.Icon icon="chevron-right" />}
+                        onPress={() => console.log('Box selected', box)}
+                    />
+                ))}
+            </List.Section>
+            <TouchableOpacity
+                style={styles.header}
+                onPress={() => navigation.navigate('ProfileEdit')}
+                activeOpacity={1} >
                 <Avatar.Image
                     size={80}
                     source={require('../img/account-box-plus-outline.png')}

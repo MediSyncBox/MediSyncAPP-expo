@@ -1,19 +1,30 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Modal, Image, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { Avatar, List } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import {Picker} from '@react-native-picker/picker';
+
 
 const ProfileEdit = () => {
-  const navigation = useNavigation();
-
-  const [avatarModalVisible, setAvatarModalVisible] = useState(false);
-
-
-  const userInfo = {
+  const [userInfo, setUserInfo] = useState({
     avatar: 'path-to-avatar',
     name: 'Mathilda',
     gender: 'Female',
-  };
+  });
+
+  const navigation = useNavigation();
+
+  const [avatarModalVisible, setAvatarModalVisible] = useState(false);
+  const [nameModalVisible, setNameModalVisible] = useState(false);
+  const [genderModalVisible, setGenderModalVisible] = useState(false);
+
+  const showNameModal = () => setNameModalVisible(true);
+  const hideNameModal = () => setNameModalVisible(false);
+
+  const showGenderModal = () => setGenderModalVisible(true);
+  const hideGenderModal = () => setGenderModalVisible(false);
+
+
 
   const renderAvatarModal = () => {
     return (
@@ -61,19 +72,82 @@ const ProfileEdit = () => {
     );
   };
 
+  const renderNameModal = () => {
+    const [newName, setNewName] = useState(userInfo.name);
+
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={nameModalVisible}
+        onRequestClose={hideNameModal}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TextInput
+              style={styles.textInput}
+              value={newName}
+              onChangeText={setNewName}
+              placeholder="Enter new name"
+            />
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={() => {
+                setUserInfo({ ...userInfo, name: newName });
+                hideNameModal();
+              }}
+            >
+              <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
+
+  const renderGenderModal = () => {
+    const [newGender, setNewGender] = useState(userInfo.gender);
+
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={genderModalVisible}
+        onRequestClose={hideGenderModal}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Picker
+              selectedValue={newGender}
+              onValueChange={(itemValue, itemIndex) => setNewGender(itemValue)}
+              style={styles.pickerStyle}
+            >
+              <Picker.Item label="Female" value="Female" />
+              <Picker.Item label="Male" value="Male" />
+              <Picker.Item label="Other" value="Other" />
+            </Picker>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={() => {
+                setUserInfo({ ...userInfo, gender: newGender });
+                hideGenderModal();
+              }}
+            >
+              <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
 
 
   const handleAvatarPress = () => {
     setAvatarModalVisible(true);
   };
 
-  const handleNamePress = () => {
-    // navigation.navigate('EditName', { name: userInfo.name });
-  };
-
-  const handleGenderPress = () => {
-    // navigation.navigate('EditGender', { gender: userInfo.gender });
-  };
 
   const ListItemWithDescription = ({ title, description, onPress }) => (
     <List.Item
@@ -101,16 +175,18 @@ const ProfileEdit = () => {
         <ListItemWithDescription
           title="Your Name"
           description={userInfo.name}
-          onPress={handleNamePress}
+          onPress={showNameModal}
         />
         <ListItemWithDescription
           title="Your Gender"
           description={userInfo.gender}
-          onPress={handleGenderPress}
+          onPress={showGenderModal}
         />
       </List.Section>
 
       {renderAvatarModal()}
+      {renderNameModal()}
+      {renderGenderModal()}
     </View>
   );
 };
@@ -197,8 +273,13 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     width: "100%",
-    backgroundColor: "#e0e0e0", 
+    backgroundColor: "#e0e0e0",
   },
+  submitButtonText: {
+    color: "black",
+    fontWeight: "bold",
+    textAlign: "center"
+  }
 
 });
 

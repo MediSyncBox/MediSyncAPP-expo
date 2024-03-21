@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, TextInput, Pressable, View, Button } from 'react-native';
+import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function EditModal({ modalVisible, setModalVisible, mode, submitForm, initialData }) {
@@ -30,7 +30,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   const handleStartPress = () => {
     setShowStartDatePicker(true);
   };
-  
+
   const handleEndPress = () => {
     setShowEndDatePicker(true);
   };
@@ -40,7 +40,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     setShowStartDatePicker(false);
     setStartDate(currentDate);
   };
-  
+
   // logic of end date earlier than start date
   const [showWarning, setShowWarning] = useState(false);
   const handleEndDateChange = (event, selectedDate) => {
@@ -58,8 +58,8 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   const formatDate = (date) => {
     return date.toLocaleDateString();
   };
-  
-  
+
+
   // how many times per day for pills
   const handleTimesPerDayChange = (value) => {
     // empty input or 0 input
@@ -67,7 +67,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
       setDoseTimes([]); // clean array
       return;
     }
-  
+
     const newTimes = parseInt(value, 10);
     if (!isNaN(newTimes) && newTimes >= 1 && newTimes <= 5) {
       const newDoseTimes = Array(newTimes).fill(null).map((_, index) =>
@@ -84,7 +84,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   };
 
   const handleTimeChange = (index, event, selectedTime) => {
-    const updatedDoseTimes = doseTimes.map((item, idx) => 
+    const updatedDoseTimes = doseTimes.map((item, idx) =>
       idx === index ? selectedTime || item : item // Retain the time or update if selected
     );
     setDoseTimes(updatedDoseTimes);
@@ -95,10 +95,10 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   const renderTimePickerControls = () => {
     return doseTimes.map((time, index) => (
       <View key={index}>
-        <Button
-          title={time ? time.toLocaleTimeString() : "Select time"}
-          onPress={() => showTimePicker(index)}
-        />
+        <TouchableOpacity style={styles.button} onPress={() => showTimePicker(index)}>
+          <Text style={styles.textStyle}>{time ? time.toLocaleTimeString() : "Select time"}</Text>
+        </TouchableOpacity>
+
         {showPickers[index] && (
           <DateTimePicker
             value={time || new Date()} // If time is null then use current time
@@ -111,13 +111,13 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
       </View>
     ));
   };
-  
+
   // manage form submit
   const handleSubmit = () => {
     submitForm({ medicine, timesPerDay: doseTimes.length, dose, doseTimes, startDate, endDate });
     setModalVisible(false);
   };
-  
+
 
   return (
     <View style={styles.centeredView}>
@@ -131,14 +131,14 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.titleText}>{mode === 'add' ? 'Add Schedule' : 'Edit Schedule'}</Text>
-            
+
             <TextInput
               style={styles.input}
               onChangeText={setMedicine}
               value={medicine}
               placeholder="Enter Medicine Name"
             />
-            
+
             <TextInput
               style={styles.input}
               onChangeText={handleTimesPerDayChange}
@@ -158,7 +158,10 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
             {renderTimePickerControls()}
 
             <View>
-              <Button style={styles.button} onPress={handleStartPress} title="Select Start Date" />
+              <TouchableOpacity style={styles.button} onPress={handleStartPress}>
+                <Text style={styles.textStyle}>Select Start Date</Text>
+              </TouchableOpacity>
+
               {showStartDatePicker && (
                 <DateTimePicker
                   testID="dateTimePicker"
@@ -172,7 +175,9 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
             </View>
 
             <View>
-              <Button style={styles.button} onPress={handleEndPress} title="Select End Date" />
+              <TouchableOpacity style={styles.button} onPress={handleEndPress}>
+                <Text style={styles.textStyle}>Select End Date</Text>
+              </TouchableOpacity>
               {showEndDatePicker && (
                 <DateTimePicker
                   testID="dateTimePicker"
@@ -192,18 +197,20 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
                 </Text>
               </View>
             )}
-            
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={handleSubmit}>
-              <Text style={styles.textStyle}>{mode === 'add' ? 'Add' : 'Save'}</Text>
-            </Pressable>
-            
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>Close</Text>
-            </Pressable>
+
+            <View style={styles.buttonContainer}>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={handleSubmit}>
+                <Text style={styles.textStyle}>{mode === 'add' ? 'Add' : 'Save'}</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>Close</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
@@ -216,7 +223,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
     margin: 20,
@@ -235,7 +242,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   textStyle: {
-    color: 'black', 
+    color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -256,19 +263,20 @@ const styles = StyleSheet.create({
     margin: 12,
     width: '100%',
     borderWidth: 1,
-    borderColor: '#ccc', 
+    borderColor: '#ccc',
     padding: 10,
     borderRadius: 5,
   },
   button: {
-    backgroundColor: '#E8DEF8', 
+    backgroundColor: '#E8DEF8',
     borderRadius: 20,
     padding: 10,
     elevation: 2,
     marginTop: 15,
   },
   buttonClose: {
-    backgroundColor: '#E8DEF8',
+    backgroundColor: '#bbb0c7',
+    borderRadius: 20,
   },
   textStyle: {
     color: "black",
@@ -284,5 +292,15 @@ const styles = StyleSheet.create({
   warningText: {
     color: '#CC0000',
     textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    margin:10,
+    marginTop: 10,
+    justifyContent: 'space-between',
+    width: '50%', 
+    alignSelf: 'center',
   },
 });

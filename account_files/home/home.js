@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Button, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { Text } from 'react-native-paper';
-import { Appbar } from 'react-native-paper';
+import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { Text, Appbar } from 'react-native-paper';
 
 const HomeScreen = () => {
 
@@ -13,15 +12,45 @@ const HomeScreen = () => {
       const updatedOptions = [...prevOptions, newOption];
       if (updatedOptions.length === 1) {
         setSelectedOption(newOption);
+        fetchBoxDetails(newOption);
       }
       return updatedOptions;
     });
   };
-  const [selectedOption, setSelectedOption] = useState('');
 
+  // const fetchBoxData = (boxId) => {
+  //   const boxData = getBoxData(boxId);
+  //   setTemperature(boxData.temperature);
+  //   setHumidity(boxData.humidity);
+  // };
+
+  // const handleSelectBox = (option) => {
+  //   setSelectedOption(option);
+  //   fetchBoxData(option.id);
+  // };
+
+  const fetchBoxDetails = (boxName) => {
+    const boxDetails = {
+      temperature: '25',
+      humidity: '50',
+    };
+
+    setTemperature(boxDetails.temperature);
+    setHumidity(boxDetails.humidity);
+  };
+
+
+  const [temperature, setTemperature] = useState(null);
+  const [humidity, setHumidity] = useState(null);
+  const [selectedOption, setSelectedOption] = useState('');
   const [visible, setVisible] = useState(false);
   const [boxId, setBoxId] = useState('');
   const [name, setName] = useState('');
+  const [pillName, setpillName] = useState('');
+  const [pillNumber, setpillNumber] = useState('');
+  const [pillTank, setpillTank] = useState('');
+  const [pillvisible, setPillVisible] = useState(false);
+  const [pills, setPills] = useState([]);
 
   const showModal = () => setVisible(true);
   const hideModal = () => {
@@ -30,6 +59,31 @@ const HomeScreen = () => {
     setName('');
     setErrorMessage('');
   };
+  const showPillModal = () => setPillVisible(true);
+  const hidePillModal = () => {
+    setPillVisible(false);
+    setErrorMessage('');
+  };
+
+
+  const addPill = () => {
+    if (!pillName || !pillNumber || !pillTank) {
+      setErrorMessage('Please fill in all fields');
+    } else if (pillTank != 1 && pillTank != 2 && pillTank != 3) {
+      setErrorMessage('The tank number must be 1, 2, or 3');
+    } else {
+      // Add the new pill to the list of pills
+      setPills([...pills, { name: pillName, number: pillNumber, tank: pillTank }]);
+      // Reset the pill name, number, and tank
+      setpillName('');
+      setpillNumber('');
+      setpillTank('');
+      // Hide the modal
+      hidePillModal();
+    }
+
+  };
+
 
   return (
 
@@ -48,7 +102,7 @@ const HomeScreen = () => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <TouchableOpacity style={styles.closeButton} onPress={hideModal}>
-              <Text style={styles.closeButtonText}>×</Text>
+              <Text style={styles.closeButtonText}>x</Text>
             </TouchableOpacity>
             <View style={styles.inputGroup}>
               <Text style={styles.textLabel}>BOX ID:</Text>
@@ -92,6 +146,58 @@ const HomeScreen = () => {
         </View>
       </Modal>
 
+      <Modal
+        visible={pillvisible}
+        onRequestClose={hidePillModal}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TouchableOpacity style={styles.closeButton} onPress={hidePillModal}>
+              <Text style={styles.closeButtonText}>x</Text>
+            </TouchableOpacity>
+            <View style={styles.inputGroup}>
+              <Text style={styles.textLabel}>Name of Pills:</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter Name"
+                value={pillName}
+                onChangeText={setpillName}
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.textLabel}>Number of Pills:</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter Number"
+                value={pillNumber}
+                onChangeText={setpillNumber}
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <Text style={styles.textLabel}>Place of Pills:</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter the tank number (1, 2, or 3)"
+                value={pillTank}
+                onChangeText={setpillTank}
+              />
+            </View>
+
+            <View style={styles.buttonContainer}>
+              {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={addPill}
+              >
+                <Text style={styles.submitButtonText}>Submit</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
+      </Modal>
 
 
 
@@ -109,18 +215,43 @@ const HomeScreen = () => {
         </ScrollView>
       </View>
       <View style={styles.information}>
-        <Text variant="headlineSmall" style={styles.headline}>Temperature</Text>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>20°C</Text>
-        </View>
-        <Text variant="headlineSmall" style={styles.headline}>Humidity</Text>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>20rh</Text>
-        </View>
+
+
+        {selectedOption && temperature && (
+          <View>
+            <Text variant="headlineSmall" style={styles.headline}>Temperature</Text>
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>{temperature}</Text>
+            </View>
+          </View>
+        )}
+
+
+        {selectedOption && humidity && (
+          <View>
+            <Text variant="headlineSmall" style={styles.headline}>Humidity</Text>
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>Humidity: {humidity}rh</Text>
+            </View>
+          </View>
+        )}
+
+
+
         <Text variant="headlineSmall" style={styles.headline}>Pills</Text>
-        <View style={styles.textContainer}>
-          <Text style={styles.text}>Paracetamol</Text>
-        </View>
+        <View style={styles.placeholder}></View>
+        <FlatList
+          data={pills}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.pillContainer}>
+              <Text style={styles.text}>{`${item.name} - ${item.number} - ${item.tank}`}</Text>
+            </View>
+          )}
+        />
+        <TouchableOpacity style={styles.button} onPress={showPillModal}>
+          <Text style={styles.buttonText}>Add Pills</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -233,11 +364,40 @@ const styles = StyleSheet.create({
   },
 
   errorText: {
-    color: 'red', 
+    color: 'red',
     marginBottom: 10,
   },
 
+  button: {
+    backgroundColor: '#9575CD',
+    padding: 15,
+    marginVertical: 10,
+    alignItems: 'center', // Center the text inside the button
+    borderRadius: 25, // Rounded corners
+    alignSelf: 'center',
+    width: 100,
+  },
+  buttonText: {
+    color: '#FFFFFF', // White text color
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  pillContainer: {
+    width: '90%',
+    borderWidth: 1,
+    borderColor: '#E8DEF8',
+    backgroundColor: '#E8DEF8',
+    borderRadius: 10,
+    padding: 10,
 
+    marginBottom: 20,
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  placeholder: {
+    marginTop: 20,
+
+  }
 });
 
 export default HomeScreen;

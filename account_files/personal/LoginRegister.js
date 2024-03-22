@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import PersonalScreen from './PersonalScreen';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../AuthContext';
 
 const LoginRegisterScreen  = () => {
+    const { login } = useAuth();
     const navigation = useNavigation();
     const [emailorPhone, setEmailorPhone] = useState('');
     const [password, setPassword] = useState('');
@@ -32,7 +34,8 @@ const LoginRegisterScreen  = () => {
             const data = await response.json();
             if(response.ok) {
                 console.log('Login successful:', data);
-                navigation.navigate('PersonalScreen'); 
+                login();
+                // navigation.navigate('PersonalScreen'); 
             } else {
                 throw new Error(data.message || 'An error occurred during login');
             }

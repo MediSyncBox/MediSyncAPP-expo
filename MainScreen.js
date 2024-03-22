@@ -2,16 +2,16 @@ import * as React from 'react';
 import { BottomNavigation } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-
+import { useAuth } from './account_files/AuthContext';
 import PersonalScreen from './account_files/personal/PersonalScreen';
 import ScheduleScreen from './account_files/schedule/ScheduleScreen';
 import HomeScreen from './account_files/home/home';
 import LoginRegisterScreen from './account_files/personal/LoginRegister'; 
 
 const MainScreen = () => {
+  const { isLoggedIn } = useAuth();
   const navigation = useNavigation();
   const [index, setIndex] = React.useState(0);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false); 
 
   const [routes] = React.useState([
     { key: 'schedule', title: 'Schedule', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },

@@ -4,20 +4,14 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Avatar, List } from 'react-native-paper';
 import ProfileEdit from './profileEdit';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../AuthContext';
 
 const PersonalScreen = () => {
+    const { userInfo } = useAuth();
     const navigation = useNavigation();
-    const [boxes, setBoxes] = useState([]);
-    useEffect(() => {
-        fetch('https://medisyncconnection.azurewebsites.net/api/boxes')
-            .then((response) => response.json())
-            .then((data) => setBoxes(data))
-            .catch((error) => console.error('Error:', error));
-    }, []); 
-
+    console.log('userInfo'); 
+    console.log(userInfo); 
     return (
-
-
         <View style={styles.container}>
             {/* <List.Section style={styles.selection}>
                 {boxes.map((box, index) => (
@@ -38,7 +32,7 @@ const PersonalScreen = () => {
                     source={require('../img/account-box-plus-outline.png')}
                 />
                 <View style={styles.userInfo}>
-                    <Text style={styles.userName}>User Name</Text>
+                    <Text style={styles.userName}>{userInfo?.userName}</Text>
                 </View>
                 <List.Icon icon="pencil" />
             </TouchableOpacity>

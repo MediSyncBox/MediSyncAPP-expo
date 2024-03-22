@@ -4,7 +4,28 @@ import PersonalScreen from './PersonalScreen';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 
-const LoginRegisterScreen  = () => {
+
+const fetchUserInfo = async (token) => {
+    try {
+      const response = await fetch('https://medisyncconnection.azurewebsites.net/api/userinfo', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        // 如果响应状态码不是 200 OK，则抛出错误
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const userInfo = await response.json();
+      return userInfo;
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+  };
+
+const LoginRegisterScreen = () => {
     const { login } = useAuth();
     const navigation = useNavigation();
     const [emailorPhone, setEmailorPhone] = useState('');
@@ -32,9 +53,10 @@ const LoginRegisterScreen  = () => {
                 throw new Error("Received non-JSON response from server");
             }
             const data = await response.json();
-            if(response.ok) {
+            if (response.ok) {
                 console.log('Login successful:', data);
-                login();
+                const userInfo = await fetchUserInfo(data.token); // 使用 token 获取用户信息
+                login(userInfo); // Store all user information to status
                 // navigation.navigate('PersonalScreen'); 
             } else {
                 throw new Error(data.message || 'An error occurred during login');
@@ -67,9 +89,15 @@ const LoginRegisterScreen  = () => {
 
             const data = await response.json();
             if (response.ok) {
-                // 保存登录 token、导航到个人页面或主页
                 console.log('Registration successful:', data);
-                navigation.navigate('PersonalScreen'); // 或您的应用中适当的屏幕
+                const userInfoResponse = await fetch('https://medisyncconnection.azurewebsites.net/api/userinfo', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const userInfoData = await userInfoResponse.json();
+                login(userInfoData); // Store all user information to status
+                // navigation.navigate('PersonalScreen'); 
             } else {
                 throw new Error(data.message || 'An error occurred during registration');
             }

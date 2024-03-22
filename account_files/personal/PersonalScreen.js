@@ -9,7 +9,7 @@ const PersonalScreen = () => {
     const navigation = useNavigation();
     const [boxes, setBoxes] = useState([]);
     useEffect(() => {
-        fetch('https://medisyncconnection1.azurewebsites.net/api/boxes')
+        fetch('https://medisyncconnection.azurewebsites.net/api/boxes')
             .then((response) => response.json())
             .then((data) => setBoxes(data))
             .catch((error) => console.error('Error:', error));
@@ -19,7 +19,7 @@ const PersonalScreen = () => {
 
 
         <View style={styles.container}>
-            <List.Section style={styles.selection}>
+            {/* <List.Section style={styles.selection}>
                 {boxes.map((box, index) => (
                     <List.Item
                         key={index}
@@ -28,7 +28,7 @@ const PersonalScreen = () => {
                         onPress={() => console.log('Box selected', box)}
                     />
                 ))}
-            </List.Section>
+            </List.Section> */}
             <TouchableOpacity
                 style={styles.header}
                 onPress={() => navigation.navigate('ProfileEdit')}

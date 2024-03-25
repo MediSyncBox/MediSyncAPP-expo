@@ -167,11 +167,11 @@ const ProfileEdit = () => {
   return (
     <View style={styles.container}>
       <List.Section style={styles.selection}>
-        <ListItemWithDescription
+        {/* <ListItemWithDescription
           title="Your Avatar"
           description={userInfo.avatar}
           onPress={handleAvatarPress}
-        />
+        /> */}
         <ListItemWithDescription
           title="Your Name"
           description={userInfo.name}

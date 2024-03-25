@@ -8,7 +8,7 @@ const HomeScreen = () => {
   const userId = userInfo?.id;
   const [options, setOptions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
-
+  const { setBoxInfo } = useAuth();
 
   const handleSubmitBox = async () => {
     if (!boxId || !name) {
@@ -31,11 +31,12 @@ const HomeScreen = () => {
       // const responseText = await response.text();
       // console.log(responseText);
 
-      const result = await response.text();
+      const result = await response.json();
       console.log(result);
       if (response.ok) {
         setOptions(prevOptions => [...prevOptions, name]);
-        console.log("yesssssssss");
+        setBoxInfo(result); 
+        fetchBoxDetails(name);
         hideModal();
       } else {
         setErrorMessage(result.message || 'Failed to update box');

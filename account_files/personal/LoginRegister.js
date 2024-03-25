@@ -14,7 +14,7 @@ const fetchUserInfo = async (token) => {
       });
   
       if (!response.ok) {
-        // 如果响应状态码不是 200 OK，则抛出错误
+        // Throws an error if the response status code is not 200 OK
         throw new Error(`HTTP error! status: ${response.status}`);
       }
   
@@ -55,7 +55,7 @@ const LoginRegisterScreen = () => {
             const data = await response.json();
             if (response.ok) {
                 console.log('Login successful:', data);
-                const userInfo = await fetchUserInfo(data.token); // 使用 token 获取用户信息
+                const userInfo = await fetchUserInfo(data.token); // Getting user information using tokens
                 login(userInfo); // Store all user information to status
                 // navigation.navigate('PersonalScreen'); 
             } else {

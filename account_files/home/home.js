@@ -1,11 +1,50 @@
 import React, { useState } from 'react';
 import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Text, Appbar } from 'react-native-paper';
+import { useAuth } from '../AuthContext';
 
 const HomeScreen = () => {
-
+  const { userInfo } = useAuth();
+  const userId = userInfo?.id;
   const [options, setOptions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+
+
+  const handleSubmitBox = async () => {
+    if (!boxId || !name) {
+      setErrorMessage('Please fill in both fields');
+      return;
+    }
+
+    try {
+      const response = await fetch('https://medisyncconnection.azurewebsites.net/api/addBox', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          boxId,
+          name,
+        }),
+      });
+      // const responseText = await response.text();
+      // console.log(responseText);
+
+      const result = await response.text();
+      console.log(result);
+      if (response.ok) {
+        setOptions(prevOptions => [...prevOptions, name]);
+        console.log("yesssssssss");
+        hideModal();
+      } else {
+        setErrorMessage(result.message || 'Failed to update box');
+      }
+    } catch (error) {
+      setErrorMessage(error.message || 'An error occurred during the request');
+    }
+  };
+
 
   const addOption = (newOption) => {
     setOptions(prevOptions => {
@@ -127,16 +166,7 @@ const HomeScreen = () => {
               {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
               <TouchableOpacity
                 style={styles.submitButton}
-                onPress={() => {
-                  if (!name || !boxId) {
-                    setErrorMessage('Please fill in both fields');
-                  } else {
-                    setErrorMessage('');
-                    console.log('Submitted:', { boxId, name });
-                    addOption(name);
-                    hideModal();
-                  }
-                }}
+                onPress={handleSubmitBox}
               >
                 <Text style={styles.submitButtonText}>Submit</Text>
               </TouchableOpacity>

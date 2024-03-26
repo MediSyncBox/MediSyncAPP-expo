@@ -31,6 +31,9 @@
         "projectId": "0465dc22-56f0-46c8-98cf-34f68164d9c2"
       }
     },
-    "owner": "mathilda33"
+    "owner": "mathilda33",
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

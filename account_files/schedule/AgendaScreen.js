@@ -1,27 +1,32 @@
 import React, { Component } from 'react'
 import { Alert, StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import { Agenda } from "react-native-calendars"
-import testIDs from "./testIDs"
+import example from "./testIDs"
 import PlusButton from "./PlusButton"
+import DisplayModal from "./DisplayModal"
 import EditModal from "./EditModal"
-// import {PopupWindow} from "./PopupWindow"
 
 export default class AgendaScreen extends Component {
   state = {
     //  initially have no entries until they are loaded dynamically.
     items: undefined,
     modalVisible: false,
+    editModalVisible: false,
   }
 
   setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
   };
 
+  setEditModalVisible = (visible) => {
+    this.setState({ editModalVisible: visible });
+  };
+
   render() {
     return (
       <View style={{ paddingTop: 25, flex: 1 }}>
         <Agenda
-          testID={testIDs.agenda.CONTAINER}
+          // testID={testIDs.agenda.CONTAINER}
           items={this.state.items}
           loadItemsForMonth={this.loadItems}
           //        selected={'2024-02-07'}
@@ -37,8 +42,24 @@ export default class AgendaScreen extends Component {
         </View>
         
         <View>
-          <EditModal modalVisible={this.state.modalVisible} setModalVisible={this.setModalVisible} />
+          <DisplayModal modalVisible={this.state.modalVisible} 
+            setModalVisible={this.setModalVisible} 
+            initialData={example.exampleSchedule}
+            // onEditPress={handleEditPress}
+            setEditModalVisible={this.setEditModalVisible}
+          />
         </View>
+
+        <View>
+          <EditModal
+            modalVisible={this.state.editModalVisible}
+            setModalVisible={this.setEditModalVisible}
+            mode="edit"
+            submitForm={this.handleEditSubmit}
+            initialData={example.exampleSchedule}
+          />
+        </View>
+
       </View>
     )
   }
@@ -82,13 +103,14 @@ export default class AgendaScreen extends Component {
     return <View style={styles.dayItem} />
   }
 
+  // TODO: change the logic, if hasRenderItem then show else empty
   renderItem = (reservation, isFirst) => {
     const fontSize = isFirst ? 16 : 14
     const color = isFirst ? "black" : "#43515c"
 
     return (
       <TouchableOpacity
-        testID={testIDs.agenda.ITEM}
+        // testID={testIDs.agenda.ITEM}
         style={[styles.item, { height: reservation.height }]}
         onPress={() => this.setModalVisible(true)}
       >

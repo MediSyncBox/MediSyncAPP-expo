@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import PersonalScreen from './PersonalScreen';
+// import PersonalScreen from './PersonalScreen';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
-
+import MainScreen from '../../MainScreen';
 
 const fetchUserInfo = async (token) => {
     try {
@@ -57,7 +57,7 @@ const LoginRegisterScreen = () => {
                 console.log('Login successful:', data);
                 const userInfo = await fetchUserInfo(data.token); // Getting user information using tokens
                 login(userInfo); // Store all user information to status
-                // navigation.navigate('PersonalScreen'); 
+                navigation.navigate('MainScreen'); 
             } else {
                 throw new Error(data.message || 'An error occurred during login');
             }
@@ -68,43 +68,43 @@ const LoginRegisterScreen = () => {
 
     };
 
-    const handleRegister = async () => {
-        if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match');
-            return;
-        }
+    // const handleRegister = async () => {
+    //     if (password !== confirmPassword) {
+    //         Alert.alert('Error', 'Passwords do not match');
+    //         return;
+    //     }
 
-        try {
-            const response = await fetch('https://medisyncconnection.azurewebsites.net/api/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    emailorPhone: emailorPhone,
-                    userName: userName,
-                    password: password,
-                }),
-            });
+    //     try {
+    //         const response = await fetch('https://medisyncconnection.azurewebsites.net/api/register', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 emailorPhone: emailorPhone,
+    //                 userName: userName,
+    //                 password: password,
+    //             }),
+    //         });
 
-            const data = await response.json();
-            if (response.ok) {
-                console.log('Registration successful:', data);
-                const userInfoResponse = await fetch('https://medisyncconnection.azurewebsites.net/api/userinfo', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const userInfoData = await userInfoResponse.json();
-                login(userInfoData); // Store all user information to status
-                // navigation.navigate('PersonalScreen'); 
-            } else {
-                throw new Error(data.message || 'An error occurred during registration');
-            }
-        } catch (error) {
-            Alert.alert('Registration Failed', error.message);
-        }
-    };
+    //         const data = await response.json();
+    //         if (response.ok) {
+    //             console.log('Registration successful:', data);
+    //             const userInfoResponse = await fetch('https://medisyncconnection.azurewebsites.net/api/userinfo', {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${token}`
+    //                 }
+    //             });
+    //             const userInfoData = await userInfoResponse.json();
+    //             login(userInfoData); // Store all user information to status
+    //             // navigation.navigate('PersonalScreen'); 
+    //         } else {
+    //             throw new Error(data.message || 'An error occurred during registration');
+    //         }
+    //     } catch (error) {
+    //         Alert.alert('Registration Failed', error.message);
+    //     }
+    // };
 
     return (
         <View style={styles.container}>
@@ -124,7 +124,7 @@ const LoginRegisterScreen = () => {
             />
             <Button title="Login" onPress={handleLogin} />
 
-            <Text style={styles.title}>Register</Text>
+            {/* <Text style={styles.title}>Register</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Username"
@@ -145,7 +145,7 @@ const LoginRegisterScreen = () => {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
             />
-            <Button title="Register" onPress={handleRegister} />
+            <Button title="Register" onPress={handleRegister} /> */}
         </View>
     );
 };

@@ -11,7 +11,7 @@ const App = () => {
       </NavigationContainer>
     </AuthProvider>
 
-  ); x
+  );
 };
 
 export default App;

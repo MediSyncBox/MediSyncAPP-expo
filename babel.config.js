@@ -1,7 +1,10 @@
 module.exports = function(api) {
   api.cache(true);
   return {
-    presets: ['module:metro-react-native-babel-preset', 'babel-preset-expo'],
+    // presets: ['module:metro-react-native-babel-preset', 'babel-preset-expo'],
+    presets: [['module:metro-react-native-babel-preset', {
+      unstable_disableES6Transforms: true
+    }]],
     env: {
       production: {
         plugins: ['react-native-paper/babel'],
@@ -18,6 +21,11 @@ module.exports = function(api) {
       ],
   };
 };
+// module.exports = {
+//   presets: [['module:metro-react-native-babel-preset', {
+//        unstable_disableES6Transforms: true
+//    }]],
+// };
 //
 //module.exports = function(api) {
 //  api.cache(true);

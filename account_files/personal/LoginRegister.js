@@ -63,9 +63,7 @@ const LoginRegisterScreen = () => {
             }
         } catch (error) {
             console.error('There has been a problem with your fetch operation:', error.message);
-
         }
-
     };
 
     // const handleRegister = async () => {
@@ -123,6 +121,7 @@ const LoginRegisterScreen = () => {
                 onChangeText={setPassword}
             />
             <Button title="Login" onPress={handleLogin} />
+            <Button title="Go to Register" onPress={() => navigation.navigate('Register')} />
 
             {/* <Text style={styles.title}>Register</Text>
             <TextInput

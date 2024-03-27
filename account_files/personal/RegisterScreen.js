@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { ScrollView, View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../AuthContext';
 
 const RegistrationScreen = () => {
+  const { login } = useAuth();
   const [emailorPhone, setEmailorPhone] = useState('');
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
@@ -36,6 +38,7 @@ const RegistrationScreen = () => {
         // For successful responses, handle both JSON and non-JSON content types
         if (contentType && contentType.includes('application/json')) {
           const json = await response.json();
+          login(json);
           // Assuming JSON response includes a token; adjust based on actual API behavior
           const userInfo = await fetchUserInfo(json.token);
           Alert.alert('Registration Success', `Welcome, ${userInfo.userName}!`);

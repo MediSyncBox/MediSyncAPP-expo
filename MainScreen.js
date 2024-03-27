@@ -26,7 +26,7 @@ const MainScreen = () => {
       case 'schedule':
         return <ScheduleScreen />;
         case 'personal':
-          return isLoggedIn ? <PersonalScreen /> : <LoginRegisterScreen />;
+          return <PersonalScreen />;
       default:
         return null;
     }

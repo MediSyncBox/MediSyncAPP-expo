@@ -14,11 +14,12 @@ function AppNavigator() {
   const { isLoggedIn } = useAuth(); // Use the authentication status to conditionally set the initial route
 
   return (
-    <Stack.Navigator initialRouteName={isLoggedIn() ? "MainScreen" : "LoginRegisterScreen"}>
+    <Stack.Navigator initialRouteName={isLoggedIn ? "MainScreen" : "LoginRegisterScreen"}>
+    {/* <Stack.Navigator> */}
       <Stack.Screen name="MainScreen" component={MainScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ProfileEdit" component={ProfileEdit} />
-      <Stack.Screen name="LoginRegisterScreen" component={LoginRegisterScreen} />
-      {/* <Stack.Screen name="PersonalScreen" component={PersonalScreen} /> */}
+      <Stack.Screen name="LoginRegisterScreen" component={LoginRegisterScreen} /> 
+      <Stack.Screen name="PersonalScreen" component={PersonalScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
     </Stack.Navigator>
   );

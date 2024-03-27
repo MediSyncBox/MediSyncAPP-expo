@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 
 const LoginScreen = () => {
+  const { login } = useAuth();
   const [emailorPhone, setEmailorPhone] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
@@ -29,6 +30,7 @@ const LoginScreen = () => {
           const json = await response.json(); // Safely parse the JSON
           const userInfo = await fetchUserInfo(json.token);
           Alert.alert('Login Success', `Welcome, ${userInfo.userName}`);
+          login(userInfo);
           // Proceed with your logic after successful login
           navigation.navigate('MainScreen'); 
         } else {

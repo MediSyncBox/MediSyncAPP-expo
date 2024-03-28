@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useAuth } from '../AuthContext';
 
 export default function EditModal({ modalVisible, setModalVisible, mode, submitForm, initialData }) {
   const [medicine, setMedicine] = useState(initialData ? initialData.medicine : '');
   const [dose, setDose] = useState(initialData ? initialData.dose : '');
   const defaultTimesPerDay = 1;
+  const { userInfo } = useAuth();
   // initialise doseTimes avoid logic conflict
   const [doseTimes, setDoseTimes] = useState(() => {
     if (initialData && Array.isArray(initialData.doseTimes)) {
@@ -13,14 +15,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     }
     return Array(defaultTimesPerDay).fill(null);
   });
-  // const [timesPerDay, setTimesPerDay] = useState(initialData ? initialData.timesPerDay.toString() : '1');
-  // const [showPickers, setShowPickers] = useState(() => {
-  //   // similar to doseTimes
-  //   const initialTimes = parseInt(timesPerDay, 10);
-  //   return !isNaN(initialTimes) && initialTimes > 0 && initialTimes <= 5
-  //     ? Array(initialTimes).fill(false)
-  //     : [];
-  // });
+  
   const [showPickers, setShowPickers] = useState(() => doseTimes.map(() => false));
   const [startDate, setStartDate] = useState(initialData ? initialData.startDate : new Date());
   const [endDate, setEndDate] = useState(initialData ? initialData.endDate : new Date());
@@ -114,9 +109,72 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
 
   // manage form submit
   const handleSubmit = () => {
-    submitForm({ medicine, timesPerDay: doseTimes.length, dose, doseTimes, startDate, endDate });
+    // submitForm({ medicine, timesPerDay: doseTimes.length, dose, doseTimes, startDate, endDate });
+    const scheduleEntries = [];
+    const userId = userInfo?.id;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    for (let day = start; day <= end; day.setDate(day.getDate() + 1)) {
+      doseTimes.forEach(time => {
+        // Here you extract the hours and minutes from each doseTime and set them on the current day
+        const entryTime = new Date(day);
+        entryTime.setHours(time.getHours());
+        entryTime.setMinutes(time.getMinutes());
+  
+        // Add the schedule entry for this day and time
+        scheduleEntries.push({
+          userId: userId, // Replace with the actual userId
+          medicine: medicine,
+          dose: dose,
+          time: entryTime,
+          taken: 0 // Assuming the default is not taken (false is represented as 0 in bit field)
+        });
+      });
+    }
+
+    scheduleEntries.forEach(entry => {
+      submitSchedule(entry); // Assume submitSchedule is the function to POST the data to the server
+    });
+
     setModalVisible(false);
   };
+
+  const submitSchedule = async (scheduleEntry) => {
+    try {
+      const response = await fetch('https://medisyncconnection.azurewebsites.net/api/addEditSchedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Include the 'Authorization' header if the request needs to be authenticated
+        },
+        body: JSON.stringify(scheduleEntry),
+      });
+  
+      // For debugging: log the response status and response text
+      console.log('Response status:', response.status);
+      const text = await response.text(); // Read the text from the response
+      console.log('Response body:', text);
+  
+      if (response.ok) {
+        // Attempt to parse the text as JSON
+        try {
+          const json = JSON.parse(text);
+          console.log('Schedule submitted:', json);
+          // Handle the parsed JSON as needed
+        } catch (e) {
+          throw new Error('Response was not valid JSON.');
+        }
+      } else {
+        throw new Error('Server responded with a status: ' + response.status);
+      }
+    } catch (error) {
+      console.error('Error submitting schedule:', error);
+      // Handle the error appropriately in the UI
+    }
+  };
+  
+  
 
 
   return (
@@ -304,3 +362,4 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+

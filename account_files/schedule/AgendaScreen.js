@@ -106,30 +106,25 @@ export default class AgendaScreen extends Component {
     axios.get(`${baseUrl}/getSchedules/${user_id}`)
       .then(response => {
         const items = this.state.items || {};
-  
-        // Process the response to fit into the required structure for the Agenda component
-        response.data.forEach((schedule) => {
-          const strTime = schedule.time.split('T')[0]; // Assuming the date format is YYYY-MM-DDTHH:mm:ss
+
+        // Process the response
+        response.data.forEach(schedule => {
+          const strTime = this.timeToString(new Date(schedule.time));
           if (!items[strTime]) {
             items[strTime] = [];
           }
           items[strTime].push({
-            name: schedule.medicine + " - " + (schedule.dose ? schedule.dose + ' dose' : 'No dose info'),
-            height: Math.max(50, Math.floor(Math.random() * 150)), // Adjust the height as necessary
-            day: strTime,
+            name: schedule.medicine,
+            dose: schedule.dose,
             time: schedule.time,
-            taken: schedule.taken
+            taken: schedule.taken,
+            height: 100 // Set a fixed height for each item
           });
         });
-  
+
         const newItems = {};
-        Object.keys(items).forEach(key => {
-          newItems[key] = items[key];
-        });
-  
-        this.setState({
-          items: newItems
-        });
+        Object.keys(items).forEach(key => { newItems[key] = items[key]; });
+        this.setState({ items: newItems });
       })
       .catch(error => {
         console.error("Error fetching schedules: ", error);
@@ -144,20 +139,27 @@ export default class AgendaScreen extends Component {
     return <View style={styles.dayItem} />
   }
 
-  // TODO: change the logic, if hasRenderItem then show else empty
-  renderItem = (reservation, isFirst) => {
-    const fontSize = isFirst ? 16 : 14
-    const color = isFirst ? "black" : "#43515c"
-
+  renderItem = (reservation) => {
+    // Create a new Date object from the schedule time
+    const scheduleDateTime = new Date(reservation.time);
+  
     return (
       <TouchableOpacity
-        // testID={testIDs.agenda.ITEM}
-        style={[styles.item, { height: reservation.height }]}
-        onPress={() => this.setModalVisible(true)}
+        style={styles.item}
+        onPress={() => this.setEditModalVisible(true)}
       >
-        <Text style={{ fontSize, color }}>{reservation.name}</Text>
+        <Text style={styles.itemText}>Medicine: {reservation.name}</Text>
+        <Text style={styles.itemText}>Dose: {reservation.dose || 'No dose info'} pills</Text>
+        {/* Render both date and time */}
+        <Text style={styles.itemText}>Time: {scheduleDateTime.toLocaleTimeString()}</Text>
+        <Text style={styles.itemText}>Taken: {reservation.taken ? 'Yes' : 'No'}</Text>
       </TouchableOpacity>
     )
+  }
+
+  timeToString = (time) => {
+    const date = new Date(time);
+    return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
   }
 
   renderEmptyDate = () => {
@@ -204,5 +206,18 @@ const styles = StyleSheet.create({
     // flex: 1 / 3,
     // marginBottom: 100,
     alignItems: 'center',
+  },
+  item: {
+    backgroundColor: "white",
+    borderRadius: 5,
+    padding: 10,
+    marginRight: 10,
+    marginTop: 17,
+    minHeight: 100, // Ensure each item has at least a height of 100
+    justifyContent: 'center' // Center the content vertically
+  },
+  itemText: {
+    fontSize: 14,
+    color: "#43515c"
   },
 })

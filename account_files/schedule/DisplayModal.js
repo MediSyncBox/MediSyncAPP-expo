@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, View, Pressable } from 'react-native';
-import EditModal from './EditModal';
+import EditModal from './AddSchedule';
 
 export default function DisplayModal({ modalVisible, setModalVisible, initialData, setEditModalVisible}) {
 

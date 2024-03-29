@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../AuthContext';
 
 export default function EditModal({ modalVisible, setModalVisible, mode, submitForm, initialData }) {
-  const [medicine, setMedicine] = useState(initialData ? initialData.medicine : '');
+  const [medicine, setMedicine] = useState(initialData ? initialData.name : '');
   const [dose, setDose] = useState(initialData ? initialData.dose : '');
   const defaultTimesPerDay = 1;
   const { userInfo } = useAuth();
@@ -15,6 +15,19 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     }
     return Array(defaultTimesPerDay).fill(null);
   });
+
+  // useEffect(() => {
+  //   setMedicine(initialData ? initialData.name : '');
+  //   setDose(initialData ? initialData.dose : '');
+  //   setDoseTimes(() => {
+  //     if (initialData && Array.isArray(initialData.doseTimes)) {
+  //       return initialData.doseTimes;
+  //     }
+  //     return Array(defaultTimesPerDay).fill(null);
+  //   });
+  //   setStartDate(initialData ? initialData.startDate : new Date());
+  //   setEndDate(initialData ? initialData.endDate : new Date());
+  // }, [initialData]); 
   
   const [showPickers, setShowPickers] = useState(() => doseTimes.map(() => false));
   const [startDate, setStartDate] = useState(initialData ? initialData.startDate : new Date());
@@ -52,6 +65,49 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   // for showing data
   const formatDate = (date) => {
     return date.toLocaleDateString();
+  };
+
+  const renderDateInputs = () => {
+    // console.warn(initialData)
+    // if (!initialData || (!initialData.startDate && !initialData.endDate)) {
+      if (initialData == null) {
+      return (
+        <>
+          <View>
+            <TouchableOpacity style={styles.button} onPress={handleStartPress}>
+              <Text style={styles.textStyle}>Select Start Date</Text>
+            </TouchableOpacity>
+            {showStartDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={startDate}
+                mode="date"
+                display="default"
+                onChange={handleStartDateChange}
+              />
+            )}
+            <Text>Start Date: {formatDate(startDate)}</Text>
+          </View>
+
+          <View>
+            <TouchableOpacity style={styles.button} onPress={handleEndPress}>
+              <Text style={styles.textStyle}>Select End Date</Text>
+            </TouchableOpacity>
+            {showEndDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={endDate}
+                mode="date"
+                display="default"
+                onChange={handleEndDateChange}
+              />
+            )}
+            <Text>End Date: {formatDate(endDate)}</Text>
+          </View>
+        </>
+      );
+    }
+    return null; // Do not render date inputs if initialData with dates is provided
   };
 
 
@@ -173,9 +229,6 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
       // Handle the error appropriately in the UI
     }
   };
-  
-  
-
 
   return (
     <View style={styles.centeredView}>
@@ -214,6 +267,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
               keyboardType="numeric"
             />
             {renderTimePickerControls()}
+            {/* {renderDateInputs()} */}
 
             <View>
               <TouchableOpacity style={styles.button} onPress={handleStartPress}>

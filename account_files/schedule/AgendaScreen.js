@@ -4,18 +4,26 @@ import { Agenda } from "react-native-calendars"
 import example from "./testIDs"
 import PlusButton from "./PlusButton"
 import DisplayModal from "./DisplayModal"
-import EditModal from "./EditModal"
+import EditModal from "./AddSchedule"
+import EditSchedule from './EditSchedule'
 import axios from 'axios';
 import { useAuth } from '../AuthContext'
 
 export default class AgendaScreen extends Component {
-
+  
+  // state = {
+  //   //  initially have no entries until they are loaded dynamically.
+  //   items: undefined,
+  //   modalVisible: false,
+  //   editModalVisible: false,
+  // }
   state = {
-    //  initially have no entries until they are loaded dynamically.
     items: undefined,
     modalVisible: false,
     editModalVisible: false,
+    selectedItem: null, // Add this line
   }
+  
 
   setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
@@ -45,92 +53,58 @@ export default class AgendaScreen extends Component {
         </View>
         
         <View>
-          <DisplayModal modalVisible={this.state.modalVisible} 
-            setModalVisible={this.setModalVisible} 
-            initialData={example.exampleSchedule}
-            // onEditPress={handleEditPress}
-            setEditModalVisible={this.setEditModalVisible}
-          />
-        </View>
-
-        <View>
-          <EditModal
+          <EditSchedule
             modalVisible={this.state.editModalVisible}
             setModalVisible={this.setEditModalVisible}
             mode="edit"
             submitForm={this.handleEditSubmit}
-            initialData={example.exampleSchedule}
+            initialData={this.state.selectedItem} // Pass selectedItem as initialData
           />
         </View>
+
 
       </View>
     )
   }
 
-  // loadItems = day => {
-  //   const items = this.state.items || {}
-
-  //   setTimeout(() => {
-  //     for (let i = -15; i < 85; i++) {
-  //       const time = day.timestamp + i * 24 * 60 * 60 * 1000
-  //       const strTime = this.timeToString(time)
-
-  //       if (!items[strTime]) {
-  //         items[strTime] = []
-
-  //         const numItems = Math.floor(Math.random() * 3 + 1)
-  //         for (let j = 0; j < numItems; j++) {
-  //           items[strTime].push({
-  //             name: "Item for " + strTime + " #" + j,
-  //             height: Math.max(50, Math.floor(Math.random() * 150)),
-  //             day: strTime
-  //           })
-  //         }
-  //       }
-  //     }
-
-  //     const newItems = {}
-  //     Object.keys(items).forEach(key => {
-  //       newItems[key] = items[key]
-  //     })
-  //     this.setState({
-  //       items: newItems
-  //     })
-  //   }, 1000)
-  // }
   loadItems = day => {
     const { user_id } = this.props;
-    // const { user_id } = this.props; // Assuming you pass the user_id as a prop to the component
-    const baseUrl = 'https://medisyncconnection.azurewebsites.net/api'; // Replace with your actual server URL
+    const baseUrl = 'https://medisyncconnection.azurewebsites.net/api';
   
     axios.get(`${baseUrl}/getSchedules/${user_id}`)
       .then(response => {
-        const items = this.state.items || {};
-
+        const newItems = { ...this.state.items }; // Spread into a new object to avoid direct state mutation
+  
         // Process the response
         response.data.forEach(schedule => {
           const strTime = this.timeToString(new Date(schedule.time));
-          if (!items[strTime]) {
-            items[strTime] = [];
+          if (!newItems[strTime]) {
+            newItems[strTime] = [];
           }
-          items[strTime].push({
-            name: schedule.medicine,
-            dose: schedule.dose,
-            time: schedule.time,
-            taken: schedule.taken,
-            height: 100 // Set a fixed height for each item
-          });
+  
+          // Here you could add a check to ensure no duplicates are added
+          // For example, by using some unique identifier of schedules
+          const isDuplicate = newItems[strTime].some(item => item.id === schedule.id);
+          if (!isDuplicate) {
+            newItems[strTime].push({
+              id: schedule.id, // Assuming each schedule has a unique 'id'
+              user: schedule.user_id,
+              name: schedule.medicine,
+              dose: schedule.dose,
+              time: schedule.time,
+              taken: schedule.taken,
+              height: 100
+            });
+          }
         });
-
-        const newItems = {};
-        Object.keys(items).forEach(key => { newItems[key] = items[key]; });
+  
         this.setState({ items: newItems });
       })
       .catch(error => {
         console.error("Error fetching schedules: ", error);
-        // Handle error appropriately
       });
   }
+  
 
   renderDay = day => {
     if (day) {
@@ -146,7 +120,12 @@ export default class AgendaScreen extends Component {
     return (
       <TouchableOpacity
         style={styles.item}
-        onPress={() => this.setEditModalVisible(true)}
+        onPress={() => {
+          this.setState({ selectedItem: reservation, editModalVisible: true }, () => {
+            // This callback function gets executed after the state has been updated.
+            // console.warn(this.state.selectedItem);
+          });
+        }}
       >
         <Text style={styles.itemText}>Medicine: {reservation.name}</Text>
         <Text style={styles.itemText}>Dose: {reservation.dose || 'No dose info'} pills</Text>
@@ -156,6 +135,7 @@ export default class AgendaScreen extends Component {
       </TouchableOpacity>
     )
   }
+  
 
   timeToString = (time) => {
     const date = new Date(time);

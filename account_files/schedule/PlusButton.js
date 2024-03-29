@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Alert, Modal, StyleSheet, Text, Pressable, View} from 'react-native';
-import EditModal from './EditModal';
+import EditModal from './AddSchedule';
 
 export default function PlusButton() {
   const [modalVisible, setModalVisible] = useState(false);

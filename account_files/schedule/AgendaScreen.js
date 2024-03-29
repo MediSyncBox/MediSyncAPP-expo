@@ -10,21 +10,20 @@ import axios from 'axios';
 import { useAuth } from '../AuthContext'
 
 export default class AgendaScreen extends Component {
-  
-  // state = {
-  //   //  initially have no entries until they are loaded dynamically.
-  //   items: undefined,
-  //   modalVisible: false,
-  //   editModalVisible: false,
-  // }
+
   state = {
     items: undefined,
     modalVisible: false,
     editModalVisible: false,
     selectedItem: null, // Add this line
   }
-  
 
+  isEmptyItems = () => {
+    const { items } = this.state;
+    if (!items) return true; // Items object is undefined
+    return Object.keys(items).every(key => items[key].length === 0);
+  }
+  
   setModalVisible = (visible) => {
     this.setState({ modalVisible: visible });
   };
@@ -37,16 +36,14 @@ export default class AgendaScreen extends Component {
     return (
       <View style={{ paddingTop: 25, flex: 1 }}>
         <Agenda
-          // testID={testIDs.agenda.CONTAINER}
           items={this.state.items}
           loadItemsForMonth={this.loadItems}
-          //        selected={'2024-02-07'}
-          // have two modal, for edit is one, another is for showing
           renderItem={this.renderItem}
           renderEmptyDate={this.renderEmptyDate}
           rowHasChanged={this.rowHasChanged}
           showClosingKnob={true}
-        />
+          renderEmptyData={() => this.isEmptyItems() ? <View style={styles.emptyData}><Text>You don't have a schedule</Text></View> : null}
+      />
         
         <View style={styles.footerContainer}>
           <PlusButton/>

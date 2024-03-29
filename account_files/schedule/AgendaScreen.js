@@ -5,8 +5,11 @@ import example from "./testIDs"
 import PlusButton from "./PlusButton"
 import DisplayModal from "./DisplayModal"
 import EditModal from "./EditModal"
+import axios from 'axios';
+import { useAuth } from '../AuthContext'
 
 export default class AgendaScreen extends Component {
+
   state = {
     //  initially have no entries until they are loaded dynamically.
     items: undefined,
@@ -64,36 +67,74 @@ export default class AgendaScreen extends Component {
     )
   }
 
+  // loadItems = day => {
+  //   const items = this.state.items || {}
+
+  //   setTimeout(() => {
+  //     for (let i = -15; i < 85; i++) {
+  //       const time = day.timestamp + i * 24 * 60 * 60 * 1000
+  //       const strTime = this.timeToString(time)
+
+  //       if (!items[strTime]) {
+  //         items[strTime] = []
+
+  //         const numItems = Math.floor(Math.random() * 3 + 1)
+  //         for (let j = 0; j < numItems; j++) {
+  //           items[strTime].push({
+  //             name: "Item for " + strTime + " #" + j,
+  //             height: Math.max(50, Math.floor(Math.random() * 150)),
+  //             day: strTime
+  //           })
+  //         }
+  //       }
+  //     }
+
+  //     const newItems = {}
+  //     Object.keys(items).forEach(key => {
+  //       newItems[key] = items[key]
+  //     })
+  //     this.setState({
+  //       items: newItems
+  //     })
+  //   }, 1000)
+  // }
   loadItems = day => {
-    const items = this.state.items || {}
-
-    setTimeout(() => {
-      for (let i = -15; i < 85; i++) {
-        const time = day.timestamp + i * 24 * 60 * 60 * 1000
-        const strTime = this.timeToString(time)
-
-        if (!items[strTime]) {
-          items[strTime] = []
-
-          const numItems = Math.floor(Math.random() * 3 + 1)
-          for (let j = 0; j < numItems; j++) {
-            items[strTime].push({
-              name: "Item for " + strTime + " #" + j,
-              height: Math.max(50, Math.floor(Math.random() * 150)),
-              day: strTime
-            })
+    const { user_id } = this.props;
+    // const { user_id } = this.props; // Assuming you pass the user_id as a prop to the component
+    const baseUrl = 'https://medisyncconnection.azurewebsites.net/api'; // Replace with your actual server URL
+  
+    axios.get(`${baseUrl}/getSchedules/${user_id}`)
+      .then(response => {
+        const items = this.state.items || {};
+  
+        // Process the response to fit into the required structure for the Agenda component
+        response.data.forEach((schedule) => {
+          const strTime = schedule.time.split('T')[0]; // Assuming the date format is YYYY-MM-DDTHH:mm:ss
+          if (!items[strTime]) {
+            items[strTime] = [];
           }
-        }
-      }
-
-      const newItems = {}
-      Object.keys(items).forEach(key => {
-        newItems[key] = items[key]
+          items[strTime].push({
+            name: schedule.medicine + " - " + (schedule.dose ? schedule.dose + ' dose' : 'No dose info'),
+            height: Math.max(50, Math.floor(Math.random() * 150)), // Adjust the height as necessary
+            day: strTime,
+            time: schedule.time,
+            taken: schedule.taken
+          });
+        });
+  
+        const newItems = {};
+        Object.keys(items).forEach(key => {
+          newItems[key] = items[key];
+        });
+  
+        this.setState({
+          items: newItems
+        });
       })
-      this.setState({
-        items: newItems
-      })
-    }, 1000)
+      .catch(error => {
+        console.error("Error fetching schedules: ", error);
+        // Handle error appropriately
+      });
   }
 
   renderDay = day => {

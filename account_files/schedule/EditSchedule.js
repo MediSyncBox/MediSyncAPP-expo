@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, StyleSheet, Text, TextInput, View, Switch, Pressable, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker'; // Ensure this is installed
 
-export default function EditSchedule({ modalVisible, setModalVisible, submitForm, initialData }) {
+export default function EditSchedule({ modalVisible, setModalVisible, initialData}) {
   const [medicine, setMedicine] = useState(initialData ? initialData.name : '');
   const [dose, setDose] = useState(initialData ? initialData.dose.toString() : '');
   const [taken, setTaken] = useState(initialData ? initialData.taken : false);
@@ -25,10 +25,49 @@ export default function EditSchedule({ modalVisible, setModalVisible, submitForm
     }
   };
 
-  const handleSubmit = () => {
-    submitForm({ ...initialData, medicine, dose: Number(dose), taken, time });
-    setModalVisible(false);
-  };
+  
+  const updateSchedule = async () => {
+    // Prepare the data object from the state before sending it
+    const scheduleData = {
+      id: initialData.id, // assuming initialData has an `id` property
+      medicine: medicine,
+      dose: Number(dose),
+      taken: taken ? 1 : 0,
+      time: time.toISOString(), // Convert the date to an ISO string
+    };
+    // console.warn(scheduleData)
+    // console.warn(initialData)
+  
+    try {
+      const response = await fetch('https://medisyncconnection.azurewebsites.net/api/updateSchedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(scheduleData),
+      });
+  
+      if (response.ok && response.headers.get("content-type")?.includes("application/json")) {
+        const data = await response.json();
+        if (data.success) {
+          Alert.alert("Update Successful", "The schedule has been updated.");
+          setModalVisible(false); // Close the modal after successful update
+          // reloadData(); // Call the passed callback function to reload data in AgendaScreen
+        } else {
+          Alert.alert("Update Failed", "The schedule update failed. Please try again.");
+        }
+      } else {
+        // If the response is not JSON, log the response to debug
+        const text = await response.text();
+        console.warn("Received non-JSON response:", text);
+        Alert.alert("Update Error", "The response from the server was not in JSON format.");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Update Error", "An error occurred while updating the schedule.");
+    }
+};
+  
 
   const resetForm = () => {
     // Reset all local states to their initial values
@@ -108,7 +147,7 @@ export default function EditSchedule({ modalVisible, setModalVisible, submitForm
             <View style={styles.buttonContainer}>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
-                onPress={handleSubmit}>
+                onPress={updateSchedule}>
                 <Text style={styles.textStyle}>Save</Text>
               </Pressable>
 

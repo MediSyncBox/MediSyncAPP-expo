@@ -1,13 +1,30 @@
-import * as React from 'react';
+import React, { useState, useCallback } from 'react';
+import { RefreshControl, ScrollView } from 'react-native';
 import AgendaScreen from './AgendaScreen';
-import PopupWindow from './PlusButton';
 import { useAuth } from '../AuthContext';
-// import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
 const ScheduleScreen = () => {
   const { userInfo } = useAuth();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [agendaKey, setAgendaKey] = useState('initialKey');
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Simulate a network request completed
+    setAgendaKey(prevKey => prevKey + '1'); // Change the key to force re-render
+    setRefreshing(false);
+  }, []);
+
   return (
-    <AgendaScreen user_id={userInfo?.id}/>
+    <ScrollView
+      contentContainerStyle={{flex: 1}}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      <AgendaScreen key={agendaKey} user_id={userInfo?.id} />
+    </ScrollView>
   );
 };
 

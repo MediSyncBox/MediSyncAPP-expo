@@ -16,24 +16,15 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     return Array(defaultTimesPerDay).fill(null);
   });
 
-  // useEffect(() => {
-  //   setMedicine(initialData ? initialData.name : '');
-  //   setDose(initialData ? initialData.dose : '');
-  //   setDoseTimes(() => {
-  //     if (initialData && Array.isArray(initialData.doseTimes)) {
-  //       return initialData.doseTimes;
-  //     }
-  //     return Array(defaultTimesPerDay).fill(null);
-  //   });
-  //   setStartDate(initialData ? initialData.startDate : new Date());
-  //   setEndDate(initialData ? initialData.endDate : new Date());
-  // }, [initialData]); 
-  
   const [showPickers, setShowPickers] = useState(() => doseTimes.map(() => false));
   const [startDate, setStartDate] = useState(initialData ? initialData.startDate : new Date());
   const [endDate, setEndDate] = useState(initialData ? initialData.endDate : new Date());
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+
+  useEffect(() => {
+    setShowPickers(doseTimes.map(() => false));
+  }, [doseTimes.length]);  
 
   const handleStartPress = () => {
     setShowStartDatePicker(true);
@@ -131,7 +122,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   };
 
   const showTimePicker = (index) => {
-    setShowPickers(showPickers.map((item, idx) => idx === index));
+    setShowPickers(showPickers.map((item, idx) => idx === index ? !item : item));
   };
 
   const handleTimeChange = (index, event, selectedTime) => {
@@ -139,11 +130,12 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
       idx === index ? selectedTime || item : item // Retain the time or update if selected
     );
     setDoseTimes(updatedDoseTimes);
+    // This will hide the picker after a time is selected
     setShowPickers(showPickers.map((item, idx) => idx === index ? false : item));
   };
-
   // the block for each time take pills
   const renderTimePickerControls = () => {
+    console.warn(showPickers[0])
     return doseTimes.map((time, index) => (
       <View key={index}>
         <TouchableOpacity style={styles.button} onPress={() => showTimePicker(index)}>

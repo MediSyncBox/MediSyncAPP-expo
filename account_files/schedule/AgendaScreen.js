@@ -1,21 +1,15 @@
 import React, { Component } from 'react'
 import { Alert, StyleSheet, Text, View, TouchableOpacity } from "react-native"
 import { Agenda } from "react-native-calendars"
-import example from "./testIDs"
 import PlusButton from "./PlusButton"
-import DisplayModal from "./DisplayModal"
-import EditModal from "./AddSchedule"
 import EditSchedule from './EditSchedule'
 import axios from 'axios';
-import { useAuth } from '../AuthContext'
-// import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default class AgendaScreen extends Component {
 
   state = {
     items: undefined,
-    modalVisible: false,
     editModalVisible: false,
     selectedItem: null, // Add this line
   }
@@ -25,10 +19,6 @@ export default class AgendaScreen extends Component {
     if (!items) return true; // Items object is undefined
     return Object.keys(items).every(key => items[key].length === 0);
   }
-  
-  setModalVisible = (visible) => {
-    this.setState({ modalVisible: visible });
-  };
 
   setEditModalVisible = (visible) => {
     this.setState({ editModalVisible: visible });
@@ -197,23 +187,6 @@ export default class AgendaScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  // items_chedule: {
-  //   backgroundColor: "white",
-  //   borderRadius: 10,
-    // padding: 1, // Reduced padding
-    // marginRight: 1,
-    // marginTop: 1,
-    // minHeight: 80, // Reduced minHeight for compactness
-    // justifyContent: 'center', // Center the content vertically
-    // shadowColor: "#000",
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.23,
-    // shadowRadius: 2.62,
-    // elevation: 4,
-  // },
   emptyDate: {
     height: 15,
     flex: 1,

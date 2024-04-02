@@ -8,6 +8,8 @@ import EditModal from "./AddSchedule"
 import EditSchedule from './EditSchedule'
 import axios from 'axios';
 import { useAuth } from '../AuthContext'
+// import Icon from 'react-native-vector-icons/FontAwesome';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default class AgendaScreen extends Component {
 
@@ -42,6 +44,8 @@ export default class AgendaScreen extends Component {
           renderEmptyDate={this.renderEmptyDate}
           rowHasChanged={this.rowHasChanged}
           showClosingKnob={true}
+          refreshing={this.props.refreshing}
+          onRefresh={this.props.onRefresh}
           renderEmptyData={() => this.isEmptyItems() ? <View style={styles.emptyData}><Text>You don't have a schedule</Text></View> : null}
       />
         
@@ -111,29 +115,29 @@ export default class AgendaScreen extends Component {
   }
 
   renderItem = (reservation) => {
-    // Create a new Date object from the schedule time
     const scheduleDateTime = new Date(reservation.time);
   
     return (
       <TouchableOpacity
         style={styles.item}
         onPress={() => {
-          this.setState({ selectedItem: reservation, editModalVisible: true }, () => {
-            // This callback function gets executed after the state has been updated.
-            // console.warn(this.state.selectedItem);
-          });
+          this.setState({ selectedItem: reservation, editModalVisible: true });
         }}
       >
-        <Text style={styles.itemText}>Medicine: {reservation.name}</Text>
-        <Text style={styles.itemText}>Dose: {reservation.dose || 'No dose info'} pills</Text>
-        {/* Render both date and time */}
-        <Text style={styles.itemText}>Time: {scheduleDateTime.toLocaleTimeString()}</Text>
+        <View style={styles.itemHeader}>
+          <Ionicons name="sync-circle" size={24} color="#43515c" style={styles.icon} />
+          <Text style={[styles.itemText, { fontSize: 18 }]}>Medicine: {reservation.name}</Text>
+        </View>
+        <View style={styles.itemFooter}>
+          <Ionicons name="time" size={20} color="#43515c" style={styles.icon} />
+          <Text style={styles.itemText}>Time: {scheduleDateTime.toLocaleTimeString()}</Text>
+          <Text style={[styles.itemText, { marginLeft: 'auto' }]}>Dose: {reservation.dose || 'No dose info'} pills</Text>
+        </View>
         <Text style={styles.itemText}>Taken: {reservation.taken ? 'Yes' : 'No'}</Text>
       </TouchableOpacity>
-    )
+    );
   }
   
-
   timeToString = (time) => {
     const date = new Date(time);
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
@@ -186,15 +190,37 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: "white",
-    borderRadius: 5,
-    padding: 10,
+    borderRadius: 10,
+    padding: 8, // Reduced padding
     marginRight: 10,
-    marginTop: 17,
-    minHeight: 100, // Ensure each item has at least a height of 100
-    justifyContent: 'center' // Center the content vertically
+    marginTop: 7,
+    minHeight: 80, // Reduced minHeight for compactness
+    justifyContent: 'center', // Center the content vertically
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    // elevation: 4,
   },
   itemText: {
-    fontSize: 14,
-    color: "#43515c"
+    fontSize: 16, // Make text larger
+    color: "#43515c",
+    marginBottom: 5, // Add spacing between text elements
+  },
+  itemHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  itemFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    marginRight: 5,
   },
 })
+

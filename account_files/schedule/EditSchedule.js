@@ -87,14 +87,15 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
   
 
   return (
-    <View style={styles.centeredView}>
+    <View>
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
           setModalVisible(!modalVisible);
-        }}>
+        }}
+        >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.titleText}>Edit Schedule</Text>

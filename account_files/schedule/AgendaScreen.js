@@ -116,27 +116,62 @@ export default class AgendaScreen extends Component {
 
   renderItem = (reservation) => {
     const scheduleDateTime = new Date(reservation.time);
-  
     return (
       <TouchableOpacity
-        style={styles.item}
+        // style={styles.items_chedule}
         onPress={() => {
           this.setState({ selectedItem: reservation, editModalVisible: true });
         }}
       >
-        <View style={styles.itemHeader}>
-          <Ionicons name="sync-circle" size={24} color="#43515c" style={styles.icon} />
-          <Text style={[styles.itemText, { fontSize: 18 }]}>Medicine: {reservation.name}</Text>
+        <View style={styles.item}>
+          <TouchableOpacity
+            style={[styles.itemTouchable, { backgroundColor: 'white'}]} // Example RGB color change based on taken status
+            onPress={() => this.handleTakenToggle(reservation)}
+          >
+            <Ionicons
+              name="checkmark-circle"
+              size={24}
+              color={reservation.taken ? "rgb(255, 92, 38)" //"rgb(202, 168, 245)" 
+              : "rgb(128, 128, 128)"} // Example RGB colors
+              style={styles.tickIcon}
+            />
+          </TouchableOpacity>
+          <View style={styles.itemHeader}>
+            <Ionicons name="sync-circle" size={24} color="#43515c" style={styles.icon} />
+            <Text style={[styles.itemText, { fontSize: 18 }]}>Medicine: {reservation.name}</Text>
+          </View>
+          <View style={styles.itemFooter}>
+            <Ionicons name="time" size={20} color="#43515c" style={styles.icon} />
+            <Text style={styles.itemText}>Time: {scheduleDateTime.toLocaleTimeString()}</Text>
+            <Text style={[styles.itemText, { marginLeft: 'auto' }]}>Dose: {reservation.dose || 'No dose info'} pills</Text>
+          </View>
         </View>
-        <View style={styles.itemFooter}>
-          <Ionicons name="time" size={20} color="#43515c" style={styles.icon} />
-          <Text style={styles.itemText}>Time: {scheduleDateTime.toLocaleTimeString()}</Text>
-          <Text style={[styles.itemText, { marginLeft: 'auto' }]}>Dose: {reservation.dose || 'No dose info'} pills</Text>
-        </View>
-        <Text style={styles.itemText}>Taken: {reservation.taken ? 'Yes' : 'No'}</Text>
       </TouchableOpacity>
     );
-  }
+  };
+  
+  handleTakenToggle = async (reservation) => {
+    const updatedReservation = { ...reservation, taken: !reservation.taken };
+    this.setState(prevState => ({
+      items: {
+        ...prevState.items,
+        [this.timeToString(reservation.time)]: prevState.items[this.timeToString(reservation.time)].map(item => item.id === reservation.id ? updatedReservation : item),
+      }
+    }), async () => {
+      try {
+        await axios.post('https://medisyncconnection.azurewebsites.net/api/updateTakenStatus', {
+          id: reservation.id,
+          taken: updatedReservation.taken,
+        });
+        // No need to reload items from the database; local state is already updated
+      } catch (error) {
+        console.error("Error updating taken status: ", error);
+        // Optionally revert the state change in case of an error
+      }
+    });
+  };
+  
+  
   
   timeToString = (time) => {
     const date = new Date(time);
@@ -162,14 +197,23 @@ export default class AgendaScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  item: {
-    backgroundColor: "white",
-    flex: 1,
-    borderRadius: 5,
-    padding: 10,
-    marginRight: 10,
-    marginTop: 17
-  },
+  // items_chedule: {
+  //   backgroundColor: "white",
+  //   borderRadius: 10,
+    // padding: 1, // Reduced padding
+    // marginRight: 1,
+    // marginTop: 1,
+    // minHeight: 80, // Reduced minHeight for compactness
+    // justifyContent: 'center', // Center the content vertically
+    // shadowColor: "#000",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.23,
+    // shadowRadius: 2.62,
+    // elevation: 4,
+  // },
   emptyDate: {
     height: 15,
     flex: 1,
@@ -193,7 +237,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 8, // Reduced padding
     marginRight: 10,
-    marginTop: 7,
+    marginTop: 10,
     minHeight: 80, // Reduced minHeight for compactness
     justifyContent: 'center', // Center the content vertically
     shadowColor: "#000",
@@ -203,7 +247,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-    // elevation: 4,
+    elevation: 4,
   },
   itemText: {
     fontSize: 16, // Make text larger
@@ -221,6 +265,12 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 5,
+  },
+  itemTouchable: {
+    position: 'absolute',
+    top: 5, // Adjust as necessary
+    right: 5, // Adjust as necessary
+    padding: 5,
   },
 })
 

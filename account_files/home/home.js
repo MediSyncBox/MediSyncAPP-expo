@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Text, Appbar } from 'react-native-paper';
 import { useAuth } from '../AuthContext';
@@ -32,20 +32,22 @@ const HomeScreen = () => {
       // console.log(responseText);
 
       const result = await response.json();
-      console.log(result);
+      // console.log (result);
       if (response.ok) {
         setOptions(prevOptions => [...prevOptions, name]);
         setBoxInfo(result); 
         fetchBoxDetails(name);
         hideModal();
       } else {
-        setErrorMessage(result.message || 'Failed to update box');
+        // setErrorMessage(result.message || 'Failed to update box');
+        setErrorMessage(result.message || 'Failed to add box due to server error.');
       }
     } catch (error) {
-      setErrorMessage(error.message || 'An error occurred during the request');
+      // setErrorMessage(error.message || 'An error occurred during the request');
+      console.error('Fetch error:', error);
+      setErrorMessage(error.toString() || 'An unknown error occurred.');
     }
   };
-
 
   const addOption = (newOption) => {
     setOptions(prevOptions => {
@@ -386,6 +388,13 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 16,
 
+  },
+  boxItem: {
+    margin: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
   },
 
   buttonContainer: {

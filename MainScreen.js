@@ -6,7 +6,7 @@ import { useAuth } from './account_files/AuthContext';
 import PersonalScreen from './account_files/personal/PersonalScreen';
 import ScheduleScreen from './account_files/schedule/ScheduleScreen';
 import HomeScreen from './account_files/home/home';
-import LoginRegisterScreen from './account_files/personal/LoginRegister'; 
+import LoginRegisterScreen from './account_files/personal/LoginScreen'; 
 
 const MainScreen = () => {
   const { isLoggedIn } = useAuth();
@@ -26,7 +26,7 @@ const MainScreen = () => {
       case 'schedule':
         return <ScheduleScreen />;
         case 'personal':
-          return isLoggedIn ? <PersonalScreen /> : <LoginRegisterScreen />;
+          return <PersonalScreen />;
       default:
         return null;
     }

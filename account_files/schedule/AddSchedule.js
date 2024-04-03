@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useAuth } from '../AuthContext';
 
 export default function EditModal({ modalVisible, setModalVisible, mode, submitForm, initialData }) {
-  const [medicine, setMedicine] = useState(initialData ? initialData.medicine : '');
+  const [medicine, setMedicine] = useState(initialData ? initialData.name : '');
   const [dose, setDose] = useState(initialData ? initialData.dose : '');
   const defaultTimesPerDay = 1;
+  const { userInfo } = useAuth();
   // initialise doseTimes avoid logic conflict
   const [doseTimes, setDoseTimes] = useState(() => {
     if (initialData && Array.isArray(initialData.doseTimes)) {
@@ -13,19 +15,16 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     }
     return Array(defaultTimesPerDay).fill(null);
   });
-  // const [timesPerDay, setTimesPerDay] = useState(initialData ? initialData.timesPerDay.toString() : '1');
-  // const [showPickers, setShowPickers] = useState(() => {
-  //   // similar to doseTimes
-  //   const initialTimes = parseInt(timesPerDay, 10);
-  //   return !isNaN(initialTimes) && initialTimes > 0 && initialTimes <= 5
-  //     ? Array(initialTimes).fill(false)
-  //     : [];
-  // });
+
   const [showPickers, setShowPickers] = useState(() => doseTimes.map(() => false));
   const [startDate, setStartDate] = useState(initialData ? initialData.startDate : new Date());
   const [endDate, setEndDate] = useState(initialData ? initialData.endDate : new Date());
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+
+  useEffect(() => {
+    setShowPickers(doseTimes.map(() => false));
+  }, [doseTimes.length]);  
 
   const handleStartPress = () => {
     setShowStartDatePicker(true);
@@ -59,6 +58,49 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     return date.toLocaleDateString();
   };
 
+  const renderDateInputs = () => {
+    // console.warn(initialData)
+    // if (!initialData || (!initialData.startDate && !initialData.endDate)) {
+      if (initialData == null) {
+      return (
+        <>
+          <View>
+            <TouchableOpacity style={styles.button} onPress={handleStartPress}>
+              <Text style={styles.textStyle}>Select Start Date</Text>
+            </TouchableOpacity>
+            {showStartDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={startDate}
+                mode="date"
+                display="default"
+                onChange={handleStartDateChange}
+              />
+            )}
+            <Text>Start Date: {formatDate(startDate)}</Text>
+          </View>
+
+          <View>
+            <TouchableOpacity style={styles.button} onPress={handleEndPress}>
+              <Text style={styles.textStyle}>Select End Date</Text>
+            </TouchableOpacity>
+            {showEndDatePicker && (
+              <DateTimePicker
+                testID="dateTimePicker"
+                value={endDate}
+                mode="date"
+                display="default"
+                onChange={handleEndDateChange}
+              />
+            )}
+            <Text>End Date: {formatDate(endDate)}</Text>
+          </View>
+        </>
+      );
+    }
+    return null; // Do not render date inputs if initialData with dates is provided
+  };
+
 
   // how many times per day for pills
   const handleTimesPerDayChange = (value) => {
@@ -80,7 +122,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   };
 
   const showTimePicker = (index) => {
-    setShowPickers(showPickers.map((item, idx) => idx === index));
+    setShowPickers(showPickers.map((item, idx) => idx === index ? !item : item));
   };
 
   const handleTimeChange = (index, event, selectedTime) => {
@@ -88,11 +130,12 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
       idx === index ? selectedTime || item : item // Retain the time or update if selected
     );
     setDoseTimes(updatedDoseTimes);
+    // This will hide the picker after a time is selected
     setShowPickers(showPickers.map((item, idx) => idx === index ? false : item));
   };
-
   // the block for each time take pills
   const renderTimePickerControls = () => {
+    console.warn(showPickers[0])
     return doseTimes.map((time, index) => (
       <View key={index}>
         <TouchableOpacity style={styles.button} onPress={() => showTimePicker(index)}>
@@ -114,10 +157,70 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
 
   // manage form submit
   const handleSubmit = () => {
-    submitForm({ medicine, timesPerDay: doseTimes.length, dose, doseTimes, startDate, endDate });
+    // submitForm({ medicine, timesPerDay: doseTimes.length, dose, doseTimes, startDate, endDate });
+    const scheduleEntries = [];
+    const userId = userInfo?.id;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    for (let day = start; day <= end; day.setDate(day.getDate() + 1)) {
+      doseTimes.forEach(time => {
+        // Here you extract the hours and minutes from each doseTime and set them on the current day
+        const entryTime = new Date(day);
+        entryTime.setHours(time.getHours());
+        entryTime.setMinutes(time.getMinutes());
+  
+        // Add the schedule entry for this day and time
+        scheduleEntries.push({
+          userId: userId, // Replace with the actual userId
+          medicine: medicine,
+          dose: dose,
+          time: entryTime,
+          taken: 0 // Assuming the default is not taken (false is represented as 0 in bit field)
+        });
+      });
+    }
+
+    scheduleEntries.forEach(entry => {
+      submitSchedule(entry); // Assume submitSchedule is the function to POST the data to the server
+    });
+
     setModalVisible(false);
   };
 
+  const submitSchedule = async (scheduleEntry) => {
+    try {
+      const response = await fetch('https://medisyncconnection.azurewebsites.net/api/addEditSchedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Include the 'Authorization' header if the request needs to be authenticated
+        },
+        body: JSON.stringify(scheduleEntry),
+      });
+  
+      // For debugging: log the response status and response text
+      console.log('Response status:', response.status);
+      const text = await response.text(); // Read the text from the response
+      console.log('Response body:', text);
+  
+      if (response.ok) {
+        // Attempt to parse the text as JSON
+        try {
+          const json = JSON.parse(text);
+          console.log('Schedule submitted:', json);
+          // Handle the parsed JSON as needed
+        } catch (e) {
+          throw new Error('Response was not valid JSON.');
+        }
+      } else {
+        throw new Error('Server responded with a status: ' + response.status);
+      }
+    } catch (error) {
+      console.error('Error submitting schedule:', error);
+      // Handle the error appropriately in the UI
+    }
+  };
 
   return (
     <View style={styles.centeredView}>
@@ -156,6 +259,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
               keyboardType="numeric"
             />
             {renderTimePickerControls()}
+            {/* {renderDateInputs()} */}
 
             <View>
               <TouchableOpacity style={styles.button} onPress={handleStartPress}>
@@ -304,3 +408,4 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+

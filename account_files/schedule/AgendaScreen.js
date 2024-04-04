@@ -51,6 +51,12 @@ const AgendaScreen = (props) => {
       });
   };
 
+  // useEffect(() => {
+  //   // loadItems();
+  //   // renderItem();
+  //   // rowHasChanged();
+  // }, [setItems]);
+
   const handleTakenToggle = async (reservation) => {
     const updatedReservation = { ...reservation, taken: !reservation.taken };
     setItems(prevItems => ({
@@ -119,6 +125,23 @@ const AgendaScreen = (props) => {
     const date = new Date(time);
     return date.toISOString().split('T')[0];
   };
+  
+  const AgendaComponent = ({ items, onRefresh, refreshing, loadItemsForMonth }) => {
+    return (
+      <Agenda
+        items={items}
+        loadItemsForMonth={loadItemsForMonth}
+        renderItem={renderItem}
+        renderEmptyDate={renderEmptyDate}
+        rowHasChanged={rowHasChanged}
+        showClosingKnob={true}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}><Text>You don't have any schedules</Text></View> : null}
+      />
+    );
+  };
+  
 
   return (
     <View style={{ paddingTop: 25, flex: 1 }}>
@@ -134,14 +157,13 @@ const AgendaScreen = (props) => {
         renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}><Text>You don't have a schedule</Text></View> : null}
       />
 
-      <View style={styles.footerContainer}>
-        <PlusButton />
+      <View>
+        <PlusButton items={items} setItems={setItems} />
       </View>
 
       <EditSchedule
         modalVisible={editModalVisible}
         setModalVisible={setEditModalVisible}
-        mode="edit"
         submitForm={() => {}}
         initialData={selectedItem}
       />

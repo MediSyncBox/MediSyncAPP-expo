@@ -3,22 +3,19 @@ import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../AuthContext';
 
-export default function EditModal({ modalVisible, setModalVisible, mode, submitForm, initialData }) {
-  const [medicine, setMedicine] = useState(initialData ? initialData.name : '');
-  const [dose, setDose] = useState(initialData ? initialData.dose : '');
+export default function EditModal({ modalVisible, setModalVisible, items, setItems }) {
+  const [medicine, setMedicine] = useState(undefined);
+  const [dose, setDose] = useState(undefined);
   const defaultTimesPerDay = 1;
   const { userInfo } = useAuth();
   // initialise doseTimes avoid logic conflict
   const [doseTimes, setDoseTimes] = useState(() => {
-    if (initialData && Array.isArray(initialData.doseTimes)) {
-      return initialData.doseTimes;
-    }
     return Array(defaultTimesPerDay).fill(null);
   });
 
   const [showPickers, setShowPickers] = useState(() => doseTimes.map(() => false));
-  const [startDate, setStartDate] = useState(initialData ? initialData.startDate : new Date());
-  const [endDate, setEndDate] = useState(initialData ? initialData.endDate : new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
@@ -58,50 +55,6 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     return date.toLocaleDateString();
   };
 
-  const renderDateInputs = () => {
-    // console.warn(initialData)
-    // if (!initialData || (!initialData.startDate && !initialData.endDate)) {
-      if (initialData == null) {
-      return (
-        <>
-          <View>
-            <TouchableOpacity style={styles.button} onPress={handleStartPress}>
-              <Text style={styles.textStyle}>Select Start Date</Text>
-            </TouchableOpacity>
-            {showStartDatePicker && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={startDate}
-                mode="date"
-                display="default"
-                onChange={handleStartDateChange}
-              />
-            )}
-            <Text>Start Date: {formatDate(startDate)}</Text>
-          </View>
-
-          <View>
-            <TouchableOpacity style={styles.button} onPress={handleEndPress}>
-              <Text style={styles.textStyle}>Select End Date</Text>
-            </TouchableOpacity>
-            {showEndDatePicker && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={endDate}
-                mode="date"
-                display="default"
-                onChange={handleEndDateChange}
-              />
-            )}
-            <Text>End Date: {formatDate(endDate)}</Text>
-          </View>
-        </>
-      );
-    }
-    return null; // Do not render date inputs if initialData with dates is provided
-  };
-
-
   // how many times per day for pills
   const handleTimesPerDayChange = (value) => {
     // empty input or 0 input
@@ -135,7 +88,6 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   };
   // the block for each time take pills
   const renderTimePickerControls = () => {
-    console.warn(showPickers[0])
     return doseTimes.map((time, index) => (
       <View key={index}>
         <TouchableOpacity style={styles.button} onPress={() => showTimePicker(index)}>
@@ -156,8 +108,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   };
 
   // manage form submit
-  const handleSubmit = () => {
-    // submitForm({ medicine, timesPerDay: doseTimes.length, dose, doseTimes, startDate, endDate });
+  const handleSubmit = async () => {
     const scheduleEntries = [];
     const userId = userInfo?.id;
     const start = new Date(startDate);
@@ -181,9 +132,37 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
       });
     }
 
-    scheduleEntries.forEach(entry => {
-      submitSchedule(entry); // Assume submitSchedule is the function to POST the data to the server
-    });
+    for (let entry of scheduleEntries) {
+      try {
+        const result = await submitSchedule(entry);
+        // console.warn(result.id);
+        // handleAddSchedule(result.id, entry);
+        if (result.id) {
+          const todayStr = entry.time.toISOString().split('T')[0];
+          // console.warn(entry.time)
+          const newSchedule = {
+            id: result.id,
+            name: medicine,
+            dose: dose,
+            time: entry.time,
+            taken: 0,
+            height: 100,
+          };
+    
+          const updatedItems = { ...items };
+          if (!updatedItems[todayStr]) {
+            updatedItems[todayStr] = [];
+          }
+          updatedItems[todayStr].push(newSchedule);
+    
+          setItems(updatedItems);
+        } else {
+          console.error('No ID returned from submitSchedule');
+        }
+      } catch (error) {
+        console.error('Failed to submit schedule:', error);
+      }
+    }
 
     setModalVisible(false);
   };
@@ -201,21 +180,11 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   
       // For debugging: log the response status and response text
       console.log('Response status:', response.status);
-      const text = await response.text(); // Read the text from the response
-      console.log('Response body:', text);
+      const text = await response.json(); // Read the text from the response
+      // console.warn(text.id);
   
-      if (response.ok) {
-        // Attempt to parse the text as JSON
-        try {
-          const json = JSON.parse(text);
-          console.log('Schedule submitted:', json);
-          // Handle the parsed JSON as needed
-        } catch (e) {
-          throw new Error('Response was not valid JSON.');
-        }
-      } else {
-        throw new Error('Server responded with a status: ' + response.status);
-      }
+      if (!response.ok) throw new Error('Failed to submit schedule');
+      return text;
     } catch (error) {
       console.error('Error submitting schedule:', error);
       // Handle the error appropriately in the UI
@@ -233,7 +202,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.titleText}>{mode === 'add' ? 'Add Schedule' : 'Edit Schedule'}</Text>
+            <Text style={styles.titleText}>{'Add Schedule'}</Text>
 
             <TextInput
               style={styles.input}
@@ -306,7 +275,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={handleSubmit}>
-                <Text style={styles.textStyle}>{mode === 'add' ? 'Add' : 'Save'}</Text>
+                <Text style={styles.textStyle}>{'Add'}</Text>
               </Pressable>
 
               <Pressable

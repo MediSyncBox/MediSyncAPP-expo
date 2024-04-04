@@ -49,6 +49,7 @@ const AgendaScreen = (props) => {
       .catch(error => {
         console.error('Error fetching schedules: ', error);
       });
+      // console.warn(items);
   };
 
   // useEffect(() => {

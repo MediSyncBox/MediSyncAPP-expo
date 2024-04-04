@@ -18,6 +18,7 @@ export default function EditModal({ modalVisible, setModalVisible, items, setIte
   const [endDate, setEndDate] = useState(new Date());
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setShowPickers(doseTimes.map(() => false));
@@ -107,8 +108,10 @@ export default function EditModal({ modalVisible, setModalVisible, items, setIte
     ));
   };
 
+  
   // manage form submit
   const handleSubmit = async () => {
+    setIsLoading(true); 
     const scheduleEntries = [];
     const userId = userInfo?.id;
     const start = new Date(startDate);
@@ -131,15 +134,13 @@ export default function EditModal({ modalVisible, setModalVisible, items, setIte
         });
       });
     }
+    const updatedItems = { ...items };
 
     for (let entry of scheduleEntries) {
       try {
         const result = await submitSchedule(entry);
-        // console.warn(result.id);
-        // handleAddSchedule(result.id, entry);
         if (result.id) {
           const todayStr = entry.time.toISOString().split('T')[0];
-          // console.warn(entry.time)
           const newSchedule = {
             id: result.id,
             name: medicine,
@@ -149,13 +150,16 @@ export default function EditModal({ modalVisible, setModalVisible, items, setIte
             height: 100,
           };
     
-          const updatedItems = { ...items };
+          
           if (!updatedItems[todayStr]) {
             updatedItems[todayStr] = [];
           }
           updatedItems[todayStr].push(newSchedule);
     
-          setItems(updatedItems);
+          // Sort the schedules for todayStr by time
+          updatedItems[todayStr].sort((a, b) => new Date(a.time) - new Date(b.time));
+          // console.warn(updatedItems);
+          // setItems(updatedItems);
         } else {
           console.error('No ID returned from submitSchedule');
         }
@@ -163,8 +167,9 @@ export default function EditModal({ modalVisible, setModalVisible, items, setIte
         console.error('Failed to submit schedule:', error);
       }
     }
-
+    setIsLoading(false);
     setModalVisible(false);
+    setItems(updatedItems);
   };
 
   const submitSchedule = async (scheduleEntry) => {
@@ -270,6 +275,12 @@ export default function EditModal({ modalVisible, setModalVisible, items, setIte
                 </Text>
               </View>
             )}
+            {isLoading && (
+              <View style={styles.warningContainer}>
+                <Text>Loading...</Text>
+                {/* Or use a Spinner/ActivityIndicator component here */}
+              </View>
+            )}
 
             <View style={styles.buttonContainer}>
               <Pressable
@@ -340,6 +351,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
+  // loadingContainer: {
+  //   position: 'absolute',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   backgroundColor: 'rgba(0,0,0,0.5)',
+  //   top: 0,
+  //   bottom: 0,
+  //   left: 0,
+  //   right: 0,
+  // },
   button: {
     backgroundColor: '#E8DEF8',
     borderRadius: 20,

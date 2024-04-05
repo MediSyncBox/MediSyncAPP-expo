@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useCallback , useEffect} from 'react';
 import {fetchPatientInfo} from './api/patient';
 
@@ -16,6 +17,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (userData, token) => {
     setIsLoggedIn(true);
     setUserInfo(userData);
+    await loadPatientInfo(token);
     console.log(userData);
     // await fetchPatientInfo(userData.id, setPatientInfo);
     try {
@@ -39,7 +41,6 @@ export const AuthProvider = ({ children }) => {
       [boxId]: details, 
     }));
   };
-
   return (
     <AuthContext.Provider value={{ isLoggedIn, userInfo, patientInfo, setPatientInfo, 
       currentPatient, setCurrentPatient, login, logout, updateTankDetails}}>

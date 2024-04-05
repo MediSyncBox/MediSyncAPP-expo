@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => setIsLoggedIn(false);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userInfo, login, logout, boxInfo }}>
+    <AuthContext.Provider value={{ isLoggedIn, userInfo, login, logout, boxInfo,setBoxInfo }}>
       {children}
     </AuthContext.Provider>
   );

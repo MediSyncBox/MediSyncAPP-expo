@@ -13,16 +13,6 @@ const PersonalScreen = () => {
     console.log(userInfo); 
     return (
         <View style={styles.container}>
-            {/* <List.Section style={styles.selection}>
-                {boxes.map((box, index) => (
-                    <List.Item
-                        key={index}
-                        title={box.patient_id} 
-                        right={() => <List.Icon icon="chevron-right" />}
-                        onPress={() => console.log('Box selected', box)}
-                    />
-                ))}
-            </List.Section> */}
             <TouchableOpacity
                 style={styles.header}
                 onPress={() => navigation.navigate('ProfileEdit')}
@@ -34,23 +24,14 @@ const PersonalScreen = () => {
                 <View style={styles.userInfo}>
                     <Text style={styles.userName}>{userInfo?.userName}</Text>
                 </View>
-                <List.Icon icon="pencil" />
             </TouchableOpacity>
             <List.Section style={styles.selection}>
                 <List.Item
-                    title="My Medical Record"
-                    right={() => <List.Icon icon="chevron-right" />}
-                    onPress={() => console.log('Edit profile')}
+                    title={userInfo?.emailorPhone}
                 />
                 <List.Item
-                    title="xxx"
-                    right={() => <List.Icon icon="chevron-right" />}
-                    onPress={() => console.log('Edit profile')}
-                />
-                <List.Item
-                    title="Settings"
-                    right={() => <List.Icon icon="chevron-right" />}
-                    onPress={() => console.log('Edit profile')}
+                    title="Check patient"
+                    onPress={() => navigation.navigate('CheckPatient')}
                 />
             </List.Section>
         </View>

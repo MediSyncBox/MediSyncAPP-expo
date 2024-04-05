@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { Text, Appbar } from 'react-native-paper';
 import { useAuth } from '../AuthContext';
@@ -8,7 +8,12 @@ const HomeScreen = () => {
   const userId = userInfo?.id;
   const [options, setOptions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [boxes, setBoxes] = useState([]);
   // const { setBoxInfo } = useAuth();
+
+  useEffect(() => {
+    fetchUserBoxes();
+  }, []);
 
   const handleSubmitBox = async () => {
     if (!boxId || !name) {
@@ -46,6 +51,26 @@ const HomeScreen = () => {
       // setErrorMessage(error.message || 'An error occurred during the request');
       console.error('Fetch error:', error);
       setErrorMessage(error.toString() || 'An unknown error occurred.');
+    }
+  };
+
+  const fetchUserBoxes = async () => {
+    console.log(userId)
+    if (userId) {
+      try {
+        const response = await fetch(`https://medisyncconnection.azurewebsites.net/api/getUserBox/${userId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch boxes');
+        }
+        const data = await response.json();
+        setBoxes(data); // 更新状态以存储用户的 boxes
+        console.log(boxes)
+      } catch (error) {
+        console.error('Fetch error:', error);
+        setErrorMessage(error.toString());
+      }
+    } else {
+      setErrorMessage('User ID is undefined');
     }
   };
 
@@ -177,7 +202,7 @@ const HomeScreen = () => {
                 <Text style={styles.submitButtonText}>Submit</Text>
               </TouchableOpacity>
             </View>
-
+            
           </View>
         </View>
       </Modal>

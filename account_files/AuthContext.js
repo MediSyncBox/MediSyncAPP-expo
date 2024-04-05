@@ -8,12 +8,14 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const [boxInfo, setBoxInfo] = useState(null);
   const [patientInfo, setPatientInfo] = useState([]);
   const [currentPatient, setCurrentPatient] = useState(null);
+  const [tankDetails, setTankDetails] = useState({});
 
   const login = async (userData, token) => {
     setIsLoggedIn(true);
-    setUserInfo(userData); 
+    setUserInfo(userData);
     console.log(userData);
     // await fetchPatientInfo(userData.id, setPatientInfo);
     try {
@@ -25,12 +27,22 @@ export const AuthProvider = ({ children }) => {
         console.error("Failed to fetch patient info:", error);
     }
   };
-
-  const logout = () => setIsLoggedIn(false);
+  const logout = () => {
+    setIsLoggedIn(false);
+    setUserInfo(null);
+    setBoxInfo(null);
+    setTankDetails({});
+  };
+  const updateTankDetails = (boxId, details) => {
+    setTankDetails(prevDetails => ({
+      ...prevDetails,
+      [boxId]: details, 
+    }));
+  };
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, userInfo, patientInfo, setPatientInfo, 
-    currentPatient, setCurrentPatient, login, logout }}>
+      currentPatient, setCurrentPatient, login, logout, updateTankDetails}}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,7 +4,7 @@ import { Text, Appbar } from 'react-native-paper';
 import { useAuth } from '../AuthContext';
 
 const HomeScreen = () => {
-  const { userInfo } = useAuth();
+  const { userInfo, tankDetails, updateTankDetails } = useAuth();
   const userId = userInfo?.id;
   const [options, setOptions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -96,19 +96,32 @@ const HomeScreen = () => {
   //   fetchBoxData(option.id);
   // };
 
-  const fetchBoxDetails = (boxName) => {
-    const { boxInfo } = useAuth();
-    const envCondition = JSON.parse(boxInfo.env_condition);
+  // const fetchBoxDetails = (boxName) => {
+  //   const { boxInfo } = useAuth();
+  //   const envCondition = JSON.parse(boxInfo.env_condition);
 
-    const boxDetails = {
-      temperature: '25',
-      humidity: '50',
-    };
+  //   const boxDetails = {
+  //     temperature: '25',
+  //     humidity: '50',
+  //   };
 
-    setTemperature(envCondition.temperature);
-    setHumidity(envCondition.humidity);
+  //   setTemperature(envCondition.temperature);
+  //   setHumidity(envCondition.humidity);
+  // };
+
+  const fetchBoxDetails = async (boxId) => {
+    try {
+      const response = await fetch(`https://medisyncconnection.azurewebsites.net/api/getTankInfo/${boxId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch tank details');
+      }
+      const details = await response.json();
+      updateTankDetails(boxId, details);
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setErrorMessage(error.toString());
+    }
   };
-
 
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
@@ -163,6 +176,49 @@ const HomeScreen = () => {
         <Appbar.Action icon="plus-box-outline" onPress={showModal} />
       </Appbar.Header>
 
+      <FlatList
+        data={boxes}
+        horizontal
+        keyExtractor={(box) => box.box_id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[styles.option, selectedOption === item.box_id && styles.selectedOption]}
+            onPress={() => {
+              setSelectedOption(item.box_id);
+              fetchBoxDetails(item.box_id); // 从后端获取盒子详情
+            }}
+          >
+            <Text style={styles.optionText}>{item.name}</Text>
+          </TouchableOpacity>
+        )}
+        showsHorizontalScrollIndicator={false}
+      />
+
+      {/* 显示所选 box 的 tank 信息 */}
+      {selectedOption && tankDetails[selectedOption] && (
+        <View style={styles.tankDetailsContainer}>
+          {Object.entries(tankDetails[selectedOption]).map(([tankId, tankData]) => (
+            <View key={tankId} style={styles.tankDetail}>
+              <Text style={styles.detailLabel}>Tank ID: {tankId}</Text>
+              <Text style={styles.detailLabel}>Temperature:</Text>
+              <Text style={styles.detailValue}>{tankData.temperature}°C</Text>
+              <Text style={styles.detailLabel}>Humidity:</Text>
+              <Text style={styles.detailValue}>{tankData.humidity}%</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {/* 选中盒子的详细信息
+      {selectedOption && tanksDetails.map((tank, index) => (
+        <View key={index} style={styles.tankDetail}>
+          <Text style={styles.text}>Tank {index + 1}:</Text>
+          <Text style={styles.text}>Temperature: {tank.temperature}°C</Text>
+          <Text style={styles.text}>Humidity: {tank.humidity}%</Text>
+        </View>
+      ))} */}
+
+
       <Modal
         visible={visible}
         onRequestClose={hideModal}
@@ -202,7 +258,7 @@ const HomeScreen = () => {
                 <Text style={styles.submitButtonText}>Submit</Text>
               </TouchableOpacity>
             </View>
-            
+
           </View>
         </View>
       </Modal>
@@ -464,8 +520,34 @@ const styles = StyleSheet.create({
   },
   placeholder: {
     marginTop: 20,
-
-  }
+  },
+  tankDetailsContainer: {
+    padding: 20,
+    marginVertical: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E8DEF8',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tankDetail: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 5,
+    width: '100%',
+  },
+  detailLabel: {
+    fontSize: 16,
+    color: '#000',
+    padding: 5,
+  },
+  detailValue: {
+    fontSize: 16,
+    color: '#333',
+    padding: 5,
+  },
 });
 
 export default HomeScreen;

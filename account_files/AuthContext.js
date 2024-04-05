@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (userData, token) => {
     setIsLoggedIn(true);
     setUserInfo(userData);
-    await loadPatientInfo(token);
+    // await loadPatientInfo(token);
     console.log(userData);
     // await fetchPatientInfo(userData.id, setPatientInfo);
     try {

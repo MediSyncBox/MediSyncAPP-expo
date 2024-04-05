@@ -27,7 +27,10 @@ const PersonalScreen = () => {
             </TouchableOpacity>
             <List.Section style={styles.selection}>
                 <List.Item
-                    title={userInfo?.emailorPhone}
+                    title={'Email/Phone: ' + userInfo?.emailorPhone}
+                />
+                <List.Item
+                    title={'ID: ' + userInfo?.id}
                 />
                 <List.Item
                     title="Check patient"

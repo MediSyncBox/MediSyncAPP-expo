@@ -70,13 +70,16 @@ const HomeScreen = () => {
   // };
 
   const fetchBoxDetails = (boxName) => {
+    const { boxInfo } = useAuth();
+    const envCondition = JSON.parse(boxInfo.env_condition);
+
     const boxDetails = {
       temperature: '25',
       humidity: '50',
     };
 
-    setTemperature(boxDetails.temperature);
-    setHumidity(boxDetails.humidity);
+    setTemperature(envCondition.temperature);
+    setHumidity(envCondition.humidity);
   };
 
 

@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, Button } from 'react-native';
 import { useAuth } from '../AuthContext'; // Make sure the path is correct
+import {fetchPatientInfo} from '../api/patient';
 
 const CheckPatient = () => {
-  const { fetchPatientInfo, patientInfo } = useAuth();
+  const { setPatientInfo, patientInfo } = useAuth();
   const { userInfo } = useAuth();
   const caregiverId = userInfo?.id;
   const [isAdding, setIsAdding] = useState(false);
   const [newUserId, setNewUserId] = useState('');
 
+  console.warn(patientInfo)
+
   useEffect(() => {
     if (caregiverId) {
-      fetchPatientInfo(caregiverId);
+      fetchPatientInfo(caregiverId, setPatientInfo);
     }
   }, [fetchPatientInfo, caregiverId]);
 
@@ -55,7 +58,7 @@ const CheckPatient = () => {
       }
 
       // If the new patient was added successfully, refresh the patient list
-      await fetchPatientInfo(caregiverId);
+      await fetchPatientInfo(caregiverId, setPatientInfo);
     } catch (error) {
       console.error('Error adding patient:', error);
       throw error;

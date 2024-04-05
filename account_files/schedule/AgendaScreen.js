@@ -5,6 +5,7 @@ import PlusButton from './PlusButton';
 import EditSchedule from './EditSchedule';
 import axios from 'axios';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import CustomAppbar from './Appbar';
 
 const AgendaScreen = (props) => {
   const [items, setItems] = useState(undefined);
@@ -146,6 +147,7 @@ const AgendaScreen = (props) => {
 
   return (
     <View style={{ paddingTop: 25, flex: 1 }}>
+      <CustomAppbar/>
       <Agenda
         items={items}
         loadItemsForMonth={loadItems}

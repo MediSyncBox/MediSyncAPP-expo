@@ -8,7 +8,7 @@ const HomeScreen = () => {
   const userId = userInfo?.id;
   const [options, setOptions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const { setBoxInfo } = useAuth();
+  // const { setBoxInfo } = useAuth();
 
   const handleSubmitBox = async () => {
     if (!boxId || !name) {
@@ -35,8 +35,8 @@ const HomeScreen = () => {
       // console.log (result);
       if (response.ok) {
         setOptions(prevOptions => [...prevOptions, name]);
-        setBoxInfo(result); 
-        fetchBoxDetails(name);
+        // setBoxInfo(result); 
+        // fetchBoxDetails(name);
         hideModal();
       } else {
         // setErrorMessage(result.message || 'Failed to update box');
@@ -54,7 +54,7 @@ const HomeScreen = () => {
       const updatedOptions = [...prevOptions, newOption];
       if (updatedOptions.length === 1) {
         setSelectedOption(newOption);
-        fetchBoxDetails(newOption);
+        // fetchBoxDetails(newOption);
       }
       return updatedOptions;
     });

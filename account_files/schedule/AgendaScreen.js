@@ -6,58 +6,32 @@ import EditSchedule from './EditSchedule';
 import axios from 'axios';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import CustomAppbar from './Appbar';
+import {loadItemsApi} from '../api/schedule';
 
 const AgendaScreen = (props) => {
-  const [items, setItems] = useState(undefined);
+  const [items, setItems] = useState({});
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const { user_id } = props;
 
   const isEmptyItems = () => {
     if (!items) return true;
     return Object.keys(items).every(key => items[key].length === 0);
   };
 
-  const loadItems = (day) => {
-    const { user_id } = props;
-    const baseUrl = 'https://medisyncconnection.azurewebsites.net/api';
+  useEffect(() => {
+    if (user_id) {
+      loadItemsForMonth() ;
+    }
+  }, [user_id]);
 
-    axios.get(`${baseUrl}/getSchedules/${user_id}`)
-      .then(response => {
-        const newItems = { ...items };
-
-        response.data.forEach(schedule => {
-          const strTime = timeToString(new Date(schedule.time));
-          if (!newItems[strTime]) {
-            newItems[strTime] = [];
-          }
-
-          const isDuplicate = newItems[strTime].some(item => item.id === schedule.id);
-          if (!isDuplicate) {
-            newItems[strTime].push({
-              id: schedule.id,
-              user: schedule.user_id,
-              name: schedule.medicine,
-              dose: schedule.dose,
-              time: schedule.time,
-              taken: schedule.taken,
-              height: 100,
-            });
-          }
-        });
-
-        setItems(newItems);
-      })
-      .catch(error => {
-        console.error('Error fetching schedules: ', error);
-      });
-      // console.warn(items);
+  const loadItemsForMonth = async () => {
+    try {
+      await loadItemsApi(user_id, items, setItems);
+    } catch (error) {
+      console.error('Failed to load items: ', error);
+    }
   };
-
-  // useEffect(() => {
-  //   // loadItems();
-  //   // renderItem();
-  //   // rowHasChanged();
-  // }, [setItems]);
 
   const handleTakenToggle = async (reservation) => {
     const updatedReservation = { ...reservation, taken: !reservation.taken };
@@ -127,30 +101,13 @@ const AgendaScreen = (props) => {
     const date = new Date(time);
     return date.toISOString().split('T')[0];
   };
-  
-  const AgendaComponent = ({ items, onRefresh, refreshing, loadItemsForMonth }) => {
-    return (
-      <Agenda
-        items={items}
-        loadItemsForMonth={loadItemsForMonth}
-        renderItem={renderItem}
-        renderEmptyDate={renderEmptyDate}
-        rowHasChanged={rowHasChanged}
-        showClosingKnob={true}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-        renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}><Text>You don't have any schedules</Text></View> : null}
-      />
-    );
-  };
-  
 
   return (
     <View style={{ paddingTop: 25, flex: 1 }}>
       <CustomAppbar/>
       <Agenda
         items={items}
-        loadItemsForMonth={loadItems}
+        loadItemsForMonth={loadItemsForMonth}
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
         rowHasChanged={rowHasChanged}

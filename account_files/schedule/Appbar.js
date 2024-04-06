@@ -12,7 +12,6 @@ const CustomAppbar = () => {
     // 因为 fetchPatientInfo 已经在 AuthContext 中被调用，这里不需要重复加载
     // 这个 useEffect 可以留空，或者用于其他初始化逻辑
   }, [userInfo]); // 依赖于 userInfo 的变化
-  console.warn(patientInfo)
   return (
     <Appbar.Header>
       <Appbar.Content title={currentPatient ? currentPatient.name : "Select a Patient"} />

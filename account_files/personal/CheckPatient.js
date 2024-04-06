@@ -10,8 +10,6 @@ const CheckPatient = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [newUserId, setNewUserId] = useState('');
 
-  console.warn(patientInfo)
-
   useEffect(() => {
     if (caregiverId) {
       fetchPatientInfo(caregiverId, setPatientInfo);

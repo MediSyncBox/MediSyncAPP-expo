@@ -33,6 +33,7 @@ const AgendaScreen = (props) => {
 
   useEffect(() => {
     if (shouldRefreshAgenda) {
+      setItems({});
       loadItemsForMonth();
       setAgendaKey(prevKey => prevKey + 1);
       setShouldRefreshAgenda(false);
@@ -40,24 +41,17 @@ const AgendaScreen = (props) => {
   }, [shouldRefreshAgenda]);
 
   const loadItemsForMonth = async () => {
-    // console.warn(currentPatient)
-
     try {
-      // await loadItemsApi(user_id, items, setItems);
-      if (Array.isArray(currentPatient)) {
-        for (const patient of currentPatient) {
-          // console.warn(items)
-          await loadItemsApi(patient.id, items, setItems);
-        }
-      } else {
-        await loadItemsApi(currentPatient.id, items, setItems);
-      }
-      console.warn(items)
-      // setShouldRefreshAgenda(true);
+      // 根据currentPatient是否为数组，获取所有用户ID
+      const user_ids = Array.isArray(currentPatient) ? currentPatient.map(p => p.id) : [currentPatient.id];
+      // 调用API加载项目，传递用户ID数组
+      await loadItemsApi(user_ids, items, setItems);
+      // 可选：在这里执行后续逻辑，例如设置刷新标志
     } catch (error) {
       console.error('Failed to load items: ', error);
     }
   };
+  
 
   const handleTakenToggle = async (reservation) => {
     const updatedReservation = { ...reservation, taken: !reservation.taken };
@@ -78,6 +72,8 @@ const AgendaScreen = (props) => {
   };
 
   const renderItem = (reservation) => {
+    // console.warn(reservation)
+    // console.warn(agendaKey)
     const scheduleDateTime = new Date(reservation.time);
     return (
       <TouchableOpacity
@@ -121,8 +117,10 @@ const AgendaScreen = (props) => {
   };
 
   const rowHasChanged = (r1, r2) => {
-    return r1.name !== r2.name;
-  };
+    // 确保这里的逻辑足够识别你的数据模型中的变化
+    console.warn(r1)
+    return r1.id !== r2.id || r1.last_updated !== r2.last_updated;
+};
 
   const timeToString = (time) => {
     const date = new Date(time);
@@ -131,14 +129,14 @@ const AgendaScreen = (props) => {
 
   return (
     <View style={{ paddingTop: 25, flex: 1 }}>
-      <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} />
+      <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
       <Agenda
         key={agendaKey}
         items={items}
         loadItemsForMonth={loadItemsForMonth}
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
-        rowHasChanged={rowHasChanged}
+        // rowHasChanged={rowHasChanged}
         showClosingKnob={true}
         refreshing={props.refreshing}
         onRefresh={props.onRefresh}

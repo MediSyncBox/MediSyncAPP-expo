@@ -110,11 +110,11 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
     ));
   };
 
-  useEffect(() => {
-    if (userId) {
-      loadItemsApi(userId, items, setItems);
-    }
-  }, [loadItemsApi, userId]);
+  // useEffect(() => {
+  //   if (userId) {
+  //     loadItemsApi(userId, items, setItems);
+  //   }
+  // }, [loadItemsApi, userId]);
 
   
   // manage form submit

@@ -1,18 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Appbar, Menu } from 'react-native-paper';
 import { useAuth } from '../AuthContext'; // 根据实际情况调整导入路径
+import {loadItemsApi} from '../api/schedule';
 
-const CustomAppbar = ({setShouldRefreshAgenda}) => {
+const CustomAppbar = ({setShouldRefreshAgenda, items, setItems}) => {
   const { userInfo, patientInfo, currentPatient, setCurrentPatient } = useAuth();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
-  useEffect(() => {
-  }, [userInfo]);
+  // useEffect(() => {
+  // }, [userInfo]);
   // console.warn(currentPatient)
+  // useEffect(() => {
+  //   if (currentPatient) {
+  //     const user_ids = Array.isArray(currentPatient) ? currentPatient.map(p => p.id) : [currentPatient.id];
+  //     loadItemsApi(user_ids, items, setItems);
+  //   }
+  //   setShouldRefreshAgenda(true);
+  // }, [loadItemsApi, currentPatient]);
 
-  const handleSetCurrentPatient = (patient) => {
+  const handleSetCurrentPatient = async (patient) => {
     setCurrentPatient(patient);
+    // setItems({});
+    // const user_ids = Array.isArray(currentPatient) ? currentPatient.map(p => p.id) : [currentPatient.id];
+    // await loadItemsApi(user_ids, items, setItems);
+    // console.warn(patient);
     setIsMenuVisible(false);
+    // await loadItemsApi(patient, items, setItems);
     setShouldRefreshAgenda(true);
   };
 

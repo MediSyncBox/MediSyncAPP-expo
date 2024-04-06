@@ -33,6 +33,8 @@ const AgendaScreen = (props) => {
 
   useEffect(() => {
     if (shouldRefreshAgenda) {
+      // i don't like that, i think it makes low efficiency but i don't know how to fix that
+      // there is also logic of agenda reservation get involve, it's probably bad idea to use that
       setItems({});
       loadItemsForMonth();
       setAgendaKey(prevKey => prevKey + 1);

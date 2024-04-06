@@ -8,7 +8,7 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
-  const [patientInfo, setPatientInfo] = useState(null);
+  const [patientInfo, setPatientInfo] = useState([]);
   const [currentPatient, setCurrentPatient] = useState(null);
 
   const login = async (userData, token) => {

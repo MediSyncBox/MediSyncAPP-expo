@@ -23,8 +23,8 @@ const fetchPatientInfo = async (caregiverId, setPatientInfo, setCurrentPatient) 
     }
 
     const data = await response.json();
-    setPatientInfo(data); // Assume the data is an array of patient info
-    setCurrentPatient(data);
+    await setPatientInfo(data); // Assume the data is an array of patient info
+    await setCurrentPatient(data);
   } catch (error) {
     console.error('Error fetching patient info:', error);
     // Optionally set some error state here

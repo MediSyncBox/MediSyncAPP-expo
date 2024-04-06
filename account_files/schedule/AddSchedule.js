@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button } from 'react-native';
+import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button} from 'react-native';
+import { Menu, Portal } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../AuthContext';
 import {loadItemsApi} from '../api/schedule';
+import { Picker } from '@react-native-picker/picker'; // 或者从 react-native 中导入
+
 
 export default function AddModal({ modalVisible, setModalVisible, items, setItems, setShouldRefreshAgenda }) {
   const [medicine, setMedicine] = useState(undefined);
   const [dose, setDose] = useState(undefined);
   const defaultTimesPerDay = 1;
-  const { userInfo } = useAuth();
+  const { userInfo, patientInfo } = useAuth();
   // initialise doseTimes avoid logic conflict
   const [doseTimes, setDoseTimes] = useState(() => {
     return Array(defaultTimesPerDay).fill(null);
@@ -21,6 +24,35 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const userId = userInfo?.id;
+  const [selectedPatientId, setSelectedPatientId] = useState(userId);
+  // const [selectedPatientId, setSelectedPatientId] = useState(patientInfo[0]?.id || '');
+
+
+  const [visible, setVisible] = useState(false);
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+
+  useEffect(() => {
+    // 如果patientInfo只有一个，则自动选择该patient
+    if (patientInfo && patientInfo.length === 1) {
+      setSelectedPatientId(patientInfo[0].id);
+    }
+  }, [patientInfo]);
+  console.warn(patientInfo)
+
+  const renderPatientPicker = () => (
+    <View style={styles.pickerContainer}>
+      <Picker
+        selectedValue={selectedPatientId}
+        onValueChange={(itemValue, itemIndex) => setSelectedPatientId(itemValue)}
+        style={styles.picker}
+      >
+        {patientInfo.map((patient) => (
+          <Picker.Item key={patient.id} label={patient.userName} value={patient.id} />
+        ))}
+      </Picker>
+    </View>
+  );
 
   useEffect(() => {
     setShowPickers(doseTimes.map(() => false));
@@ -118,11 +150,13 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
 
   
   // manage form submit
+  console.warn(selectedPatientId)
   const handleSubmit = async () => {
     setIsLoading(true); 
     const scheduleEntries = [];
     const start = new Date(startDate);
     const end = new Date(endDate);
+    
 
     for (let day = start; day <= end; day.setDate(day.getDate() + 1)) {
       doseTimes.forEach(time => {
@@ -133,7 +167,7 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
   
         // Add the schedule entry for this day and time
         scheduleEntries.push({
-          userId: userId, // Replace with the actual userId
+          userId: patientInfo.length <= 1 ? userId : selectedPatientId,
           medicine: medicine,
           dose: dose,
           time: entryTime,
@@ -169,7 +203,7 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
   
       if (!response.ok) throw new Error('Failed to submit schedule');
       // return text;
-      await loadItemsApi(userId, items, setItems);
+      await loadItemsApi([userId], items, setItems);
     } catch (error) {
       console.error('Error submitting schedule:', error);
     }
@@ -184,8 +218,46 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
         onRequestClose={() => {
           setModalVisible(!modalVisible);
         }}>
+          
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+          {/* <View style={styles.container}>
+      <Picker
+        selectedValue={selectedPatientId}
+        onValueChange={(itemValue, itemIndex) => setSelectedPatientId(itemValue)}
+        style={styles.picker} // 可选，如果你需要自定义样式
+      >
+        {patientInfo.map((patient) => (
+          <Picker.Item label={patient.userName} value={patient.id} key={patient.id} />
+        ))}
+      </Picker>
+    </View> */}
+              {patientInfo && patientInfo.length > 1 && renderPatientPicker()}
+              {/* <Menu
+                visible={visible}
+                onDismiss={closeMenu}
+                anchor={
+                // <Button title='Patient' onPress={openMenu}>Select Patient</Button>
+                <TouchableOpacity onPress={openMenu}>
+                  <Text>Select an Option</Text>
+                </TouchableOpacity>
+                }>
+                  
+                {patientInfo && patientInfo.map((patient) => (
+                  <Menu.Item
+                    key={patient.id}
+                    title={patient.userName}
+                    onPress={() => {
+                      setSelectedPatientId(patient.id);
+                      closeMenu();
+                    }}
+                  />
+                ))}
+              </Menu> */}
+
+            {/* {patientInfo && patientInfo.length > 1 && renderPatientPicker()} */}
+            
+
             <Text style={styles.titleText}>{'Add Schedule'}</Text>
 
             <TextInput
@@ -273,6 +345,7 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
                 onPress={() => setModalVisible(!modalVisible)}>
                 <Text style={styles.textStyle}>Close</Text>
               </Pressable>
+              
             </View>
           </View>
         </View>
@@ -287,6 +360,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  picker: {
+    height: 50,
+    width: 100,
+    // 更多自定义样式
   },
   modalView: {
     margin: 20,

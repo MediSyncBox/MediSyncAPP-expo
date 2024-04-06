@@ -52,7 +52,7 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
         const data = await response.json();
         if (data.success) {
           Alert.alert("Update Successful", "The schedule has been updated.");
-          await loadItemsApi(userId, items, setItems);
+          await loadItemsApi([userId], items, setItems);
           setModalVisible(false); // Close the modal after successful update
           // reloadData(); // Call the passed callback function to reload data in AgendaScreen
         } else {

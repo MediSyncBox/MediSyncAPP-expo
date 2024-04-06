@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../AuthContext';
 import {loadItemsApi} from '../api/schedule';
 
-export default function AddModal({ modalVisible, setModalVisible, items, setItems }) {
+export default function AddModal({ modalVisible, setModalVisible, items, setItems, setShouldRefreshAgenda }) {
   const [medicine, setMedicine] = useState(undefined);
   const [dose, setDose] = useState(undefined);
   const defaultTimesPerDay = 1;
@@ -149,7 +149,7 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
     } catch (error) {
       console.error('Failed to submit or refresh schedules:', error);
     }
-  
+    setShouldRefreshAgenda(true);
     setIsLoading(false);
     setModalVisible(false);
   };

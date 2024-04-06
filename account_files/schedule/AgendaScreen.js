@@ -12,6 +12,8 @@ const AgendaScreen = (props) => {
   const [items, setItems] = useState({});
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [agendaKey, setAgendaKey] = useState(0);
+  const [shouldRefreshAgenda, setShouldRefreshAgenda] = useState(false);
   const { user_id } = props;
 
   const isEmptyItems = () => {
@@ -19,11 +21,19 @@ const AgendaScreen = (props) => {
     return Object.keys(items).every(key => items[key].length === 0);
   };
 
+  // useEffect(() => {
+  //   if (user_id) {
+  //     loadItemsForMonth().then(() => {
+  //       setAgendaKey(prevKey => prevKey + 1);
+  //     });
+  //   }
+  // }, [user_id]);
   useEffect(() => {
-    if (user_id) {
-      loadItemsForMonth() ;
+    if (shouldRefreshAgenda) {
+      setAgendaKey(prevKey => prevKey + 1);
+      setShouldRefreshAgenda(false);
     }
-  }, [user_id]);
+  }, [shouldRefreshAgenda]);
 
   const loadItemsForMonth = async () => {
     try {
@@ -51,6 +61,7 @@ const AgendaScreen = (props) => {
   };
 
   const renderItem = (reservation) => {
+    console.warn(reservation)
     const scheduleDateTime = new Date(reservation.time);
     return (
       <TouchableOpacity
@@ -106,6 +117,7 @@ const AgendaScreen = (props) => {
     <View style={{ paddingTop: 25, flex: 1 }}>
       <CustomAppbar/>
       <Agenda
+        key={agendaKey}
         items={items}
         loadItemsForMonth={loadItemsForMonth}
         renderItem={renderItem}
@@ -118,7 +130,7 @@ const AgendaScreen = (props) => {
       />
 
       <View>
-        <PlusButton items={items} setItems={setItems} />
+        <PlusButton items={items} setItems={setItems} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
       </View>
 
       <EditSchedule

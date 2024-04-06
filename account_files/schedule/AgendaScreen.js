@@ -58,10 +58,10 @@ const AgendaScreen = (props) => {
     } catch (error) {
       console.error('Error updating taken status: ', error);
     }
+    setShouldRefreshAgenda(true);
   };
 
   const renderItem = (reservation) => {
-    console.warn(reservation)
     const scheduleDateTime = new Date(reservation.time);
     return (
       <TouchableOpacity

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../AuthContext';
+import {loadItemsApi} from '../api/schedule';
 
-export default function EditModal({ modalVisible, setModalVisible, items, setItems }) {
+export default function AddModal({ modalVisible, setModalVisible, items, setItems }) {
   const [medicine, setMedicine] = useState(undefined);
   const [dose, setDose] = useState(undefined);
   const defaultTimesPerDay = 1;
@@ -19,6 +20,7 @@ export default function EditModal({ modalVisible, setModalVisible, items, setIte
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const userId = userInfo?.id;
 
   useEffect(() => {
     setShowPickers(doseTimes.map(() => false));
@@ -108,12 +110,17 @@ export default function EditModal({ modalVisible, setModalVisible, items, setIte
     ));
   };
 
+  useEffect(() => {
+    if (userId) {
+      loadItemsApi(userId, items, setItems);
+    }
+  }, [loadItemsApi, userId]);
+
   
   // manage form submit
   const handleSubmit = async () => {
     setIsLoading(true); 
     const scheduleEntries = [];
-    const userId = userInfo?.id;
     const start = new Date(startDate);
     const end = new Date(endDate);
 
@@ -134,42 +141,17 @@ export default function EditModal({ modalVisible, setModalVisible, items, setIte
         });
       });
     }
-    const updatedItems = { ...items };
 
-    for (let entry of scheduleEntries) {
-      try {
-        const result = await submitSchedule(entry);
-        if (result.id) {
-          const todayStr = entry.time.toISOString().split('T')[0];
-          const newSchedule = {
-            id: result.id,
-            name: medicine,
-            dose: dose,
-            time: entry.time,
-            taken: 0,
-            height: 100,
-          };
-    
-          
-          if (!updatedItems[todayStr]) {
-            updatedItems[todayStr] = [];
-          }
-          updatedItems[todayStr].push(newSchedule);
-    
-          // Sort the schedules for todayStr by time
-          updatedItems[todayStr].sort((a, b) => new Date(a.time) - new Date(b.time));
-          // console.warn(updatedItems);
-          // setItems(updatedItems);
-        } else {
-          console.error('No ID returned from submitSchedule');
-        }
-      } catch (error) {
-        console.error('Failed to submit schedule:', error);
+    try {
+      for (let entry of scheduleEntries) {
+        await submitSchedule(entry);
       }
+    } catch (error) {
+      console.error('Failed to submit or refresh schedules:', error);
     }
+  
     setIsLoading(false);
     setModalVisible(false);
-    setItems(updatedItems);
   };
 
   const submitSchedule = async (scheduleEntry) => {
@@ -178,21 +160,18 @@ export default function EditModal({ modalVisible, setModalVisible, items, setIte
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Include the 'Authorization' header if the request needs to be authenticated
         },
         body: JSON.stringify(scheduleEntry),
       });
   
-      // For debugging: log the response status and response text
       console.log('Response status:', response.status);
       const text = await response.json(); // Read the text from the response
-      // console.warn(text.id);
   
       if (!response.ok) throw new Error('Failed to submit schedule');
-      return text;
+      // return text;
+      await loadItemsApi(userId, items, setItems);
     } catch (error) {
       console.error('Error submitting schedule:', error);
-      // Handle the error appropriately in the UI
     }
   };
 

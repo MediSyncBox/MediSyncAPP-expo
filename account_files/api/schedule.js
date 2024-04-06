@@ -37,7 +37,13 @@ const loadItemsApi = async (user_id, items, setItems) => {
                     });
       }
     });
+
+    Object.keys(newItems).forEach(date => {
+      newItems[date].sort((a, b) => new Date(a.time) - new Date(b.time));
+    });
+    
     setItems(newItems);
+    console.warn(newItems)
   } catch (error) {
     console.error('Error fetching schedules: ', error);
     throw error;

@@ -9,7 +9,11 @@ const loadItemsApi = async (user_id, items, setItems) => {
     const response = await axios.get(`${baseUrl}/getSchedules/${user_id}`);
     const fetchedItems = response.data;
     
-    const newItems = { ...items };
+    // const newItems = { ...items };
+    const newItems = {};
+    Object.keys(items).forEach(date => {
+      newItems[date] = items[date].filter(item => item.user === user_id);
+    });
     fetchedItems.forEach(schedule => {
       const strTime = schedule.time.split('T')[0]; // Assumes that time is formatted as an ISO string
 

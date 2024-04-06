@@ -14,7 +14,7 @@
 // };
 import React, { useCallback } from "react";
 
-const fetchPatientInfo = async (caregiverId, setPatientInfo) => {
+const fetchPatientInfo = async (caregiverId, setPatientInfo, setCurrentPatient) => {
   try {
     const response = await fetch(`https://medisyncconnection.azurewebsites.net/api/getPatient/${caregiverId}`);
     
@@ -24,6 +24,7 @@ const fetchPatientInfo = async (caregiverId, setPatientInfo) => {
 
     const data = await response.json();
     setPatientInfo(data); // Assume the data is an array of patient info
+    setCurrentPatient(data);
   } catch (error) {
     console.error('Error fetching patient info:', error);
     // Optionally set some error state here

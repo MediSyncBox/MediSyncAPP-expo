@@ -7,6 +7,7 @@ import axios from 'axios';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import CustomAppbar from './Appbar';
 import {loadItemsApi} from '../api/schedule';
+import { useAuth } from '../AuthContext';
 
 const AgendaScreen = (props) => {
   const [items, setItems] = useState({});
@@ -15,6 +16,7 @@ const AgendaScreen = (props) => {
   const [agendaKey, setAgendaKey] = useState(0);
   const [shouldRefreshAgenda, setShouldRefreshAgenda] = useState(false);
   const { user_id } = props;
+  const { currentPatient, setCurrentPatient } = useAuth();
 
   const isEmptyItems = () => {
     if (!items) return true;
@@ -28,16 +30,30 @@ const AgendaScreen = (props) => {
   //     });
   //   }
   // }, [user_id]);
+
   useEffect(() => {
     if (shouldRefreshAgenda) {
+      loadItemsForMonth();
       setAgendaKey(prevKey => prevKey + 1);
       setShouldRefreshAgenda(false);
     }
   }, [shouldRefreshAgenda]);
 
   const loadItemsForMonth = async () => {
+    // console.warn(currentPatient)
+
     try {
-      await loadItemsApi(user_id, items, setItems);
+      // await loadItemsApi(user_id, items, setItems);
+      if (Array.isArray(currentPatient)) {
+        for (const patient of currentPatient) {
+          // console.warn(items)
+          await loadItemsApi(patient.id, items, setItems);
+        }
+      } else {
+        await loadItemsApi(currentPatient.id, items, setItems);
+      }
+      console.warn(items)
+      // setShouldRefreshAgenda(true);
     } catch (error) {
       console.error('Failed to load items: ', error);
     }
@@ -115,7 +131,7 @@ const AgendaScreen = (props) => {
 
   return (
     <View style={{ paddingTop: 25, flex: 1 }}>
-      <CustomAppbar/>
+      <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} />
       <Agenda
         key={agendaKey}
         items={items}

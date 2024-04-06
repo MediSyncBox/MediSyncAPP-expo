@@ -19,7 +19,8 @@ export const AuthProvider = ({ children }) => {
     try {
       // const patientInfo = await fetchPatientInfo(userData.id);
       // setPatientInfo(patientInfo);
-      await fetchPatientInfo(userData.id, setPatientInfo);
+      await fetchPatientInfo(userData.id, setPatientInfo, setCurrentPatient);
+      // setCurrentPatient(patientInfo);
     } catch (error) {
         console.error("Failed to fetch patient info:", error);
     }

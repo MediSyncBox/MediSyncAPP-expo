@@ -40,16 +40,27 @@ const AgendaScreen = (props) => {
     }
   }, [shouldRefreshAgenda]);
 
-  const loadItemsForMonth = async () => {
+  const loadItemsForMonth = async (fromDate) => {
+    // setItems({});
     try {
       // 根据currentPatient是否为数组，获取所有用户ID
+      if (currentPatient === null) {
+        console.log("No current patient selected.");
+        return; // 提前返回，避免执行API调用
+      }
       const user_ids = Array.isArray(currentPatient) ? currentPatient.map(p => p.id) : [currentPatient.id];
-      // 调用API加载项目，传递用户ID数组
-      await loadItemsApi(user_ids, items, setItems);
+      // console.warn(currentPatient)
+      await loadItemsApi(user_ids, items, setItems, fromDate);
       // 可选：在这里执行后续逻辑，例如设置刷新标志
     } catch (error) {
       console.error('Failed to load items: ', error);
     }
+  };
+
+  const loadFromDate = async (fromDate) => {
+    // setShouldRefreshAgenda(true);
+    setItems({});
+    loadItemsForMonth(fromDate);
   };
   
 
@@ -126,6 +137,7 @@ const AgendaScreen = (props) => {
     const date = new Date(time);
     return date.toISOString().split('T')[0];
   };
+  // console.warn(currentPatient.length !== 1)
 
   return (
     <View style={{ paddingTop: 25, flex: 1 }}>
@@ -137,6 +149,8 @@ const AgendaScreen = (props) => {
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
         // rowHasChanged={rowHasChanged}
+        // onDayPress={({dateString}) => loadItemsForMonth(dateString)}
+        onDayPress={({dateString}) => loadFromDate(dateString)}
         showClosingKnob={true}
         refreshing={props.refreshing}
         onRefresh={props.onRefresh}

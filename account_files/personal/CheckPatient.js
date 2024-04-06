@@ -4,7 +4,7 @@ import { useAuth } from '../AuthContext'; // Make sure the path is correct
 import {fetchPatientInfo} from '../api/patient';
 
 const CheckPatient = () => {
-  const { setPatientInfo, patientInfo } = useAuth();
+  const { setPatientInfo, patientInfo, setCurrentPatient } = useAuth();
   const { userInfo } = useAuth();
   const caregiverId = userInfo?.id;
   const [isAdding, setIsAdding] = useState(false);
@@ -12,7 +12,7 @@ const CheckPatient = () => {
 
   useEffect(() => {
     if (caregiverId) {
-      fetchPatientInfo(caregiverId, setPatientInfo);
+      fetchPatientInfo(caregiverId, setPatientInfo, setCurrentPatient);
     }
   }, [fetchPatientInfo, caregiverId]);
 
@@ -56,7 +56,7 @@ const CheckPatient = () => {
       }
 
       // If the new patient was added successfully, refresh the patient list
-      await fetchPatientInfo(caregiverId, setPatientInfo);
+      await fetchPatientInfo(caregiverId, setPatientInfo, setCurrentPatient);
     } catch (error) {
       console.error('Error adding patient:', error);
       throw error;

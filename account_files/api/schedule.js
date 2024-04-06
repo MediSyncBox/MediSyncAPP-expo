@@ -73,20 +73,21 @@ import axios from 'axios';
 
 const baseUrl = 'https://medisyncconnection.azurewebsites.net/api';
 
-const loadItemsApi = async (user_ids, items, setItems) => {
-  let newItems = {}; // 初始化一个新的空对象来存储所有日程
+const loadItemsApi = async (user_ids, items, setItems, fromDate=null) => {
+  let newItems = {};
   // setItems({});
   // console.warn(user_ids)
 
   try {
-    // 对每个user_id并行执行数据获取操作
     const schedulePromises = user_ids.map(async user_id => {
       const response = await axios.get(`${baseUrl}/getSchedules/${user_id}`);
-      return response.data; // 返回获取到的日程数据
+      return response.data; 
     });
 
-    // 使用Promise.all等待所有请求完成
     const schedulesArray = await Promise.all(schedulePromises);
+    const filteredSchedulesArray = fromDate 
+      ? schedulesArray.map(schedules => schedules.filter(schedule => new Date(schedule.time) >= new Date(fromDate)))
+      : schedulesArray;
 
     // 合并所有日程到newItems中
     schedulesArray.forEach(schedules => {
@@ -94,10 +95,9 @@ const loadItemsApi = async (user_ids, items, setItems) => {
         const strTime = schedule.time.split('T')[0]; // Assumes time is formatted as an ISO string
 
         if (!newItems[strTime]) {
-          newItems[strTime] = []; // 如果这个日期还没有被加入到newItems，就创建一个空数组
+          newItems[strTime] = [];
         }
 
-        // 直接添加新日程
         newItems[strTime].push({
           id: schedule.id,
           user: schedule.user_id,
@@ -111,7 +111,6 @@ const loadItemsApi = async (user_ids, items, setItems) => {
       });
     });
 
-    // 对每个日期下的日程进行排序
     Object.keys(newItems).forEach(date => {
       newItems[date].sort((a, b) => new Date(a.time) - new Date(b.time));
     });

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, StyleSheet, Text, TextInput, View, Switch, Pressable, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker'; // Ensure this is installed
+import {loadItemsApi} from '../api/schedule';
 
-export default function EditSchedule({ modalVisible, setModalVisible, initialData}) {
+export default function EditSchedule({ modalVisible, setModalVisible, initialData, setShouldRefreshAgenda, userId, items, setItems }) {
   const [medicine, setMedicine] = useState(initialData ? initialData.name : '');
   const [dose, setDose] = useState(initialData ? initialData.dose.toString() : '');
   const [taken, setTaken] = useState(initialData ? initialData.taken : false);
@@ -51,21 +52,36 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
         const data = await response.json();
         if (data.success) {
           Alert.alert("Update Successful", "The schedule has been updated.");
+          await loadItemsApi(userId, items, setItems);
           setModalVisible(false); // Close the modal after successful update
           // reloadData(); // Call the passed callback function to reload data in AgendaScreen
         } else {
           Alert.alert("Update Failed", "The schedule update failed. Please try again.");
         }
+        
       } else {
         // If the response is not JSON, log the response to debug
         const text = await response.text();
         console.warn("Received non-JSON response:", text);
         Alert.alert("Update Error", "The response from the server was not in JSON format.");
       }
+      // if (response.ok) {
+      //   // 调用成功，更新日程数据
+      //   try {
+      //     await loadItemsApi(userId, items, setItems);
+      //     // 标记为需要刷新Agenda组件
+      //     setShouldRefreshAgenda(true); // 通知父组件刷新Agenda
+      //     setModalVisible(false);
+      //   } catch (error) {
+      //     console.error('Failed to reload items: ', error);
+      //   }
+      // }
     } catch (error) {
       console.error(error);
       Alert.alert("Update Error", "An error occurred while updating the schedule.");
     }
+    setShouldRefreshAgenda(true);
+    
 };
   
 

@@ -21,8 +21,22 @@ const loadItemsApi = async (user_id, items, setItems) => {
 
       if (index >= 0) {
         // If item exists, replace it if the fetched item is newer
+        // if (new Date(schedule.last_updated) > new Date(newItems[strTime][index].last_updated)) {
+        //   newItems[strTime][index] = { ...schedule, last_updated: new Date(schedule.last_updated) };
+        // }
         if (new Date(schedule.last_updated) > new Date(newItems[strTime][index].last_updated)) {
-          newItems[strTime][index] = { ...schedule, last_updated: new Date(schedule.last_updated) };
+          newItems[strTime][index] = {
+            // 对属性名进行调整
+            id: schedule.id,
+            user: schedule.user_id, // 修改 'user' 为 'userId'
+            name: schedule.medicine, // 修改 'name' 为 'medicineName'
+            // 保持其它属性不变
+            dose: schedule.dose,
+            time: schedule.time,
+            taken: schedule.taken,
+            last_updated: schedule.last_updated,
+            height: 100,
+          };
         }
       } else {
         newItems[strTime].push({

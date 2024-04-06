@@ -138,6 +138,10 @@ const AgendaScreen = (props) => {
         setModalVisible={setEditModalVisible}
         submitForm={() => {}}
         initialData={selectedItem}
+        setShouldRefreshAgenda={setShouldRefreshAgenda}
+        userId={user_id}
+        items={items}
+        setItems={setItems}
       />
     </View>
   );

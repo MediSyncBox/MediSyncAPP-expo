@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Dimensions, Switch } from 'react-native';
+import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Switch, Dimensions } from 'react-native';
 import { Text, Appbar } from 'react-native-paper';
 import { useAuth } from '../AuthContext';
 
@@ -15,17 +15,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     fetchUserBoxes();
-    // If a box has been selected, start fetching details on a regular basis
-    if (selectedOption) {
-      fetchBoxDetails(selectedOption);
-      const intervalId = setInterval(() => {
-        fetchBoxDetails(selectedOption);
-      }, 5000); // Fetch data every 5 seconds
-
-      // Clear the timer
-      return () => clearInterval(intervalId);
-    }
-  }, [selectedOption]);
+  }, []);
 
   const handleSubmitBox = async () => {
     if (!boxId || !name) {
@@ -52,10 +42,8 @@ const HomeScreen = () => {
       const result = await response.json();
       // console.log (result);
       if (response.ok) {
-        setOptions(prevOptions => [...prevOptions, name]);
-        // setBoxInfo(result); 
-        // fetchBoxDetails(name);
         hideModal();
+        fetchUserBoxes(); 
       } else {
         // setErrorMessage(result.message || 'Failed to update box');
         setErrorMessage(result.message || 'Failed to add box due to server error.');
@@ -68,7 +56,6 @@ const HomeScreen = () => {
   };
 
   const fetchUserBoxes = async () => {
-    console.log(userId)
     if (userId) {
       try {
         const response = await fetch(`https://medisyncconnection.azurewebsites.net/api/getUserBox/${userId}`);
@@ -76,8 +63,16 @@ const HomeScreen = () => {
           throw new Error('Failed to fetch boxes');
         }
         const data = await response.json();
-        setBoxes(data); // 更新状态以存储用户的 boxes
-        console.log(boxes)
+        const detailsPromises = data.map(box => fetchBoxDetails(box.box_id));
+        const detailsResults = await Promise.all(detailsPromises);
+        detailsResults.forEach((details, index) => {
+          if (details) {
+            updateTankDetails(data[index].box_id, details);
+          }
+        });
+
+        setBoxes(data);
+
       } catch (error) {
         console.error('Fetch error:', error);
         setErrorMessage(error.toString());
@@ -132,6 +127,7 @@ const HomeScreen = () => {
       updateTankDetails(boxId, details);
     } catch (error) {
       console.error('Fetch error:', error);
+      return null;
       // setErrorMessage(error.toString());
     }
   };
@@ -207,21 +203,21 @@ const HomeScreen = () => {
         showsHorizontalScrollIndicator={false}
       />
 
+
       {/* 显示所选 box 的 tank 信息 */}
       {selectedOption && tankDetails[selectedOption] && (
         <View style={styles.tankDetailsContainer}>
-          {tankDetails[selectedOption].map((tank, index) => (
-            <View key={index} style={styles.tankDetail}>
-              <Text style={styles.detailLabel}>Tank ID: {tank.id}</Text>
+          {Object.entries(tankDetails[selectedOption]).map(([tankId, tankData]) => (
+            <View key={tankId} style={styles.tankDetail}>
+              <Text style={styles.detailLabel}>Tank ID: {tankId}</Text>
               <Text style={styles.detailLabel}>Temperature:</Text>
-              <Text style={styles.detailValue}>{tank.temperature}°C</Text>
+              <Text style={styles.detailValue}>{tankData.temperature}°C</Text>
               <Text style={styles.detailLabel}>Humidity:</Text>
-              <Text style={styles.detailValue}>{tank.humidity}%</Text>
+              <Text style={styles.detailValue}>{tankData.humidity}%</Text>
             </View>
           ))}
         </View>
       )}
-
 
       {/* 选中盒子的详细信息
       {selectedOption && tanksDetails.map((tank, index) => (
@@ -262,7 +258,6 @@ const HomeScreen = () => {
                 onChangeText={setName}
               />
             </View>
-
             <View style={styles.inputGroup}>
               <Text style={styles.textLabel}>Is Your Own Box:</Text>
               <Switch

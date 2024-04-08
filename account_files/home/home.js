@@ -13,7 +13,17 @@ const HomeScreen = () => {
 
   useEffect(() => {
     fetchUserBoxes();
-  }, []);
+    // If a box has been selected, start fetching details on a regular basis
+    if (selectedOption) {
+      fetchBoxDetails(selectedOption);
+      const intervalId = setInterval(() => {
+        fetchBoxDetails(selectedOption);
+      }, 5000); // Fetch data every 5 seconds
+
+      // Clear the timer
+      return () => clearInterval(intervalId);
+    }
+  }, [selectedOption]);
 
   const handleSubmitBox = async () => {
     if (!boxId || !name) {
@@ -119,7 +129,7 @@ const HomeScreen = () => {
       updateTankDetails(boxId, details);
     } catch (error) {
       console.error('Fetch error:', error);
-      setErrorMessage(error.toString());
+      // setErrorMessage(error.toString());
     }
   };
 
@@ -197,17 +207,18 @@ const HomeScreen = () => {
       {/* 显示所选 box 的 tank 信息 */}
       {selectedOption && tankDetails[selectedOption] && (
         <View style={styles.tankDetailsContainer}>
-          {Object.entries(tankDetails[selectedOption]).map(([tankId, tankData]) => (
-            <View key={tankId} style={styles.tankDetail}>
-              <Text style={styles.detailLabel}>Tank ID: {tankId}</Text>
+          {tankDetails[selectedOption].map((tank, index) => (
+            <View key={index} style={styles.tankDetail}>
+              <Text style={styles.detailLabel}>Tank ID: {tank.id}</Text>
               <Text style={styles.detailLabel}>Temperature:</Text>
-              <Text style={styles.detailValue}>{tankData.temperature}°C</Text>
+              <Text style={styles.detailValue}>{tank.temperature}°C</Text>
               <Text style={styles.detailLabel}>Humidity:</Text>
-              <Text style={styles.detailValue}>{tankData.humidity}%</Text>
+              <Text style={styles.detailValue}>{tank.humidity}%</Text>
             </View>
           ))}
         </View>
       )}
+
 
       {/* 选中盒子的详细信息
       {selectedOption && tanksDetails.map((tank, index) => (

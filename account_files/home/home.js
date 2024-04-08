@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Dimensions, Switch } from 'react-native';
 import { Text, Appbar } from 'react-native-paper';
 import { useAuth } from '../AuthContext';
 
@@ -9,6 +9,8 @@ const HomeScreen = () => {
   const [options, setOptions] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [boxes, setBoxes] = useState([]);
+  const [isUserOwnBox, setIsUserOwnBox] = useState(false);
+
   // const { setBoxInfo } = useAuth();
 
   useEffect(() => {
@@ -41,6 +43,7 @@ const HomeScreen = () => {
           userId,
           boxId,
           name,
+          isUserOwnBox,
         }),
       });
       // const responseText = await response.text();
@@ -259,6 +262,15 @@ const HomeScreen = () => {
                 onChangeText={setName}
               />
             </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.textLabel}>Is Your Own Box:</Text>
+              <Switch
+                value={isUserOwnBox}
+                onValueChange={setIsUserOwnBox}
+              />
+            </View>
+
 
             <View style={styles.buttonContainer}>
               {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}

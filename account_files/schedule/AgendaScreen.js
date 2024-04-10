@@ -130,8 +130,6 @@ const AgendaScreen = (props) => {
   };
 
   const rowHasChanged = (r1, r2) => {
-    // 确保这里的逻辑足够识别你的数据模型中的变化
-    console.warn(r1)
     return r1.id !== r2.id || r1.last_updated !== r2.last_updated;
 };
 

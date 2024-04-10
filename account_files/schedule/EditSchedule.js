@@ -62,7 +62,7 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
       } else {
         // If the response is not JSON, log the response to debug
         const text = await response.text();
-        console.warn("Received non-JSON response:", text);
+        console.error("Received non-JSON response:", text);
         Alert.alert("Update Error", "The response from the server was not in JSON format.");
       }
       // if (response.ok) {

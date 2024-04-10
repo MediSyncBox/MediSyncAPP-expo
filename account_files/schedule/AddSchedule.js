@@ -38,7 +38,6 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
       setSelectedPatientId(patientInfo[0].id);
     }
   }, [patientInfo]);
-  console.warn(patientInfo)
 
   const renderPatientPicker = () => (
     <View style={styles.pickerContainer}>
@@ -150,7 +149,6 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
 
   
   // manage form submit
-  console.warn(selectedPatientId)
   const handleSubmit = async () => {
     setIsLoading(true); 
     const scheduleEntries = [];

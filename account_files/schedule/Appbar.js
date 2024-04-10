@@ -32,7 +32,7 @@ const CustomAppbar = ({setShouldRefreshAgenda, items, setItems}) => {
   };
 
   return (
-    <Appbar.Header>
+    <Appbar.Header style={ {backgroundColor: 'white'}}>
       <Appbar.Content title={currentPatient ? 
         (Array.isArray(currentPatient) ? "All Patients" : currentPatient.userName) : "Select a Patient"} />
       <TouchableOpacity onPress={() => setIsMenuVisible(true)}>

@@ -23,12 +23,6 @@ const AgendaScreen = (props) => {
   const [isInDeleteMode, setIsInDeleteMode] = useState(false);
   const [selectedItemsForDeletion, setSelectedItemsForDeletion] = useState([]);
 
-
-  const isEmptyItems = () => {
-    if (!items) return true;
-    return Object.keys(items).every(key => items[key].length === 0);
-  };
-
   // useEffect(() => {
   //   if (user_id) {
   //     loadItemsForMonth().then(() => {
@@ -37,6 +31,7 @@ const AgendaScreen = (props) => {
   //   }
   // }, [user_id]);
 
+  // loading and refresh schedules
   useEffect(() => {
     if (shouldRefreshAgenda) {
       // i don't like that, i think it makes low efficiency but i don't know how to fix that
@@ -62,14 +57,8 @@ const AgendaScreen = (props) => {
       console.error('Failed to load items: ', error);
     }
   };
-
-  const loadFromDate = async (fromDate) => {
-    // setShouldRefreshAgenda(true);
-    setItems({});
-    loadItemsForMonth(fromDate);
-  };
   
-
+  // update taken by toggle
   const handleTakenToggle = async (reservation) => {
     const updatedReservation = { ...reservation, taken: !reservation.taken };
     setItems(prevItems => ({
@@ -87,6 +76,36 @@ const AgendaScreen = (props) => {
     }
     setShouldRefreshAgenda(true);
   };
+
+  // Agenda parameters
+  const loadFromDate = async (fromDate) => {
+    // setShouldRefreshAgenda(true);
+    setItems({});
+    loadItemsForMonth(fromDate);
+  };
+
+  const isEmptyItems = () => {
+    if (!items) return true;
+    return Object.keys(items).every(key => items[key].length === 0);
+  };
+
+  const renderEmptyDate = () => {
+    return (
+      <View style={styles.emptyDate}>
+        <Text>This is empty date!</Text>
+      </View>
+    );
+  };
+
+  const rowHasChanged = (r1, r2) => {
+    return r1.id !== r2.id || r1.last_updated !== r2.last_updated;
+};
+
+  const timeToString = (time) => {
+    const date = new Date(time);
+    return date.toISOString().split('T')[0];
+  };
+
 
   const renderItem = (reservation) => {
     const scheduleDateTime = new Date(reservation.time);
@@ -116,37 +135,74 @@ const AgendaScreen = (props) => {
           <View style={styles.itemFooter}>
             <Ionicons name="time" size={18} color="#43515c" style={styles.icon} />
             <Text style={styles.itemText}>{scheduleDateTime.toLocaleTimeString()}</Text>
-            <Ionicons name="menu" size={18} color="#43515c" style={[styles.icon, { marginLeft: 45 }]} />
-            <Text style={[styles.itemText, ]}>{reservation.dose || 'No dose info'} pills</Text>
+            <Ionicons name="water" size={18} color="#43515c" style={[styles.icon, { marginLeft: 55 }]} />
+            <Text style={[styles.itemText, ]}>{reservation.dose || 'No dose info'} pill</Text>
           </View>
         </View>
       </TouchableOpacity>
     );
   };
 
-  const renderEmptyDate = () => {
-    return (
-      <View style={styles.emptyDate}>
-        <Text>This is empty date!</Text>
-      </View>
+  // delete logic
+  const handleDeleteSelectedItems = async () => {
+    if (selectedItemsForDeletion.length === 0) {
+      Alert.alert("No items selected", "Please select items to delete.");
+      return;
+    }
+  
+    // 确认删除对话框
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete the selected items?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              // 假设你有一个后端的删除API接受一个包含要删除日程id的数组
+              const response = await axios.post('YOUR_BACKEND_API/delete', {
+                ids: selectedItemsForDeletion
+              });
+  
+              // 检查后端返回的响应，这里假设如果成功，后端会返回一个success状态
+              if (response.data.success) {
+                // 从UI中移除被选中的日程
+                const newItems = { ...items };
+                selectedItemsForDeletion.forEach((id) => {
+                  Object.keys(newItems).forEach((date) => {
+                    newItems[date] = newItems[date].filter((item) => item.id !== id);
+                  });
+                });
+                setItems(newItems);
+  
+                // 如果需要，可以在这里添加其他UI更新逻辑
+                Alert.alert("Deleted", "The selected items have been deleted.");
+              } else {
+                // 处理错误情况
+                Alert.alert("Error", "Could not delete the selected items.");
+              }
+            } catch (error) {
+              console.error('Error deleting items: ', error);
+              Alert.alert("Error", "An error occurred while deleting the items.");
+            }
+  
+            // 重置删除模式和选中的项目
+            setIsInDeleteMode(false);
+            setSelectedItemsForDeletion([]);
+          }
+        }
+      ],
+      { cancelable: false }
     );
   };
-
-  const rowHasChanged = (r1, r2) => {
-    return r1.id !== r2.id || r1.last_updated !== r2.last_updated;
-};
-
-  const timeToString = (time) => {
-    const date = new Date(time);
-    return date.toISOString().split('T')[0];
-  };
-
-  const handleDeleteSelectedItems = () => {
-    // TODO: 实现删除逻辑，根据 selectedItemsForDeletion 删除选中的日程
-  };
+  
 
   return (
-    <View style={{ paddingTop: 25, flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
       <Agenda
         key={agendaKey}
@@ -236,13 +292,14 @@ const styles = StyleSheet.create({
   itemHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    // marginBottom: 5,
+    marginBottom: 1,
+    left: 5,
   },
   itemFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     // top: 5, // Adjust as necessary
-    // left: 5, // Adjust as necessary
+    left: 5, // Adjust as necessary
     // padding: 5,
   },
   icon: {

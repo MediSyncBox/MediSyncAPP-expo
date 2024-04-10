@@ -8,6 +8,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import CustomAppbar from './Appbar';
 import {loadItemsApi} from '../api/schedule';
 import { useAuth } from '../AuthContext';
+import DeleteModeButton from './DeleteButton';
 
 const AgendaScreen = (props) => {
   const [items, setItems] = useState({});
@@ -17,6 +18,11 @@ const AgendaScreen = (props) => {
   const [shouldRefreshAgenda, setShouldRefreshAgenda] = useState(false);
   const { user_id } = props;
   const { currentPatient, setCurrentPatient } = useAuth();
+
+  // for delete
+  const [isInDeleteMode, setIsInDeleteMode] = useState(false);
+  const [selectedItemsForDeletion, setSelectedItemsForDeletion] = useState([]);
+
 
   const isEmptyItems = () => {
     if (!items) return true;
@@ -135,6 +141,10 @@ const AgendaScreen = (props) => {
     return date.toISOString().split('T')[0];
   };
 
+  const handleDeleteSelectedItems = () => {
+    // TODO: 实现删除逻辑，根据 selectedItemsForDeletion 删除选中的日程
+  };
+
   return (
     <View style={{ paddingTop: 25, flex: 1 }}>
       <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
@@ -156,6 +166,12 @@ const AgendaScreen = (props) => {
       <View>
         <PlusButton items={items} setItems={setItems} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
       </View>
+
+      <DeleteModeButton
+        isInDeleteMode={isInDeleteMode}
+        setIsInDeleteMode={setIsInDeleteMode}
+        handleDeleteSelectedItems={handleDeleteSelectedItems}
+      />
 
       <EditSchedule
         modalVisible={editModalVisible}

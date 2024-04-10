@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Appbar, Menu } from 'react-native-paper';
 import { useAuth } from '../AuthContext'; // 根据实际情况调整导入路径
 import {loadItemsApi} from '../api/schedule';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Alert, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 const CustomAppbar = ({setShouldRefreshAgenda, items, setItems}) => {
   const { userInfo, patientInfo, currentPatient, setCurrentPatient } = useAuth();
@@ -31,8 +33,11 @@ const CustomAppbar = ({setShouldRefreshAgenda, items, setItems}) => {
 
   return (
     <Appbar.Header>
-      <Appbar.Content title={currentPatient ? (Array.isArray(currentPatient) ? "All Patients" : currentPatient.userName) : "Select a Patient"} />
-      <Appbar.Action icon="menu" onPress={() => setIsMenuVisible(true)} />
+      <Appbar.Content title={currentPatient ? 
+        (Array.isArray(currentPatient) ? "All Patients" : currentPatient.userName) : "Select a Patient"} />
+      <TouchableOpacity onPress={() => setIsMenuVisible(true)}>
+        <Ionicons name="list" size={24}/>
+      </TouchableOpacity>
       <Menu
         visible={isMenuVisible}
         onDismiss={() => setIsMenuVisible(false)}

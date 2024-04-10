@@ -65,17 +65,6 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
         console.error("Received non-JSON response:", text);
         Alert.alert("Update Error", "The response from the server was not in JSON format.");
       }
-      // if (response.ok) {
-      //   // 调用成功，更新日程数据
-      //   try {
-      //     await loadItemsApi(userId, items, setItems);
-      //     // 标记为需要刷新Agenda组件
-      //     setShouldRefreshAgenda(true); // 通知父组件刷新Agenda
-      //     setModalVisible(false);
-      //   } catch (error) {
-      //     console.error('Failed to reload items: ', error);
-      //   }
-      // }
     } catch (error) {
       console.error(error);
       Alert.alert("Update Error", "An error occurred while updating the schedule.");
@@ -149,7 +138,7 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
 
             <Text>Time: {time.toLocaleTimeString()}</Text>
 
-            <View style={styles.switchContainer}>
+            {/* <View style={styles.switchContainer}>
               <Text style={styles.switchLabel}>Taken: </Text>
               <Text>{taken ? 'Yes' : 'No'}</Text>
               <Switch
@@ -159,7 +148,7 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
                 onValueChange={setTaken}
                 value={taken}
               />
-            </View>
+            </View> */}
 
             <View style={styles.buttonContainer}>
               <Pressable

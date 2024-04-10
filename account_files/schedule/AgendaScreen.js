@@ -43,17 +43,15 @@ const AgendaScreen = (props) => {
   }, [shouldRefreshAgenda]);
 
   const loadItemsForMonth = async (fromDate) => {
-    // setItems({});
+    // keep fetching schedules
     try {
-      // 根据currentPatient是否为数组，获取所有用户ID
       if (currentPatient === null) {
         console.log("No current patient selected.");
-        return; // 提前返回，避免执行API调用
+        return;
       }
       const user_ids = Array.isArray(currentPatient) ? currentPatient.map(p => p.id) : [currentPatient.id];
       // console.warn(currentPatient)
       await loadItemsApi(user_ids, items, setItems, fromDate);
-      // 可选：在这里执行后续逻辑，例如设置刷新标志
     } catch (error) {
       console.error('Failed to load items: ', error);
     }
@@ -85,8 +83,6 @@ const AgendaScreen = (props) => {
   };
 
   const renderItem = (reservation) => {
-    // console.warn(reservation)
-    // console.warn(agendaKey)
     const scheduleDateTime = new Date(reservation.time);
     return (
       <TouchableOpacity
@@ -108,13 +104,14 @@ const AgendaScreen = (props) => {
             />
           </TouchableOpacity>
           <View style={styles.itemHeader}>
-            <Ionicons name="sync-circle" size={24} color="#43515c" style={styles.icon} />
-            <Text style={[styles.itemText, { fontSize: 18 }]}>Medicine: {reservation.name}</Text>
+            {/* <Ionicons name="alert-circle" size={24} color="#43515c" style={styles.icon} /> */}
+            <Text style={[styles.itemText, { fontSize: 18 }]}>{reservation.name}</Text>
           </View>
           <View style={styles.itemFooter}>
-            <Ionicons name="time" size={20} color="#43515c" style={styles.icon} />
-            <Text style={styles.itemText}>Time: {scheduleDateTime.toLocaleTimeString()}</Text>
-            <Text style={[styles.itemText, { marginLeft: 'auto' }]}>Dose: {reservation.dose || 'No dose info'} pills</Text>
+            <Ionicons name="time" size={18} color="#43515c" style={styles.icon} />
+            <Text style={styles.itemText}>{scheduleDateTime.toLocaleTimeString()}</Text>
+            <Ionicons name="menu" size={18} color="#43515c" style={[styles.icon, { marginLeft: 45 }]} />
+            <Text style={[styles.itemText, ]}>{reservation.dose || 'No dose info'} pills</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -137,7 +134,6 @@ const AgendaScreen = (props) => {
     const date = new Date(time);
     return date.toISOString().split('T')[0];
   };
-  // console.warn(currentPatient.length !== 1)
 
   return (
     <View style={{ paddingTop: 25, flex: 1 }}>
@@ -214,21 +210,24 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-    // elevation: 2,
+    elevation: 3,
   },
   itemText: {
     fontSize: 16, // Make text larger
     color: "#43515c",
-    marginBottom: 5, // Add spacing between text elements
+    marginBottom: 3, // Add spacing between text elements
   },
   itemHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    // marginBottom: 5,
   },
   itemFooter: {
     flexDirection: 'row',
     alignItems: 'center',
+    // top: 5, // Adjust as necessary
+    // left: 5, // Adjust as necessary
+    // padding: 5,
   },
   icon: {
     marginRight: 5,

@@ -41,7 +41,14 @@ const AgendaScreen = (props) => {
       setAgendaKey(prevKey => prevKey + 1);
       setShouldRefreshAgenda(false);
     }
-  }, [shouldRefreshAgenda]);
+    if (isInDeleteMode) {
+      // loadItemsForMonth();
+      setItems({});
+      loadItemsForMonth();
+      setAgendaKey(prevKey => prevKey + 1);
+      // setShouldRefreshAgenda(false);
+    }
+  }, [shouldRefreshAgenda, isInDeleteMode]);
 
   const loadItemsForMonth = async (fromDate) => {
     // keep fetching schedules
@@ -98,8 +105,16 @@ const AgendaScreen = (props) => {
   };
 
   const rowHasChanged = (r1, r2) => {
-    return r1.id !== r2.id || r1.last_updated !== r2.last_updated;
-};
+    // 检查两项是否不同，或者它们的更新时间戳不同
+    const isDifferent = r1.id !== r2.id || r1.last_updated !== r2.last_updated;
+    // 检查它们的选中状态是否变化
+    // const isSelectedChanged = selectedItemsForDeletion.includes(r1.id) !== selectedItemsForDeletion.includes(r2.id);
+    const isSelectedChanged = (selectedItemsForDeletion.includes(r1.id) && !selectedItemsForDeletion.includes(r2.id)) ||
+                            (!selectedItemsForDeletion.includes(r1.id) && selectedItemsForDeletion.includes(r2.id));
+    // console.warn(isInDeleteMode)
+    // 如果任一条件为真，则需要重新渲染
+    return isDifferent || isSelectedChanged;
+  };
 
   const timeToString = (time) => {
     const date = new Date(time);
@@ -109,13 +124,28 @@ const AgendaScreen = (props) => {
 
   const renderItem = (reservation) => {
     const scheduleDateTime = new Date(reservation.time);
+    const isSelected = selectedItemsForDeletion.includes(reservation.id);
+    console.warn(reservation.name)
+
+    const handlePressItem = () => {
+      if (isInDeleteMode) {
+        setSelectedItemsForDeletion((currentSelectedItems) => {
+          if (isSelected) {
+            return currentSelectedItems.filter((id) => id !== reservation.id);
+          } else {
+            return [...currentSelectedItems, reservation.id];
+          }
+        });
+      } else {
+        setSelectedItem(reservation);
+        setEditModalVisible(true);
+      }
+    };
     return (
-      <TouchableOpacity
-        onPress={() => {
-          setSelectedItem(reservation);
-          setEditModalVisible(true);
-        }}
-      >
+      <TouchableOpacity onPress={handlePressItem} style={[
+        styles.item,
+        isSelected && isInDeleteMode ? styles.selectedItem : {},
+      ]}>
         <View style={styles.item}>
           <TouchableOpacity
             style={[styles.itemTouchable, { backgroundColor: 'white' }]}
@@ -199,8 +229,8 @@ const AgendaScreen = (props) => {
       { cancelable: false }
     );
   };
-  
 
+  console.warn(selectedItemsForDeletion)
   return (
     <View style={{ flex: 1 }}>
       <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
@@ -210,7 +240,7 @@ const AgendaScreen = (props) => {
         loadItemsForMonth={loadItemsForMonth}
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
-        // rowHasChanged={rowHasChanged}
+        rowHasChanged={rowHasChanged}
         // onDayPress={({dateString}) => loadItemsForMonth(dateString)}
         onDayPress={({dateString}) => loadFromDate(dateString)}
         showClosingKnob={true}
@@ -267,6 +297,9 @@ const styles = StyleSheet.create({
     // marginBottom: 100,
     alignItems: 'center',
   },
+  selectedItem: {
+    backgroundColor: '#d3d3d3', // 一个示例高亮颜色
+  },
   item: {
     backgroundColor: "white",
     borderRadius: 10,
@@ -312,4 +345,3 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 })
-

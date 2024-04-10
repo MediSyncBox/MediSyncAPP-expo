@@ -117,6 +117,8 @@ const HomeScreen = () => {
   //   setHumidity(envCondition.humidity);
   // };
 
+
+  
   const fetchBoxDetails = async (boxId) => {
     try {
       const response = await fetch(`https://medisyncconnection.azurewebsites.net/api/getTankInfo/${boxId}`);
@@ -131,6 +133,21 @@ const HomeScreen = () => {
       // setErrorMessage(error.toString());
     }
   };
+
+
+  const getActualTankId = (boxId, selectedTankIndex) => {
+    const tanks = tankDetails[boxId];
+    if (!tanks) {
+      console.error('No tanks found for this box_id:', boxId);
+      return null;
+    }
+  
+    const sortedTanks = [...tanks].sort((a, b) => a.id - b.id);
+    return sortedTanks[selectedTankIndex]?.id; 
+  };
+  
+
+  
 
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
@@ -158,24 +175,52 @@ const HomeScreen = () => {
   };
 
 
-  const addPill = () => {
-    if (!pillName || !pillNumber || !pillTank) {
+
+  const addPill = async () => {
+    if (!pillName || !pillNumber || selectedOption === '' || pillTank === undefined) {
       setErrorMessage('Please fill in all fields');
-    } else if (pillTank != 1 && pillTank != 2 && pillTank != 3) {
-      setErrorMessage('The tank number must be 1, 2, or 3');
-    } else {
-      // Add the new pill to the list of pills
+      return;
+    }
+  
+    const actualTankId = getActualTankId(selectedOption, parseInt(pillTank));
+    if (!actualTankId) {
+      setErrorMessage('Invalid tank selected');
+      return;
+    }
+  
+    try {
+      const response = await fetch('https://medisyncconnection.azurewebsites.net/api/addPills', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          boxId: selectedOption,
+          tankId: actualTankId,
+          pillName,
+          pillNumber,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to add pill information');
+      }
+  
+      // Handle success
       setPills([...pills, { name: pillName, number: pillNumber, tank: pillTank }]);
-      // Reset the pill name, number, and tank
       setpillName('');
       setpillNumber('');
       setpillTank('');
-      // Hide the modal
       hidePillModal();
+      // Optional: fetch updated tank details if needed
+      // fetchUserBoxes();
+  
+    } catch (error) {
+      console.error('Fetch error:', error);
+      setErrorMessage(error.toString());
     }
-
   };
-
+  
 
   return (
 

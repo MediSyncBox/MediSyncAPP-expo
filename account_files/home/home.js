@@ -43,7 +43,7 @@ const HomeScreen = () => {
       // console.log (result);
       if (response.ok) {
         hideModal();
-        fetchUserBoxes(); 
+        fetchUserBoxes();
       } else {
         // setErrorMessage(result.message || 'Failed to update box');
         setErrorMessage(result.message || 'Failed to add box due to server error.');
@@ -118,7 +118,7 @@ const HomeScreen = () => {
   // };
 
 
-  
+
   const fetchBoxDetails = async (boxId) => {
     try {
       const response = await fetch(`https://medisyncconnection.azurewebsites.net/api/getTankInfo/${boxId}`);
@@ -141,13 +141,13 @@ const HomeScreen = () => {
       console.error('No tanks found for this box_id:', boxId);
       return null;
     }
-  
-    const sortedTanks = [...tanks].sort((a, b) => a.id - b.id);
-    return sortedTanks[selectedTankIndex]?.id; 
-  };
-  
 
-  
+    const sortedTanks = [...tanks].sort((a, b) => a.id - b.id);
+    return sortedTanks[selectedTankIndex]?.id;
+  };
+
+
+
 
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
@@ -181,13 +181,13 @@ const HomeScreen = () => {
       setErrorMessage('Please fill in all fields');
       return;
     }
-  
+
     const actualTankId = getActualTankId(selectedOption, parseInt(pillTank));
     if (!actualTankId) {
       setErrorMessage('Invalid tank selected');
       return;
     }
-  
+
     try {
       const response = await fetch('https://medisyncconnection.azurewebsites.net/api/addPills', {
         method: 'POST',
@@ -201,11 +201,11 @@ const HomeScreen = () => {
           pillNumber,
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to add pill information');
       }
-  
+
       // Handle success
       setPills([...pills, { name: pillName, number: pillNumber, tank: pillTank }]);
       setpillName('');
@@ -214,13 +214,13 @@ const HomeScreen = () => {
       hidePillModal();
       // Optional: fetch updated tank details if needed
       // fetchUserBoxes();
-  
+
     } catch (error) {
       console.error('Fetch error:', error);
       setErrorMessage(error.toString());
     }
   };
-  
+
 
   return (
 
@@ -253,13 +253,28 @@ const HomeScreen = () => {
       {selectedOption && tankDetails[selectedOption] && (
         <View style={styles.tankDetailsContainer}>
           {Object.entries(tankDetails[selectedOption]).map(([tankId, tankData]) => (
-            <View key={tankId} style={styles.tankDetail}>
-              <Text style={styles.detailLabel}>Tank ID: {tankId}</Text>
-              <Text style={styles.detailLabel}>Temperature:</Text>
-              <Text style={styles.detailValue}>{tankData.temperature}°C</Text>
-              <Text style={styles.detailLabel}>Humidity:</Text>
-              <Text style={styles.detailValue}>{tankData.humidity}%</Text>
-            </View>
+            <React.Fragment key={tankId}>
+              <View style={styles.tankDetail}>
+                <Text style={styles.detailLabel}>Tank ID: {tankId}</Text>
+                <Text style={styles.detailLabel}>Temperature:</Text>
+                <Text style={styles.detailValue}>{tankData.temperature}°C</Text>
+                <Text style={styles.detailLabel}>Humidity:</Text>
+                <Text style={styles.detailValue}>{tankData.humidity}%</Text>
+              </View>
+              <View style={styles.pillDetail}>
+                {/* 显示药丸信息 */}
+                <Text style={styles.detailLabel}>Pills:</Text>
+                <Text style={styles.detailValue}>{tankData.pillName || 'No pills'}</Text>
+                <Text style={styles.detailValue}>Quantity: {tankData.pillNumber || 'N/A'}</Text>
+                {/* 添加或编辑药丸的按钮 */}
+                <TouchableOpacity
+                  style={styles.pillEditButton}
+                  onPress={showPillModal}
+                >
+                  <Text style={styles.pillEditText}>{tankData.pillName ? 'Edit' : 'Add'} Pills</Text>
+                </TouchableOpacity>
+              </View>
+            </React.Fragment>
           ))}
         </View>
       )}
@@ -433,7 +448,7 @@ const HomeScreen = () => {
           <Text style={styles.buttonText}>Add Pills</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </View >
   );
 };
 

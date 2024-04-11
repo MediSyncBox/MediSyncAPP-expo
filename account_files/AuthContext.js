@@ -40,16 +40,39 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [boxInfo, setBoxInfo] = useState(null);
+  const [tankDetails, setTankDetails] = useState({});
 
   const login = (userData) => {
     setIsLoggedIn(true);
-    setUserInfo(userData); 
+    setUserInfo(userData);
     console.log(userData);
   };
-  const logout = () => setIsLoggedIn(false);
-
+  const logout = () => {
+    setIsLoggedIn(false);
+    setUserInfo(null);
+    setBoxInfo(null);
+    setTankDetails({});
+  };
+  const updateTankDetails = (boxId, details) => {
+    setTankDetails(prevDetails => ({
+      ...prevDetails,
+      [boxId]: details, 
+    }));
+  };
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userInfo, login, logout, boxInfo,setBoxInfo }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        userInfo,
+        login,
+        logout,
+        boxInfo,
+        setBoxInfo,
+        tankDetails, 
+        setTankDetails,
+        updateTankDetails
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -3,7 +3,7 @@ import { View, Text, Modal, Image, StyleSheet, TouchableOpacity, TextInput } fro
 import { Avatar, List } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import {Picker} from '@react-native-picker/picker';
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const ProfileEdit = () => {
   const [userInfo, setUserInfo] = useState({
@@ -108,7 +108,7 @@ const ProfileEdit = () => {
 
   const renderGenderModal = () => {
     const [newGender, setNewGender] = useState(userInfo.gender);
-
+  
     return (
       <Modal
         animationType="slide"
@@ -118,10 +118,12 @@ const ProfileEdit = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            {/* 这里为 Picker 设置了明确的样式，以确保它在屏幕上可见 */}
             <Picker
               selectedValue={newGender}
               onValueChange={(itemValue, itemIndex) => setNewGender(itemValue)}
-              style={styles.pickerStyle}
+              style={{ width: '100%', height: 150 }} // 指定宽度和高度
+              itemStyle={{ height: 150 }} // 指定每个选项的高度
             >
               <Picker.Item label="Female" value="Female" />
               <Picker.Item label="Male" value="Male" />
@@ -143,27 +145,21 @@ const ProfileEdit = () => {
   };
 
 
-
   const handleAvatarPress = () => {
     setAvatarModalVisible(true);
   };
 
 
-  const ListItemWithDescription = ({ title, description, onPress }) => (
-    <List.Item
-      title={(
-        <View style={styles.listItemRow}>
-          <Text style={styles.listItemTitle}>{title}</Text>
-          <Text style={styles.listItemDescription}>{description}</Text>
-        </View>
-      )}
-      right={() => <List.Icon icon="chevron-right" />}
-      onPress={onPress}
-      titleNumberOfLines={2}
-      style={styles.listItem}
-    />
+  const CustomListItem = ({ title, description, onPress, iconName }) => (
+    <TouchableOpacity onPress={onPress} style={styles.customListItem}>
+      <View style={styles.listItemContent}>
+        <Text style={styles.listItemTitle}>{title}</Text>
+        <Text style={styles.listItemDescription}>{description}</Text>
+      </View>
+      <Ionicons name={iconName} size={24} color="black" />
+    </TouchableOpacity>
   );
-
+  
   return (
     <View style={styles.container}>
       <List.Section style={styles.selection}>
@@ -172,12 +168,12 @@ const ProfileEdit = () => {
           description={userInfo.avatar}
           onPress={handleAvatarPress}
         /> */}
-        <ListItemWithDescription
+        <CustomListItem
           title="Your Name"
           description={userInfo.name}
           onPress={showNameModal}
         />
-        <ListItemWithDescription
+        <CustomListItem
           title="Your Gender"
           description={userInfo.gender}
           onPress={showGenderModal}

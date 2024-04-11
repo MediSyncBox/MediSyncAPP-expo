@@ -26,6 +26,30 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
     }
   };
 
+  const handleDeleteSchedule = async () => {
+    try {
+      // 假设 initialData 有一个 id 属性，用来唯一标识 schedule
+      const scheduleId = initialData.id;
+      const response = await fetch(`https://medisyncconnection.azurewebsites.net/api/singleDelete/${scheduleId}`, {
+        method: 'DELETE',
+      });
+      console.warn(initialData)
+  
+      if (response.ok) {
+        Alert.alert("Delete Successful", "The schedule has been deleted.");
+        await loadItemsApi([userId], items, setItems);
+        setModalVisible(false); // 关闭 modal
+        setShouldRefreshAgenda(true); // 刷新 agenda 视图
+      } else {
+        // 如果响应状态不是 ok，说明删除失败
+        Alert.alert("Delete Failed", "The schedule could not be deleted. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Delete Error", "An error occurred while deleting the schedule.");
+    }
+  };
+  
   
   const updateSchedule = async () => {
     // Prepare the data object from the state before sending it
@@ -155,6 +179,12 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
                 style={[styles.button, styles.buttonClose]}
                 onPress={updateSchedule}>
                 <Text style={styles.textStyle}>Save</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={handleDeleteSchedule}>
+                <Text style={styles.textStyle}>Delete</Text>
               </Pressable>
 
               <Pressable

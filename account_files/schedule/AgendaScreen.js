@@ -110,13 +110,13 @@ const AgendaScreen = (props) => {
             />
           </TouchableOpacity>
           <View style={styles.itemHeader}>
-            <Ionicons name="alert-circle" size={24} color="#43515c" style={styles.icon} />
-            <Text style={[styles.itemText, { fontSize: 18 }]}>Medicine: {reservation.name}</Text>
+            <Text style={[styles.timeText, { fontSize: 18 }]}>{reservation.name}</Text>
           </View>
           <View style={styles.itemFooter}>
-            <Ionicons name="time" size={20} color="#43515c" style={styles.icon} />
-            <Text style={styles.itemText}>Time: {scheduleDateTime.toLocaleTimeString()}</Text>
-            <Text style={[styles.itemText, { marginLeft: 'auto' }]}>Dose: {reservation.dose || 'No dose info'} pills</Text>
+            <Ionicons name="time" size={18} color="#43515c" style={styles.icon} />
+            <Text style={styles.timeText}>{scheduleDateTime.toLocaleTimeString()}</Text>
+            <Ionicons name="water" size={18} color="#43515c" style={styles.doseicon} />
+            <Text style={styles.doseText}>Dose: {reservation.dose || 'No dose info'}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: "white",
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 8, // Reduced padding
     marginRight: 10,
     marginTop: 10,
@@ -222,30 +222,42 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
+    width: 300,
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 3,
   },
-  itemText: {
+  timeText: {
     fontSize: 16, // Make text larger
     color: "#43515c",
     marginBottom: 3, // Add spacing between text elements
+  },
+  doseText: {
+    fontSize: 16, // Make text larger
+    color: "#43515c",
+    marginBottom: 2, // Add spacing between text elements
+    marginLeft: 72,
   },
   itemHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 1,
-    left: 5,
+    left: 18,
   },
   itemFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    // top: 5, // Adjust as necessary
-    left: 5, // Adjust as necessary
+    top: 3, // Adjust as necessary
+    left: 16, // Adjust as necessary
     // padding: 5,
   },
   icon: {
-    marginRight: 5,
+    marginRight: 2,
+    marginBottom: 1,
+  },
+  doseicon: {
+    left: 70,
+    marginBottom: 1,
   },
   itemTouchable: {
     position: 'absolute',

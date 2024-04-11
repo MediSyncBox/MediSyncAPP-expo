@@ -25,8 +25,8 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
   const [isLoading, setIsLoading] = useState(false);
   const userId = userInfo?.id;
   const [selectedPatientId, setSelectedPatientId] = useState(userId);
-  // const [selectedPatientId, setSelectedPatientId] = useState(patientInfo[0]?.id || '');
-
+  const [startDateText, setStartDateText] = useState("Select Start Date");
+  const [endDateText, setEndDateText] = useState("Select End Date");
 
   const [visible, setVisible] = useState(false);
   const openMenu = () => setVisible(true);
@@ -43,8 +43,8 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
       <Picker
         selectedValue={selectedPatientId}
         onValueChange={(itemValue, itemIndex) => setSelectedPatientId(itemValue)}
-        style={styles.picker}
-      >
+        style={styles.picker}>
+        <Picker.Item label="Choose User" value="" />
         {patientInfo.map((patient) => (
           <Picker.Item key={patient.id} label={patient.userName} value={patient.id} />
         ))}
@@ -68,6 +68,7 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
     const currentDate = selectedDate || startDate;
     setShowStartDatePicker(false);
     setStartDate(currentDate);
+    setStartDateText(currentDate.toLocaleDateString());  // 更新按钮文本
   };
 
   // logic of end date earlier than start date
@@ -77,10 +78,11 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
     setShowEndDatePicker(false);
     if (currentDate < startDate) {
       setShowWarning(true);
+      setEndDateText("Select End Date");  // 保持原始文本如果日期选择不合适
     } else {
-      // hide warning and show date
       setShowWarning(false);
       setEndDate(currentDate);
+      setEndDateText(currentDate.toLocaleDateString());  // 更新按钮文本
     }
   };
   // for showing data
@@ -221,44 +223,8 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
           
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-          {/* <View style={styles.container}>
-      <Picker
-        selectedValue={selectedPatientId}
-        onValueChange={(itemValue, itemIndex) => setSelectedPatientId(itemValue)}
-        style={styles.picker} // 可选，如果你需要自定义样式
-      >
-        {patientInfo.map((patient) => (
-          <Picker.Item label={patient.userName} value={patient.id} key={patient.id} />
-        ))}
-      </Picker>
-    </View> */}
-              {patientInfo && patientInfo.length > 1 && renderPatientPicker()}
-              {/* <Menu
-                visible={visible}
-                onDismiss={closeMenu}
-                anchor={
-                // <Button title='Patient' onPress={openMenu}>Select Patient</Button>
-                <TouchableOpacity onPress={openMenu}>
-                  <Text>Select an Option</Text>
-                </TouchableOpacity>
-                }>
-                  
-                {patientInfo && patientInfo.map((patient) => (
-                  <Menu.Item
-                    key={patient.id}
-                    title={patient.userName}
-                    onPress={() => {
-                      setSelectedPatientId(patient.id);
-                      closeMenu();
-                    }}
-                  />
-                ))}
-              </Menu> */}
-
-            {/* {patientInfo && patientInfo.length > 1 && renderPatientPicker()} */}
-            
-
             <Text style={styles.titleText}>{'Add Schedule'}</Text>
+            {patientInfo && patientInfo.length > 1 && renderPatientPicker()}
 
             <TextInput
               style={styles.input}
@@ -287,36 +253,31 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
             {/* {renderDateInputs()} */}
 
             <View>
-              <TouchableOpacity style={styles.button} onPress={handleStartPress}>
-                <Text style={styles.textStyle}>Select Start Date</Text>
-              </TouchableOpacity>
-
-              {showStartDatePicker && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={startDate}
-                  mode="date"
-                  display="default"
-                  onChange={handleStartDateChange}
-                />
-              )}
-              <Text>Start Date: {formatDate(startDate)}</Text>
+            <TouchableOpacity style={styles.button} onPress={handleStartPress}>
+              <Text style={styles.textStyle}>{startDateText}</Text>
+            </TouchableOpacity>
+            {showStartDatePicker && (
+              <DateTimePicker
+                value={startDate}
+                mode="date"
+                display="default"
+                onChange={handleStartDateChange}
+              />
+            )}
             </View>
 
             <View>
-              <TouchableOpacity style={styles.button} onPress={handleEndPress}>
-                <Text style={styles.textStyle}>Select End Date</Text>
-              </TouchableOpacity>
-              {showEndDatePicker && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={endDate}
-                  mode="date"
-                  display="default"
-                  onChange={handleEndDateChange}
-                />
-              )}
-              <Text>End Date: {formatDate(endDate)}</Text>
+            <TouchableOpacity style={styles.button} onPress={handleEndPress}>
+              <Text style={styles.textStyle}>{endDateText}</Text>
+            </TouchableOpacity>
+            {showEndDatePicker && (
+              <DateTimePicker
+                value={endDate}
+                mode="date"
+                display="default"
+                onChange={handleEndDateChange}
+              />
+            )}
             </View>
             {/* warning of the end date */}
             {showWarning && (
@@ -363,8 +324,9 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: 100,
-    // 更多自定义样式
+    width: 200,
+    borderRadius: 25,
+    // backgroundColor: '#f0f0f0',
   },
   modalView: {
     margin: 20,

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 
-const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRefreshAgenda}) => {
+const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRefreshAgenda }) => {
   const [selectedPatient, setSelectedPatient] = useState('');
   const [selectedMedicine, setSelectedMedicine] = useState('');
   const baseUrl = 'https://medisyncconnection.azurewebsites.net/api';
@@ -30,7 +29,7 @@ const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRef
       Alert.alert('Error', 'An error occurred while trying to delete the schedule.');
     }
     closeModal();
-  };  
+  };
 
   useEffect(() => {
     if (selectedPatient) {
@@ -50,7 +49,6 @@ const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRef
       console.error('Error fetching medicines:', error);
     }
   };
-  
 
   return (
     <View style={styles.centeredView}>
@@ -72,16 +70,18 @@ const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRef
           onValueChange={(itemValue, itemIndex) => setSelectedMedicine(itemValue)}
           style={styles.picker}>
           {medicines.map((medicine) => (
-              <Picker.Item key={medicine} label={medicine} value={medicine} />
-            ))}
+            <Picker.Item key={medicine} label={medicine} value={medicine} />
+          ))}
         </Picker>
 
-        <TouchableOpacity style={[styles.button, styles.buttonClose]} onPress={handleDelete}>
-          <Text style={styles.textStyle}>Delete</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.buttonClose]} onPress={closeModal}>
-          <Text style={styles.textStyle}>Close</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={[styles.button]} onPress={handleDelete}>
+            <Text style={styles.textStyle}>Delete</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.buttonClose]} onPress={closeModal}>
+            <Text style={styles.textStyle}>Close</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -95,10 +95,10 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   modalView: {
-    margin: 20,
+    width: '80%',  // Increase the width
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
+    padding: 20,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -109,11 +109,18 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',  // Allow buttons to take full width of the modal
+  },
   button: {
     borderRadius: 20,
     padding: 10,
     elevation: 2,
-    marginTop: 10,
+    margin: 10,
+    flex: 1,  // Allow buttons to grow
+    backgroundColor: 'orange',
   },
   buttonClose: {
     backgroundColor: '#2196F3',
@@ -124,7 +131,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   picker: {
-    width: 200,
+    width: '100%',  // Increase the width
     height: 44,
     marginBottom: 20,
   },

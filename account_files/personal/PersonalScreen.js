@@ -5,7 +5,7 @@ import { Avatar, List } from 'react-native-paper';
 import ProfileEdit from './profileEdit';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 const PersonalScreen = () => {
     const { userInfo } = useAuth();
     const navigation = useNavigation();

@@ -5,7 +5,7 @@ import { Avatar, List } from 'react-native-paper';
 import ProfileEdit from './profileEdit';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 const PersonalScreen = () => {
     const { userInfo } = useAuth();
     const navigation = useNavigation();
@@ -34,22 +34,22 @@ const PersonalScreen = () => {
                 <View style={styles.userInfo}>
                     <Text style={styles.userName}>{userInfo?.userName}</Text>
                 </View>
-                <List.Icon icon="pencil" />
+                <Ionicons name="pencil-outline" size={24} color="black" />
             </TouchableOpacity>
             <List.Section style={styles.selection}>
                 <List.Item
                     title="My Medical Record"
-                    right={() => <List.Icon icon="chevron-right" />}
+                    right={() => <Ionicons name="chevron-forward-outline" size={24} color="black" />}
                     onPress={() => console.log('Edit profile')}
                 />
                 <List.Item
                     title="xxx"
-                    right={() => <List.Icon icon="chevron-right" />}
+                    right={() => <Ionicons name="chevron-forward-outline" size={24} color="black" />}
                     onPress={() => console.log('Edit profile')}
                 />
                 <List.Item
                     title="Settings"
-                    right={() => <List.Icon icon="chevron-right" />}
+                    right={() => <Ionicons name="chevron-forward-outline" size={24} color="black" />}
                     onPress={() => console.log('Edit profile')}
                 />
             </List.Section>

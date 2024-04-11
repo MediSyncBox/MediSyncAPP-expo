@@ -3,7 +3,7 @@ import { View, Text, Modal, Image, StyleSheet, TouchableOpacity, TextInput } fro
 import { Avatar, List } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import {Picker} from '@react-native-picker/picker';
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const ProfileEdit = () => {
   const [userInfo, setUserInfo] = useState({
@@ -149,21 +149,16 @@ const ProfileEdit = () => {
   };
 
 
-  const ListItemWithDescription = ({ title, description, onPress }) => (
-    <List.Item
-      title={(
-        <View style={styles.listItemRow}>
-          <Text style={styles.listItemTitle}>{title}</Text>
-          <Text style={styles.listItemDescription}>{description}</Text>
-        </View>
-      )}
-      right={() => <List.Icon icon="chevron-right" />}
-      onPress={onPress}
-      titleNumberOfLines={2}
-      style={styles.listItem}
-    />
+  const CustomListItem = ({ title, description, onPress, iconName }) => (
+    <TouchableOpacity onPress={onPress} style={styles.customListItem}>
+      <View style={styles.listItemContent}>
+        <Text style={styles.listItemTitle}>{title}</Text>
+        <Text style={styles.listItemDescription}>{description}</Text>
+      </View>
+      <Ionicons name={iconName} size={24} color="black" />
+    </TouchableOpacity>
   );
-
+  
   return (
     <View style={styles.container}>
       <List.Section style={styles.selection}>
@@ -172,12 +167,12 @@ const ProfileEdit = () => {
           description={userInfo.avatar}
           onPress={handleAvatarPress}
         /> */}
-        <ListItemWithDescription
+        <CustomListItem
           title="Your Name"
           description={userInfo.name}
           onPress={showNameModal}
         />
-        <ListItemWithDescription
+        <CustomListItem
           title="Your Gender"
           description={userInfo.gender}
           onPress={showGenderModal}

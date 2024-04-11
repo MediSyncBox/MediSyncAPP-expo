@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   submitButton: {
-    backgroundColor: '#E8DEF8',
+    backgroundColor: '#00A9CE', // NHS Blue for primary buttons
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -555,9 +555,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitButtonText: {
-    color: '#000000',
+    color: '#ffffff', // White text for legibility on NHS Blue
     fontSize: 16,
-
+    fontWeight: 'bold',
+  },
+  editButton: {
+    backgroundColor: '#00A499', // A lighter NHS Blue variant for secondary buttons
+    padding: 10,
+    borderRadius: 20,
+  },
+  editButtonText: {
+    color: '#ffffff', 
+    fontWeight: 'bold',
   },
   boxItem: {
     margin: 10,
@@ -673,14 +682,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-  editButton: {
-    backgroundColor: '#E8DEF8',
-    padding: 10,
-    borderRadius: 20,
-  },
-  editButtonText: {
-    color: '#333',
-  }
+
 });
 
 export default HomeScreen;

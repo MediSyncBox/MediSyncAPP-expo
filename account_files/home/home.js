@@ -251,9 +251,9 @@ const HomeScreen = () => {
 
       {/* 显示所选 box 的 tank 信息 */}
 
-      {selectedOption && tankDetails[selectedOption] && (
-        <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.tankList}>
-          {Object.entries(tankDetails[selectedOption]).map(([tankId, tankData]) => (
+      <ScrollView style={styles.tankDetailsScroll}>
+        {selectedOption && tankDetails[selectedOption] && (
+          Object.entries(tankDetails[selectedOption]).map(([tankId, tankData]) => (
             <View key={tankId} style={styles.tankCard}>
               <Text style={styles.tankId}>{`Tank ID: ${tankId}`}</Text>
               <View style={styles.tankInfo}>
@@ -264,18 +264,16 @@ const HomeScreen = () => {
                 <Text style={styles.pillName}>{tankData.pillName || 'No pills'}</Text>
                 <View style={styles.quantityContainer}>
                   <Text style={styles.quantityLabel}>Quantity:</Text>
-                  <Text style={styles.quantity}>{tankData.pillNumber || 'N/A'}</Text>
+                  <Text style={styles.quantity}>{tankData.pillNumber || 'No pills'}</Text>
                 </View>
                 <TouchableOpacity style={styles.editButton} onPress={showPillModal}>
                   <Text style={styles.editButtonText}>{tankData.pillName ? 'Edit' : 'Add'} Pills</Text>
                 </TouchableOpacity>
               </View>
             </View>
-          ))}
-        </ScrollView>
-      )}
-
-      )}
+          ))
+        )}
+      </ScrollView>
 
 
       {/* 选中盒子的详细信息
@@ -411,7 +409,7 @@ const HomeScreen = () => {
       <View style={styles.information}>
 
 
-        {selectedOption && temperature && (
+        {/* {selectedOption && temperature && (
           <View>
             <Text variant="headlineSmall" style={styles.headline}>Temperature</Text>
             <View style={styles.textContainer}>
@@ -445,7 +443,7 @@ const HomeScreen = () => {
         />
         <TouchableOpacity style={styles.button} onPress={showPillModal}>
           <Text style={styles.buttonText}>Add Pills</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View >
   );
@@ -453,8 +451,16 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 5
+    flex: 1,
+    backgroundColor: '#fff', // Or any other background color you prefer
   },
+  tankDetailsScroll: {
+    // If you have a tab bar or any other components, adjust the height accordingly
+    height: '80%', // Or you can use flex: 1 if it doesn't work
+  },
+  // container: {
+  //   paddingTop: 5
+  // },
   scroll: {
     paddingTop: 10
   },
@@ -599,70 +605,79 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 
-  tankDetailsContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  scrollContainer: {
+
   },
-  headline: {
+  tankList: {
+    paddingVertical: 20,
+  },
+  tankCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    padding: 20,
+    marginVertical: 10,
+    marginHorizontal: 20,
+    elevation: 3,
+    shadowRadius: 3,
+    shadowOpacity: 0.2,
+    shadowColor: '#000',
+    shadowOffset: { width: 1, height: 3 },
+  },
+  tankId: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
+    color: '#333333',
+    marginBottom: 10,
+    // marginLeft: 10, 
   },
-  tankDetail: {
+  tankInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
   },
-  detailLabel: {
+  temperature: {
+    color: '#1E90FF',
     fontSize: 16,
-    fontWeight: '500',
-    color: '#666',
   },
-  detailValueTemperature: {
+  humidity: {
+    color: '#1E90FF',
     fontSize: 16,
-    color: '#FF6347', // Use a color that stands out for temperature
   },
-  detailValueHumidity: {
-    fontSize: 16,
-    color: '#1E90FF', // Use a color that stands out for humidity
-  },
-  pillDetail: {
+  pillsInfo: {
     borderTopWidth: 1,
     borderTopColor: '#eee',
-    paddingTop: 8,
+    paddingTop: 10,
+    alignItems: 'center', // Center align for the Add Pills button
   },
   pillName: {
-    fontSize: 16,
-    color: '#4CAF50', // Make pill name stand out with a different color
     fontWeight: 'bold',
+    fontSize: 16,
+    color: '#4CAF50',
     marginBottom: 4,
   },
-  pillEditButton: {
-    backgroundColor: '#E8DEF8',
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    alignSelf: 'flex-start',
-    marginTop: 4,
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center', // Center align for quantity
+    marginBottom: 10,
   },
-  pillEditText: {
+  quantityLabel: {
+    fontSize: 16,
+    color: '#666',
+    marginRight: 4,
+  },
+  quantity: {
+    fontSize: 16,
     color: '#333',
-    fontSize: 14,
   },
-
+  editButton: {
+    backgroundColor: '#E8DEF8',
+    padding: 10,
+    borderRadius: 20,
+  },
+  editButtonText: {
+    color: '#333',
+  }
 });
 
 export default HomeScreen;

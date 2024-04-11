@@ -142,7 +142,7 @@ const AgendaScreen = (props) => {
   // console.warn(currentPatient.length !== 1)
 
   return (
-    <View style={{ paddingTop: 25, flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
       <Agenda
         key={agendaKey}

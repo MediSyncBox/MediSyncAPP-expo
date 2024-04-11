@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   };
   return (
     <AuthContext.Provider value={{ isLoggedIn, userInfo, patientInfo, setPatientInfo, 
-      currentPatient, setCurrentPatient, login, logout, updateTankDetails}}>
+      currentPatient, setCurrentPatient, login, logout, updateTankDetails, tankDetails}}>
       {children}
     </AuthContext.Provider>
   );

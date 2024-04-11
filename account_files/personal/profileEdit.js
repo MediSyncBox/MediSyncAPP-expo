@@ -108,7 +108,7 @@ const ProfileEdit = () => {
 
   const renderGenderModal = () => {
     const [newGender, setNewGender] = useState(userInfo.gender);
-
+  
     return (
       <Modal
         animationType="slide"
@@ -118,10 +118,12 @@ const ProfileEdit = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            {/* 这里为 Picker 设置了明确的样式，以确保它在屏幕上可见 */}
             <Picker
               selectedValue={newGender}
               onValueChange={(itemValue, itemIndex) => setNewGender(itemValue)}
-              style={styles.pickerStyle}
+              style={{ width: '100%', height: 150 }} // 指定宽度和高度
+              itemStyle={{ height: 150 }} // 指定每个选项的高度
             >
               <Picker.Item label="Female" value="Female" />
               <Picker.Item label="Male" value="Male" />
@@ -141,7 +143,6 @@ const ProfileEdit = () => {
       </Modal>
     );
   };
-
 
 
   const handleAvatarPress = () => {

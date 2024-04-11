@@ -1,30 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {Picker} from '@react-native-picker/picker';
 import axios from 'axios';
 
 const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRefreshAgenda}) => {
-  const [selectedPatient, setSelectedPatient] = useState(currentPatient.length === 1 ? currentPatient[0].id : '');
+  const [selectedPatient, setSelectedPatient] = useState('');
   const [selectedMedicine, setSelectedMedicine] = useState('');
   const baseUrl = 'https://medisyncconnection.azurewebsites.net/api';
   const [medicines, setMedicines] = useState([]);
 
   const handleDelete = async () => {
+    if (!selectedPatient) {
+      Alert.alert('No patient selected', 'Please select a patient before deleting the schedule.');
+      return;
+    }
     try {
       const response = await axios.delete(`${baseUrl}/batchDelete/${selectedPatient}/${selectedMedicine}`);
       if (response.status === 200) {
         console.log('Medicine deleted successfully:', selectedMedicine);
-        setShouldRefreshAgenda(true); // 刷新Agenda视图
+        setShouldRefreshAgenda(true); // Refresh Agenda view
+        Alert.alert('Success', 'The schedule has been deleted successfully.');
       } else {
         console.log('Failed to delete medicine:', response.data);
-        // 可以添加一个弹出提示用户删除失败
+        Alert.alert('Deletion Failed', 'Failed to delete the schedule.');
       }
     } catch (error) {
       console.error('Error deleting medicine:', error);
-      // 可以添加一个弹出提示用户删除时遇到错误
+      Alert.alert('Error', 'An error occurred while trying to delete the schedule.');
     }
-    closeModal(); // 关闭模态框
+    closeModal();
   };  
 
   useEffect(() => {
@@ -38,7 +43,6 @@ const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRef
       const response = await axios.get(`${baseUrl}/getMedicines/${selectedPatient}`);
       const medi = response.data;
       setMedicines(medi);
-      console.warn(medi)
       if (medi.length > 0) {
         setSelectedMedicine(medi[0]);
       }
@@ -47,7 +51,6 @@ const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRef
     }
   };
   
-  // console.warn(items)
 
   return (
     <View style={styles.centeredView}>
@@ -57,6 +60,7 @@ const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRef
             selectedValue={selectedPatient}
             onValueChange={(itemValue, itemIndex) => setSelectedPatient(itemValue)}
             style={styles.picker}>
+            <Picker.Item label="Who's schedule you want to delete?" value="" />
             {currentPatient.map((patient) => (
               <Picker.Item key={patient.id} label={patient.userName} value={patient.id} />
             ))}

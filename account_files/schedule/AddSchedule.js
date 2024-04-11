@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button} from 'react-native';
+import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button, Alert} from 'react-native';
 import { Menu, Portal } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../AuthContext';
@@ -148,17 +148,19 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
 
   
   // manage form submit
-  console.warn(selectedPatientId)
   const handleSubmit = async () => {
     setIsLoading(true); 
     const scheduleEntries = [];
     const start = new Date(startDate);
     const end = new Date(endDate);
     
-
     for (let day = start; day <= end; day.setDate(day.getDate() + 1)) {
       doseTimes.forEach(time => {
         // Here you extract the hours and minutes from each doseTime and set them on the current day
+        if (!time) {
+          Alert.alert('No time selected', 'Please select a time before adding the schedule.');
+          return;
+        }
         const entryTime = new Date(day);
         entryTime.setHours(time.getHours());
         entryTime.setMinutes(time.getMinutes());

@@ -48,7 +48,10 @@ const AgendaScreen = (props) => {
       setAgendaKey(prevKey => prevKey + 1);
       // setShouldRefreshAgenda(false);
     }
-  }, [shouldRefreshAgenda, isInDeleteMode]);
+    if (selectedItemsForDeletion) {
+      setAgendaKey(prevKey => prevKey + 1);
+    }
+  }, [shouldRefreshAgenda, isInDeleteMode, selectedItemsForDeletion]);
 
   const loadItemsForMonth = async (fromDate) => {
     // keep fetching schedules
@@ -58,7 +61,6 @@ const AgendaScreen = (props) => {
         return;
       }
       const user_ids = Array.isArray(currentPatient) ? currentPatient.map(p => p.id) : [currentPatient.id];
-      // console.warn(currentPatient)
       await loadItemsApi(user_ids, items, setItems, fromDate);
     } catch (error) {
       console.error('Failed to load items: ', error);
@@ -111,7 +113,6 @@ const AgendaScreen = (props) => {
     // const isSelectedChanged = selectedItemsForDeletion.includes(r1.id) !== selectedItemsForDeletion.includes(r2.id);
     const isSelectedChanged = (selectedItemsForDeletion.includes(r1.id) && !selectedItemsForDeletion.includes(r2.id)) ||
                             (!selectedItemsForDeletion.includes(r1.id) && selectedItemsForDeletion.includes(r2.id));
-    // console.warn(isInDeleteMode)
     // 如果任一条件为真，则需要重新渲染
     return isDifferent || isSelectedChanged;
   };
@@ -121,11 +122,11 @@ const AgendaScreen = (props) => {
     return date.toISOString().split('T')[0];
   };
 
-
+  console.warn(selectedItemsForDeletion)
   const renderItem = (reservation) => {
+    console.warn(reservation.id)
     const scheduleDateTime = new Date(reservation.time);
     const isSelected = selectedItemsForDeletion.includes(reservation.id);
-    console.warn(reservation.name)
 
     const handlePressItem = () => {
       if (isInDeleteMode) {
@@ -135,15 +136,18 @@ const AgendaScreen = (props) => {
           } else {
             return [...currentSelectedItems, reservation.id];
           }
+          
         });
       } else {
         setSelectedItem(reservation);
         setEditModalVisible(true);
       }
+      
     };
+    
     return (
       <TouchableOpacity onPress={handlePressItem} style={[
-        styles.item,
+        // styles.item,
         isSelected && isInDeleteMode ? styles.selectedItem : {},
       ]}>
         <View style={styles.item}>
@@ -230,7 +234,6 @@ const AgendaScreen = (props) => {
     );
   };
 
-  console.warn(selectedItemsForDeletion)
   return (
     <View style={{ flex: 1 }}>
       <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
@@ -240,7 +243,7 @@ const AgendaScreen = (props) => {
         loadItemsForMonth={loadItemsForMonth}
         renderItem={renderItem}
         renderEmptyDate={renderEmptyDate}
-        rowHasChanged={rowHasChanged}
+        // rowHasChanged={rowHasChanged}
         // onDayPress={({dateString}) => loadItemsForMonth(dateString)}
         onDayPress={({dateString}) => loadFromDate(dateString)}
         showClosingKnob={true}

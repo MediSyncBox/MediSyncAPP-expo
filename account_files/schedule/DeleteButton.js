@@ -1,51 +1,52 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import React, {useState} from 'react';
+import {Alert, Modal, StyleSheet, Text, Pressable, View, TouchableOpacity} from 'react-native';
+import DeleteModal from './DeleteModal';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-const DeleteModeButton = ({ isInDeleteMode, setIsInDeleteMode, handleDeleteSelectedItems }) => {
+export default function DeleteButton({items, setItems, currentPatient, setShouldRefreshAgenda}) {
+  const [modalVisible, setModalVisible] = useState(false);
+
   return (
-    <View style={styles.deleteButtonContainer}>
-      <TouchableOpacity
-        onPress={() => {
-          if (isInDeleteMode) {
-            handleDeleteSelectedItems(); // 调用函数来处理选中项的删除
-          }
-          setIsInDeleteMode(!isInDeleteMode); // 切换删除模式
-        }}
-        style={styles.deleteButton}
-      >
-        <Ionicons
-          name={isInDeleteMode ? 'trash-bin' : 'trash-outline'}
-          size={24}
-          color="white"
-        />
-        <Text style={styles.deleteButtonText}>
-          {isInDeleteMode ? 'Delete' : 'Edit'}
-        </Text>
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.button}>
+        <Ionicons name="trash-bin" size={24} color="white" />
       </TouchableOpacity>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <DeleteModal closeModal={() => setModalVisible(false)} items={items} setItems={setItems} 
+        currentPatient={currentPatient} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
+      </Modal>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  deleteButtonContainer: {
-    position: 'absolute',
-    left: 10,
-    bottom: 10,
-    zIndex: 1,
+  container: {
+    // position: 'absolute',
+    // bottom: 10,
+    // left: 10,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  deleteButton: {
-    backgroundColor: 'red',
-    borderRadius: 25,
-    padding: 10,
-    flexDirection: 'row',
+  button: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  deleteButtonText: {
-    color: 'white',
-    marginLeft: 5,
+    // width: 40,
+    // bottom: 40,
+    backgroundColor: 'red',
+    borderRadius: 25,
+    // left: 40, 
+    // height: 40, 
+    width: 40, 
+    bottom: 40, 
+    right: 140, 
+    height: 40, 
   },
 });
-
-export default DeleteModeButton;

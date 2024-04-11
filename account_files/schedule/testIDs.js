@@ -57,7 +57,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import CustomAppbar from './Appbar';
 import {loadItemsApi} from '../api/schedule';
 import { useAuth } from '../AuthContext';
-import DeleteModeButton from './DeleteButton';
+// import DeleteModeButton from './DeleteButton';
 
 const AgendaScreen = (props) => {
   const [items, setItems] = useState({});

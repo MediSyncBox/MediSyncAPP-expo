@@ -6,7 +6,7 @@ import { useAuth } from './account_files/AuthContext';
 import PersonalScreen from './account_files/personal/PersonalScreen';
 import ScheduleScreen from './account_files/schedule/ScheduleScreen';
 import HomeScreen from './account_files/home/home';
-import LoginRegisterScreen from './account_files/personal/LoginScreen'; 
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const MainScreen = () => {
   const { isLoggedIn } = useAuth();
@@ -14,35 +14,34 @@ const MainScreen = () => {
   const [index, setIndex] = React.useState(0);
 
   const [routes] = React.useState([
-    { key: 'schedule', title: 'Schedule', focusedIcon: 'bell', unfocusedIcon: 'bell-outline' },
-    { key: 'home', title: 'Home', focusedIcon: 'home', unfocusedIcon: 'home-outline' },
-    { key: 'personal', title: 'Personal', focusedIcon: 'account', unfocusedIcon: 'account-outline' },
+    { key: 'schedule', title: 'Schedule', icon: 'calendar' },
+    { key: 'home', title: 'Home', icon: 'cube' },
+    { key: 'personal', title: 'Personal', icon: 'person' },
   ]);
 
-  const renderScene = ({ route, jumpTo }) => {
-    switch (route.key) {
-      case 'home':
-        return <HomeScreen />;
-      case 'schedule':
-        return <ScheduleScreen />;
-        case 'personal':
-          return <PersonalScreen />;
-      default:
-        return null;
-    }
-  };
+  const renderScene = BottomNavigation.SceneMap({
+    home: HomeScreen,
+    schedule: ScheduleScreen,
+    personal: PersonalScreen,
+  });
+
+  const renderIcon = ({ route, focused, color }) => (
+    <Ionicons
+      name={focused ? route.icon : `${route.icon}-outline`}
+      size={24}
+      color={color}
+    />
+  );
 
   return (
     <SafeAreaProvider>
       <BottomNavigation
         navigationState={{ index, routes }}
         onIndexChange={(newIndex) => {
-          // if (routes[newIndex].key === 'personal' && !isLoggedIn) {
-          //   navigation.navigate('LoginRegister');
-          // }
           setIndex(newIndex);
         }}
         renderScene={renderScene}
+        renderIcon={renderIcon}
       />
     </SafeAreaProvider>
   );

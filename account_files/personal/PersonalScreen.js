@@ -19,7 +19,8 @@ const PersonalScreen = () => {
                 activeOpacity={1} >
                 <Avatar.Image
                     size={80}
-                    source={require('../img/account-box-plus-outline.png')}
+                    source={require('../img/avatar.png')}
+                    style={{ backgroundColor: 'transparent' }}
                 />
                 <View style={styles.userInfo}>
                     <Text style={styles.userName}>{userInfo?.userName}</Text>

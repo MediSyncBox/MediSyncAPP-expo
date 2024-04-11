@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity, StyleSheet, Switch, Dimensions } from 'react-native';
 import { Text, Appbar } from 'react-native-paper';
 import { useAuth } from '../AuthContext';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const HomeScreen = () => {
   const { userInfo, tankDetails, updateTankDetails } = useAuth();
@@ -227,7 +228,9 @@ const HomeScreen = () => {
     <View style={styles.container}>
       <Appbar.Header>
         <Appbar.Content title="Your Medical Boxes" />
-        <Appbar.Action icon="plus-box-outline" onPress={showModal} />
+        <TouchableOpacity onPress={showModal} style={{ marginRight: 10 }}>
+          <Ionicons name="add-circle-outline" size={30} color="black" />
+        </TouchableOpacity>
       </Appbar.Header>
 
       <FlatList

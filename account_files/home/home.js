@@ -250,34 +250,33 @@ const HomeScreen = () => {
 
 
       {/* 显示所选 box 的 tank 信息 */}
+
       {selectedOption && tankDetails[selectedOption] && (
-        <View style={styles.tankDetailsContainer}>
+        <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.tankList}>
           {Object.entries(tankDetails[selectedOption]).map(([tankId, tankData]) => (
-            <React.Fragment key={tankId}>
-              <View style={styles.tankDetail}>
-                <Text style={styles.detailLabel}>Tank ID: {tankId}</Text>
-                <Text style={styles.detailLabel}>Temperature:</Text>
-                <Text style={styles.detailValue}>{tankData.temperature}°C</Text>
-                <Text style={styles.detailLabel}>Humidity:</Text>
-                <Text style={styles.detailValue}>{tankData.humidity}%</Text>
+            <View key={tankId} style={styles.tankCard}>
+              <Text style={styles.tankId}>{`Tank ID: ${tankId}`}</Text>
+              <View style={styles.tankInfo}>
+                <Text style={styles.temperature}>{`${tankData.temperature}°C`}</Text>
+                <Text style={styles.humidity}>{`${tankData.humidity}%`}</Text>
               </View>
-              <View style={styles.pillDetail}>
-                {/* 显示药丸信息 */}
-                <Text style={styles.detailLabel}>Pills:</Text>
-                <Text style={styles.detailValue}>{tankData.pillName || 'No pills'}</Text>
-                <Text style={styles.detailValue}>Quantity: {tankData.pillNumber || 'N/A'}</Text>
-                {/* 添加或编辑药丸的按钮 */}
-                <TouchableOpacity
-                  style={styles.pillEditButton}
-                  onPress={showPillModal}
-                >
-                  <Text style={styles.pillEditText}>{tankData.pillName ? 'Edit' : 'Add'} Pills</Text>
+              <View style={styles.pillsInfo}>
+                <Text style={styles.pillName}>{tankData.pillName || 'No pills'}</Text>
+                <View style={styles.quantityContainer}>
+                  <Text style={styles.quantityLabel}>Quantity:</Text>
+                  <Text style={styles.quantity}>{tankData.pillNumber || 'N/A'}</Text>
+                </View>
+                <TouchableOpacity style={styles.editButton} onPress={showPillModal}>
+                  <Text style={styles.editButtonText}>{tankData.pillName ? 'Edit' : 'Add'} Pills</Text>
                 </TouchableOpacity>
               </View>
-            </React.Fragment>
+            </View>
           ))}
-        </View>
+        </ScrollView>
       )}
+
+      )}
+
 
       {/* 选中盒子的详细信息
       {selectedOption && tanksDetails.map((tank, index) => (
@@ -374,7 +373,7 @@ const HomeScreen = () => {
               <Text style={styles.textLabel}>Place of Pills:</Text>
               <TextInput
                 style={styles.textInput}
-                placeholder="Enter the tank number (1, 2, or 3)"
+                placeholder="Enter tank number (0, 1, or 2)"
                 value={pillTank}
                 onChangeText={setpillTank}
               />
@@ -491,7 +490,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   headline: {
-    marginLeft: 10,
+    marginLeft: 50,
   },
   centeredView: {
     flex: 1,
@@ -599,33 +598,71 @@ const styles = StyleSheet.create({
   placeholder: {
     marginTop: 20,
   },
+
   tankDetailsContainer: {
-    padding: 20,
-    marginVertical: 10,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#E8DEF8',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  headline: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
   },
   tankDetail: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 5,
-    width: '100%',
+    marginBottom: 8,
   },
   detailLabel: {
     fontSize: 16,
-    color: '#000',
-    padding: 5,
+    fontWeight: '500',
+    color: '#666',
   },
-  detailValue: {
+  detailValueTemperature: {
     fontSize: 16,
-    color: '#333',
-    padding: 5,
+    color: '#FF6347', // Use a color that stands out for temperature
   },
+  detailValueHumidity: {
+    fontSize: 16,
+    color: '#1E90FF', // Use a color that stands out for humidity
+  },
+  pillDetail: {
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    paddingTop: 8,
+  },
+  pillName: {
+    fontSize: 16,
+    color: '#4CAF50', // Make pill name stand out with a different color
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  pillEditButton: {
+    backgroundColor: '#E8DEF8',
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+  },
+  pillEditText: {
+    color: '#333',
+    fontSize: 14,
+  },
+
 });
 
 export default HomeScreen;

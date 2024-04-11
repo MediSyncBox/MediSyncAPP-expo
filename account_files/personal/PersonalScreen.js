@@ -13,16 +13,6 @@ const PersonalScreen = () => {
     console.log(userInfo); 
     return (
         <View style={styles.container}>
-            {/* <List.Section style={styles.selection}>
-                {boxes.map((box, index) => (
-                    <List.Item
-                        key={index}
-                        title={box.patient_id} 
-                        right={() => <List.Icon icon="chevron-right" />}
-                        onPress={() => console.log('Box selected', box)}
-                    />
-                ))}
-            </List.Section> */}
             <TouchableOpacity
                 style={styles.header}
                 onPress={() => navigation.navigate('ProfileEdit')}
@@ -35,23 +25,17 @@ const PersonalScreen = () => {
                 <View style={styles.userInfo}>
                     <Text style={styles.userName}>{userInfo?.userName}</Text>
                 </View>
-                <Ionicons name="pencil-outline" size={24} color="black" />
             </TouchableOpacity>
             <List.Section style={styles.selection}>
                 <List.Item
-                    title="My Medical Record"
-                    right={() => <Ionicons name="chevron-forward-outline" size={24} color="black" />}
-                    onPress={() => console.log('Edit profile')}
+                    title={'Email/Phone: ' + userInfo?.emailorPhone}
                 />
                 <List.Item
-                    title="xxx"
-                    right={() => <Ionicons name="chevron-forward-outline" size={24} color="black" />}
-                    onPress={() => console.log('Edit profile')}
+                    title={'ID: ' + userInfo?.id}
                 />
                 <List.Item
-                    title="Settings"
-                    right={() => <Ionicons name="chevron-forward-outline" size={24} color="black" />}
-                    onPress={() => console.log('Edit profile')}
+                    title="Check patient"
+                    onPress={() => navigation.navigate('CheckPatient')}
                 />
             </List.Section>
         </View>

@@ -3,9 +3,10 @@ import { ScrollView, View, Text, TextInput, Button, StyleSheet, Alert } from 're
 // import PersonalScreen from './PersonalScreen';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
+import {fetchPatientInfo} from '../api/patient';
 
 const LoginScreen = () => {
-  const { login } = useAuth();
+  const { login, setPatientInfo } = useAuth();
   const [emailorPhone, setEmailorPhone] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
@@ -26,6 +27,7 @@ const LoginScreen = () => {
       // Check if the response header indicates JSON content
       const contentType = response.headers.get('content-type');
       if (response.ok) {
+        
         if (contentType && contentType.includes('application/json')) {
           const json = await response.json(); // Safely parse the JSON
           const userInfo = await fetchUserInfo(json.token);
@@ -36,6 +38,7 @@ const LoginScreen = () => {
         } else {
           throw new Error('Expected JSON response, but received a different format');
         }
+        // await fetchPatientInfo(userInfo.id, setPatientInfo);
       } else {
         // Handle non-200 responses
         if (contentType && contentType.includes('application/json')) {

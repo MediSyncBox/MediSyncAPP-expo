@@ -8,8 +8,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import CustomAppbar from './Appbar';
 import {loadItemsApi} from '../api/schedule';
 import { useAuth } from '../AuthContext';
-// import { DeleteButton } from './DeleteButton';
-import DeleteButton from './DeleteButton';
+// import DeleteModeButton from './DeleteButton';
 
 const AgendaScreen = (props) => {
   const [items, setItems] = useState({});
@@ -20,10 +19,9 @@ const AgendaScreen = (props) => {
   const { user_id } = props;
   const { currentPatient, setCurrentPatient } = useAuth();
 
-  const isEmptyItems = () => {
-    if (!items) return true;
-    return Object.keys(items).every(key => items[key].length === 0);
-  };
+  // for delete
+  const [isInDeleteMode, setIsInDeleteMode] = useState(false);
+  const [selectedItemsForDeletion, setSelectedItemsForDeletion] = useState([]);
 
   // useEffect(() => {
   //   if (user_id) {
@@ -33,6 +31,7 @@ const AgendaScreen = (props) => {
   //   }
   // }, [user_id]);
 
+  // loading and refresh schedules
   useEffect(() => {
     if (shouldRefreshAgenda) {
       // i don't like that, i think it makes low efficiency but i don't know how to fix that
@@ -42,32 +41,24 @@ const AgendaScreen = (props) => {
       setAgendaKey(prevKey => prevKey + 1);
       setShouldRefreshAgenda(false);
     }
-  }, [shouldRefreshAgenda]);
+  }, [shouldRefreshAgenda, selectedItemsForDeletion]);
 
   const loadItemsForMonth = async (fromDate) => {
-    // setItems({});
+    // keep fetching schedules
     try {
-      // 根据currentPatient是否为数组，获取所有用户ID
       if (currentPatient === null) {
         console.log("No current patient selected.");
-        return; // 提前返回，避免执行API调用
+        return;
       }
       const user_ids = Array.isArray(currentPatient) ? currentPatient.map(p => p.id) : [currentPatient.id];
       // console.warn(currentPatient)
       await loadItemsApi(user_ids, items, setItems, fromDate);
-      // 可选：在这里执行后续逻辑，例如设置刷新标志
     } catch (error) {
       console.error('Failed to load items: ', error);
     }
   };
-
-  const loadFromDate = async (fromDate) => {
-    // setShouldRefreshAgenda(true);
-    setItems({});
-    loadItemsForMonth(fromDate);
-  };
   
-
+  // update taken by toggle
   const handleTakenToggle = async (reservation) => {
     const updatedReservation = { ...reservation, taken: !reservation.taken };
     setItems(prevItems => ({
@@ -86,41 +77,16 @@ const AgendaScreen = (props) => {
     setShouldRefreshAgenda(true);
   };
 
-  const renderItem = (reservation) => {
-    // console.warn(reservation)
-    // console.warn(agendaKey)
-    const scheduleDateTime = new Date(reservation.time);
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          setSelectedItem(reservation);
-          setEditModalVisible(true);
-        }}
-      >
-        <View style={styles.item}>
-          <TouchableOpacity
-            style={[styles.itemTouchable, { backgroundColor: 'white' }]}
-            onPress={() => handleTakenToggle(reservation)}
-          >
-            <Ionicons
-              name="checkmark-circle"
-              size={24}
-              color={reservation.taken ? "rgb(255, 92, 38)" : "rgb(128, 128, 128)"}
-              style={styles.tickIcon}
-            />
-          </TouchableOpacity>
-          <View style={styles.itemHeader}>
-            <Ionicons name="alert-circle" size={24} color="#43515c" style={styles.icon} />
-            <Text style={[styles.itemText, { fontSize: 18 }]}>Medicine: {reservation.name}</Text>
-          </View>
-          <View style={styles.itemFooter}>
-            <Ionicons name="time" size={20} color="#43515c" style={styles.icon} />
-            <Text style={styles.itemText}>Time: {scheduleDateTime.toLocaleTimeString()}</Text>
-            <Text style={[styles.itemText, { marginLeft: 'auto' }]}>Dose: {reservation.dose || 'No dose info'} pills</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
+  // Agenda parameters
+  const loadFromDate = async (fromDate) => {
+    // setShouldRefreshAgenda(true);
+    setItems({});
+    loadItemsForMonth(fromDate);
+  };
+
+  const isEmptyItems = () => {
+    if (!items) return true;
+    return Object.keys(items).every(key => items[key].length === 0);
   };
 
   const renderEmptyDate = () => {
@@ -139,10 +105,119 @@ const AgendaScreen = (props) => {
     const date = new Date(time);
     return date.toISOString().split('T')[0];
   };
-  // console.warn(currentPatient.length !== 1)
+
+
+  const renderItem = (reservation) => {
+    const scheduleDateTime = new Date(reservation.time);
+    const isSelected = selectedItemsForDeletion.includes(reservation.id);
+    console.warn(isInDeleteMode)
+
+    const handlePressItem = () => {
+      if (isInDeleteMode) {
+        setSelectedItemsForDeletion((currentSelectedItems) => {
+          if (isSelected) {
+            return currentSelectedItems.filter((id) => id !== reservation.id);
+          } else {
+            return [...currentSelectedItems, reservation.id];
+          }
+        });
+      } else {
+        setSelectedItem(reservation);
+        setEditModalVisible(true);
+      }
+    };
+    return (
+      <TouchableOpacity onPress={handlePressItem} style={[
+        styles.item,
+        isSelected && isInDeleteMode ? styles.selectedItem : {},
+      ]}>
+        <View style={styles.item}>
+          <TouchableOpacity
+            style={[styles.itemTouchable, { backgroundColor: 'white' }]}
+            onPress={() => handleTakenToggle(reservation)}
+          >
+            <Ionicons
+              name="checkmark-circle"
+              size={24}
+              color={reservation.taken ? "rgb(255, 92, 38)" : "rgb(128, 128, 128)"}
+              style={styles.tickIcon}
+            />
+          </TouchableOpacity>
+          <View style={styles.itemHeader}>
+            {/* <Ionicons name="alert-circle" size={24} color="#43515c" style={styles.icon} /> */}
+            <Text style={[styles.itemText, { fontSize: 18 }]}>{reservation.name}</Text>
+          </View>
+          <View style={styles.itemFooter}>
+            <Ionicons name="time" size={18} color="#43515c" style={styles.icon} />
+            <Text style={styles.itemText}>{scheduleDateTime.toLocaleTimeString()}</Text>
+            <Ionicons name="water" size={18} color="#43515c" style={[styles.icon, { marginLeft: 55 }]} />
+            <Text style={[styles.itemText, ]}>{reservation.dose || 'No dose info'} pill</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  // delete logic
+  const handleDeleteSelectedItems = async () => {
+    if (selectedItemsForDeletion.length === 0) {
+      Alert.alert("No items selected", "Please select items to delete.");
+      return;
+    }
+  
+    // 确认删除对话框
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete the selected items?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              // 假设你有一个后端的删除API接受一个包含要删除日程id的数组
+              const response = await axios.post('YOUR_BACKEND_API/delete', {
+                ids: selectedItemsForDeletion
+              });
+  
+              // 检查后端返回的响应，这里假设如果成功，后端会返回一个success状态
+              if (response.data.success) {
+                // 从UI中移除被选中的日程
+                const newItems = { ...items };
+                selectedItemsForDeletion.forEach((id) => {
+                  Object.keys(newItems).forEach((date) => {
+                    newItems[date] = newItems[date].filter((item) => item.id !== id);
+                  });
+                });
+                setItems(newItems);
+  
+                // 如果需要，可以在这里添加其他UI更新逻辑
+                Alert.alert("Deleted", "The selected items have been deleted.");
+              } else {
+                // 处理错误情况
+                Alert.alert("Error", "Could not delete the selected items.");
+              }
+            } catch (error) {
+              console.error('Error deleting items: ', error);
+              Alert.alert("Error", "An error occurred while deleting the items.");
+            }
+  
+            // 重置删除模式和选中的项目
+            setIsInDeleteMode(false);
+            setSelectedItemsForDeletion([]);
+          }
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+  
 
   return (
-    <View style={{ paddingTop: 25, flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
       <Agenda
         key={agendaKey}
@@ -163,10 +238,11 @@ const AgendaScreen = (props) => {
         <PlusButton items={items} setItems={setItems} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
       </View>
 
-      <View>
-        <DeleteButton items={items} setItems={setItems} 
-        currentPatient={currentPatient} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
-      </View>
+      <DeleteModeButton
+        isInDeleteMode={isInDeleteMode}
+        setIsInDeleteMode={setIsInDeleteMode}
+        handleDeleteSelectedItems={handleDeleteSelectedItems}
+      />
 
       <EditSchedule
         modalVisible={editModalVisible}
@@ -254,3 +330,4 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 })
+

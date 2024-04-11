@@ -11,12 +11,21 @@ const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRef
   const [medicines, setMedicines] = useState([]);
 
   const handleDelete = async () => {
-    // 伪代码：替换为你的API调用逻辑
-    // await deleteMedicineAPI(selectedMedicine);
-    console.log('Deleting medicine with ID:', selectedMedicine);
-    setShouldRefreshAgenda(true); // 刷新Agenda视图
+    try {
+      const response = await axios.delete(`${baseUrl}/batchDelete/${selectedPatient}/${selectedMedicine}`);
+      if (response.status === 200) {
+        console.log('Medicine deleted successfully:', selectedMedicine);
+        setShouldRefreshAgenda(true); // 刷新Agenda视图
+      } else {
+        console.log('Failed to delete medicine:', response.data);
+        // 可以添加一个弹出提示用户删除失败
+      }
+    } catch (error) {
+      console.error('Error deleting medicine:', error);
+      // 可以添加一个弹出提示用户删除时遇到错误
+    }
     closeModal(); // 关闭模态框
-  };
+  };  
 
   useEffect(() => {
     if (selectedPatient) {

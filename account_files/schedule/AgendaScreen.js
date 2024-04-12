@@ -22,6 +22,11 @@ const AgendaScreen = (props) => {
   const { user_id } = props;
   const { currentPatient, setCurrentPatient } = useAuth();
 
+  const colors = [
+    '#FFADAD', '#FFD6A5', '#584c3b', '#a9d0a1', '#237fbc', // pink, light brown, dark brown, green, blue
+    '#A0C4FF', '#BDB2FF', '#FFC6FF', '#800000', '#BDB76B' // pueple blue, violet, bright pink, brick red, tellow green
+  ];
+
   const isEmptyItems = () => {
     if (!items) return true;
     return Object.keys(items).every(key => items[key].length === 0);
@@ -88,10 +93,32 @@ const AgendaScreen = (props) => {
     setShouldRefreshAgenda(true);
   };
 
+  const getColorForUserId = (userId) => {
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    hash = Math.abs(hash);
+    return colors[hash % colors.length];
+  };  
+
+  const getInitials = (name) => {
+    const parts = name.split(' ');
+    if (parts.length > 1) {
+      return parts.map(part => part[0].toUpperCase()).join('');  // 多个词的每个词的首字母
+    }
+    return parts[0].charAt(0).toUpperCase();  // 单词的首字母
+  };
+
   const renderItem = (reservation) => {
-    // console.warn(reservation)
-    // console.warn(agendaKey)
     const scheduleDateTime = new Date(reservation.time);
+    // const patient = currentPatient && currentPatient.find(p => p.id === reservation.user);
+    const patient = Array.isArray(currentPatient) ? currentPatient.find(p => p.id === reservation.user) : null;
+    const userName = patient && patient.userName ? patient.userName : '';
+    // const initial = patient && patient.userName ? patient.userName.charAt(0).toUpperCase() : '?';
+    const initials = getInitials(userName);
+    const initialColor = getColorForUserId(userName);
+    
     return (
     //   <LinearGradient
     //   colors={['#c6dcee', '#ffffff']}
@@ -99,35 +126,40 @@ const AgendaScreen = (props) => {
     //   end={{ x: 1, y: 1 }}
     //   style={{ borderRadius: 5, padding: 10, marginVertical: 5 }}
     // >
-      <TouchableOpacity
-        onPress={() => {
-          setSelectedItem(reservation);
-          setEditModalVisible(true);
-        }}
-      >
-        <View style={styles.item} >
-          <TouchableOpacity
-            style={[styles.itemTouchable, { backgroundColor: 'white' }]}
-            onPress={() => handleTakenToggle(reservation)}
-          >
-            <Ionicons
-              name="checkmark-circle"
-              size={24}
-              color={reservation.taken ? "rgb(255, 92, 38)" : "rgb(128, 128, 128)"}
-              style={styles.tickIcon}
-            />
-          </TouchableOpacity>
-          <View style={styles.itemHeader}>
-            <Text style={[styles.timeText, { fontSize: 18 }]}>{reservation.name}</Text>
-          </View>
-          <View style={styles.itemFooter}>
-            <Ionicons name="time" size={18} color="#43515c" style={styles.icon} />
-            <Text style={styles.timeText}>{scheduleDateTime.toLocaleTimeString()}</Text>
-            <Ionicons name="water" size={18} color="#43515c" style={styles.doseicon} />
-            <Text style={styles.doseText}>Dose: {reservation.dose || 'No dose info'}</Text>
-          </View>
+    <TouchableOpacity
+      onPress={() => {
+        setSelectedItem(reservation);
+        setEditModalVisible(true);
+      }}
+    >
+      <View style={styles.item} >
+        {userName !== '' && (
+            <View style={[styles.initialCircle, { backgroundColor: initialColor }]}>
+              <Text style={styles.initialText}>{initials}</Text>
+            </View>
+          )}
+        <TouchableOpacity
+          style={[styles.itemTouchable, { backgroundColor: 'white' }]}
+          onPress={() => handleTakenToggle(reservation)}
+        >
+          <Ionicons
+            name="checkmark-circle"
+            size={24}
+            color={reservation.taken ? "rgb(255, 92, 38)" : "rgb(128, 128, 128)"}
+            style={styles.tickIcon}
+          />
+        </TouchableOpacity>
+        <View style={styles.itemHeader}>
+          <Text style={[styles.timeText, { fontSize: 18 }]}>{reservation.name}</Text>
         </View>
-      </TouchableOpacity>
+        <View style={styles.itemFooter}>
+          <Ionicons name="time" size={18} color="#43515c" style={styles.icon} />
+          <Text style={styles.timeText}>{scheduleDateTime.toLocaleTimeString()}</Text>
+          <Ionicons name="water" size={18} color="#43515c" style={styles.doseicon} />
+          <Text style={styles.doseText}>Dose: {reservation.dose || 'No dose info'}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
       // </LinearGradient>
     );
   };
@@ -207,6 +239,22 @@ const styles = StyleSheet.create({
     height: 15,
     flex: 1,
     paddingTop: 30
+  },
+  initialCircle: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#007AFF', // 蓝色背景
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    zIndex: 2,
+  },
+  initialText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   customDay: {
     margin: 10,

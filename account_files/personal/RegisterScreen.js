@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { ScrollView, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 
@@ -23,7 +23,7 @@ const RegistrationScreen = () => {
           password,
         }),
       });
-  
+
       const contentType = response.headers.get('content-type');
       if (!response.ok) {
         // For non-OK responses, attempt to read as JSON for detailed error messages
@@ -55,30 +55,13 @@ const RegistrationScreen = () => {
       Alert.alert('Registration Error', error.message || 'An unexpected error occurred. Please try again later.');
     }
   };
-  
-  
-
-  const fetchUserInfo = async (token) => {
-    try {
-      const response = await fetch('https://medisyncconnection.azurewebsites.net/api/userinfo', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const userInfo = await response.json();
-      return userInfo;
-    } catch (error) {
-      console.error('Error fetching user info:', error);
-    }
-  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Image
+        source={require('../img/logo.png')}
+        style={styles.logo}
+      />
       <Text style={styles.title}>Register</Text>
       <TextInput
         style={styles.input}
@@ -99,7 +82,9 @@ const RegistrationScreen = () => {
         onChangeText={setPassword}
         value={password}
       />
-      <Button title="Register" onPress={registerUser} />
+      <TouchableOpacity style={styles.button} onPress={registerUser}>
+        <Text style={styles.buttonText}>Register</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -110,43 +95,48 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#ffffff', // Consistent background color
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#1a2771', // Title color matched
+  },
+  logo: {
+    position: 'absolute', 
+    top: 100, 
+    alignSelf: 'center',
+    width: 120,
+    height: undefined, 
+    aspectRatio: 1, 
+    resizeMode: 'contain',
+
   },
   input: {
     width: '100%',
     height: 50,
-    backgroundColor: '#FFF',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#DDD',
+    borderColor: '#70bdf5', // Input border color matched
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 10,
+    color: '#1a2771' // Input text color matched
   },
   button: {
-    width: '100%',
+    width: '40%', // Size adjustment for aesthetics
     height: 50,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#3d80cb', // Button color matched
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    marginTop: 10,
+    marginTop: 20, // Increased margin for separation
   },
   buttonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
+    color: '#ffffff', // Button text color for readability
+    fontSize: 15,
     fontWeight: 'bold',
-  },
-  linkButton: {
-    marginTop: 15,
-  },
-  linkButtonText: {
-    color: '#007BFF',
-    fontSize: 16,
   },
 });
 

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { ScrollView, View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { ScrollView, View, Text, TextInput, TouchableOpacity, Button, StyleSheet, Alert, Image } from 'react-native';
 // import PersonalScreen from './PersonalScreen';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
-import {fetchPatientInfo} from '../api/patient';
+import { fetchPatientInfo } from '../api/patient';
 
 const LoginScreen = () => {
   const { login, setPatientInfo } = useAuth();
@@ -23,18 +23,18 @@ const LoginScreen = () => {
           password,
         }),
       });
-  
+
       // Check if the response header indicates JSON content
       const contentType = response.headers.get('content-type');
       if (response.ok) {
-        
+
         if (contentType && contentType.includes('application/json')) {
           const json = await response.json(); // Safely parse the JSON
           const userInfo = await fetchUserInfo(json.token);
           Alert.alert('Login Success', `Welcome, ${userInfo.userName}`);
           login(userInfo);
           // Proceed with your logic after successful login
-          navigation.navigate('MainScreen'); 
+          navigation.navigate('MainScreen');
         } else {
           throw new Error('Expected JSON response, but received a different format');
         }
@@ -78,6 +78,10 @@ const LoginScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Image
+        source={require('../img/logo.png')}
+        style={styles.logo}
+      />
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
@@ -92,56 +96,74 @@ const LoginScreen = () => {
         onChangeText={setPassword}
         value={password}
       />
-      <Button title="Login" onPress={loginUser} />
-      <Button title="Go to Register" onPress={() => navigation.navigate('Register')} />
+      <TouchableOpacity style={styles.button} onPress={loginUser}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Register')}>
+        <Text style={styles.buttonText}>Go to Register</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flexGrow: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 20,
-      backgroundColor: '#F5F5F5',
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginBottom: 20,
-    },
-    input: {
-      width: '100%',
-      height: 50,
-      backgroundColor: '#FFF',
-      borderWidth: 1,
-      borderColor: '#DDD',
-      borderRadius: 5,
-      paddingHorizontal: 10,
-      marginBottom: 10,
-    },
-    button: {
-      width: '100%',
-      height: 50,
-      backgroundColor: '#007BFF',
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 5,
-      marginTop: 10,
-    },
-    buttonText: {
-      color: '#FFFFFF',
-      fontSize: 18,
-      fontWeight: 'bold',
-    },
-    linkButton: {
-      marginTop: 15,
-    },
-    linkButtonText: {
-      color: '#007BFF',
-      fontSize: 16,
-    },
-  });
+
+  container: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 10, 
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    backgroundColor: '#ffffff',
+  },
+
+  logo: {
+    position: 'absolute', 
+    top: 100, 
+    alignSelf: 'center',
+    width: 120,
+    height: undefined, 
+    aspectRatio: 1, 
+    resizeMode: 'contain',
+
+  },
+  title: {
+    marginTop: 20,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#1a2771', 
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#70bdf5',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    color: '#1a2771'
+  },
+  button: {
+    width: '40%',
+    height: 50,
+    backgroundColor: '#3d80cb',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  linkButton: {
+    marginTop: 15,
+  },
+
+});
 
 export default LoginScreen;

@@ -300,8 +300,6 @@ const HomeScreen = () => {
     }
   };
 
-  console.warn(tankDetails)
-
   return (
 
     <View style={styles.container}>

@@ -10,6 +10,10 @@ import {loadItemsApi} from '../api/schedule';
 import { useAuth } from '../AuthContext';
 // import { DeleteButton } from './DeleteButton';
 import DeleteButton from './DeleteButton';
+import BackgroundComponent from '../style/BackgroundComponent';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useNotification } from '../NotificationContext';
+import * as Notifications from 'expo-notifications';
 
 const AgendaScreen = (props) => {
   const [items, setItems] = useState({});
@@ -19,10 +23,33 @@ const AgendaScreen = (props) => {
   const [shouldRefreshAgenda, setShouldRefreshAgenda] = useState(false);
   const { user_id } = props;
   const { currentPatient, setCurrentPatient } = useAuth();
+  const { token } = useNotification();
+
+  const colors = [
+    '#FFADAD', '#FFD6A5', '#584c3b', '#a9d0a1', '#237fbc', // pink, light brown, dark brown, green, blue
+    '#A0C4FF', '#BDB2FF', '#FFC6FF', '#800000', '#BDB76B' // pueple blue, violet, bright pink, brick red, tellow green
+  ];
 
   const isEmptyItems = () => {
     if (!items) return true;
     return Object.keys(items).every(key => items[key].length === 0);
+  };
+
+  const scheduleNotification = async (time, title, body) => {
+    console.warn(time)
+    const schedulingOptions = {
+      content: {
+        title: 'Eat pills!',
+        body: "pills!",
+        sound: true, // 可选，如果你希望通知有声音
+      },
+      trigger: {
+        date: time, // 确保time是一个JavaScript Date对象
+      },
+    };
+  
+    // 调用Notifications.scheduleNotificationAsync来安排通知
+    await Notifications.scheduleNotificationAsync(schedulingOptions);
   };
 
   // useEffect(() => {
@@ -43,9 +70,11 @@ const AgendaScreen = (props) => {
       setShouldRefreshAgenda(false);
     }
   }, [shouldRefreshAgenda]);
-
+  // call = 0;
   const loadItemsForMonth = async (fromDate) => {
     // setItems({});
+    // console.warn(items)
+    // call = call + 1;
     try {
       // 根据currentPatient是否为数组，获取所有用户ID
       if (currentPatient === null) {
@@ -59,7 +88,25 @@ const AgendaScreen = (props) => {
     } catch (error) {
       console.error('Failed to load items: ', error);
     }
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrowEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    Object.keys(items).forEach(date => {
+      const itemDate = new Date(date);
+      if (itemDate >= todayStart && itemDate < tomorrowEnd) {
+        items[date].forEach(item => {
+          const eventTime = new Date(item.time);
+          if (eventTime >= todayStart && eventTime < tomorrowEnd) {
+            scheduleNotification(eventTime, "日程提醒", `您有一个${item.name}的约会。`).catch(error => {
+              console.error("Failed to schedule notification:", error);
+            });
+          }
+        });
+      }
+    });
   };
+  
 
   const loadFromDate = async (fromDate) => {
     // setShouldRefreshAgenda(true);
@@ -86,40 +133,74 @@ const AgendaScreen = (props) => {
     setShouldRefreshAgenda(true);
   };
 
+  const getColorForUserId = (userId) => {
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    hash = Math.abs(hash);
+    return colors[hash % colors.length];
+  };  
+
+  const getInitials = (name) => {
+    const parts = name.split(' ');
+    if (parts.length > 1) {
+      return parts.map(part => part[0].toUpperCase()).join('');  // 多个词的每个词的首字母
+    }
+    return parts[0].charAt(0).toUpperCase();  // 单词的首字母
+  };
+
   const renderItem = (reservation) => {
-    // console.warn(reservation)
-    // console.warn(agendaKey)
     const scheduleDateTime = new Date(reservation.time);
+    // const patient = currentPatient && currentPatient.find(p => p.id === reservation.user);
+    const patient = Array.isArray(currentPatient) ? currentPatient.find(p => p.id === reservation.user) : null;
+    const userName = patient && patient.userName ? patient.userName : '';
+    // const initial = patient && patient.userName ? patient.userName.charAt(0).toUpperCase() : '?';
+    const initials = getInitials(userName);
+    const initialColor = getColorForUserId(userName);
+    
     return (
-      <TouchableOpacity
-        onPress={() => {
-          setSelectedItem(reservation);
-          setEditModalVisible(true);
-        }}
-      >
-        <View style={styles.item}>
-          <TouchableOpacity
-            style={[styles.itemTouchable, { backgroundColor: 'white' }]}
-            onPress={() => handleTakenToggle(reservation)}
-          >
-            <Ionicons
-              name="checkmark-circle"
-              size={24}
-              color={reservation.taken ? "rgb(255, 92, 38)" : "rgb(128, 128, 128)"}
-              style={styles.tickIcon}
-            />
-          </TouchableOpacity>
-          <View style={styles.itemHeader}>
-            <Ionicons name="alert-circle" size={24} color="#43515c" style={styles.icon} />
-            <Text style={[styles.itemText, { fontSize: 18 }]}>Medicine: {reservation.name}</Text>
-          </View>
-          <View style={styles.itemFooter}>
-            <Ionicons name="time" size={20} color="#43515c" style={styles.icon} />
-            <Text style={styles.itemText}>Time: {scheduleDateTime.toLocaleTimeString()}</Text>
-            <Text style={[styles.itemText, { marginLeft: 'auto' }]}>Dose: {reservation.dose || 'No dose info'} pills</Text>
-          </View>
+    //   <LinearGradient
+    //   colors={['#c6dcee', '#ffffff']}
+    //   start={{ x: 0, y: 0 }}
+    //   end={{ x: 1, y: 1 }}
+    //   style={{ borderRadius: 5, padding: 10, marginVertical: 5 }}
+    // >
+    <TouchableOpacity
+      onPress={() => {
+        setSelectedItem(reservation);
+        setEditModalVisible(true);
+      }}
+    >
+      <View style={styles.item} >
+        {userName !== '' && (
+            <View style={[styles.initialCircle, { backgroundColor: initialColor }]}>
+              <Text style={styles.initialText}>{initials}</Text>
+            </View>
+          )}
+        <TouchableOpacity
+          style={[styles.itemTouchable, { backgroundColor: 'white' }]}
+          onPress={() => handleTakenToggle(reservation)}
+        >
+          <Ionicons
+            name="checkmark-circle"
+            size={24}
+            color={reservation.taken ? "rgb(255, 92, 38)" : "rgb(128, 128, 128)"}
+            style={styles.tickIcon}
+          />
+        </TouchableOpacity>
+        <View style={styles.itemHeader}>
+          <Text style={[styles.timeText, { fontSize: 18 }]}>{reservation.name}</Text>
         </View>
-      </TouchableOpacity>
+        <View style={styles.itemFooter}>
+          <Ionicons name="time" size={18} color="#43515c" style={styles.icon} />
+          <Text style={styles.timeText}>{scheduleDateTime.toLocaleTimeString()}</Text>
+          <Ionicons name="water" size={18} color="#43515c" style={styles.doseicon} />
+          <Text style={styles.doseText}>Dose: {reservation.dose || 'No dose info'}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+      // </LinearGradient>
     );
   };
 
@@ -141,44 +222,52 @@ const AgendaScreen = (props) => {
   };
   // console.warn(currentPatient.length !== 1)
 
+  
+
   return (
-    <View style={{ flex: 1 }}>
-      <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
-      <Agenda
-        key={agendaKey}
-        items={items}
-        loadItemsForMonth={loadItemsForMonth}
-        renderItem={renderItem}
-        renderEmptyDate={renderEmptyDate}
-        // rowHasChanged={rowHasChanged}
-        // onDayPress={({dateString}) => loadItemsForMonth(dateString)}
-        onDayPress={({dateString}) => loadFromDate(dateString)}
-        showClosingKnob={true}
-        refreshing={props.refreshing}
-        onRefresh={props.onRefresh}
-        renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}><Text>You don't have a schedule</Text></View> : null}
-      />
+    // <BackgroundComponent>
+      <View style={{ flex: 1 }}>
+        <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
+        <Agenda
+          key={agendaKey}
+          items={items}
+          loadItemsForMonth={loadItemsForMonth}
+          renderItem={renderItem}
+          renderEmptyDate={renderEmptyDate}
+          // rowHasChanged={rowHasChanged}
+          // onDayPress={({dateString}) => loadItemsForMonth(dateString)}
+          onDayPress={({dateString}) => loadFromDate(dateString)}
+          showClosingKnob={true}
+          refreshing={props.refreshing}
+          onRefresh={props.onRefresh}
+          theme={{
+            reservationsBackgroundColor: '#c6dcee',
+          }}
+          renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}>
+            <Text>You don't have a schedule</Text></View> : null}
+        />
 
-      <View>
-        <PlusButton items={items} setItems={setItems} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
+        <View>
+          <PlusButton items={items} setItems={setItems} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
+        </View>
+
+        <View>
+          <DeleteButton items={items} setItems={setItems} 
+          currentPatient={currentPatient} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
+        </View>
+
+        <EditSchedule
+          modalVisible={editModalVisible}
+          setModalVisible={setEditModalVisible}
+          submitForm={() => {}}
+          initialData={selectedItem}
+          setShouldRefreshAgenda={setShouldRefreshAgenda}
+          userId={user_id}
+          items={items}
+          setItems={setItems}
+        />
       </View>
-
-      <View>
-        <DeleteButton items={items} setItems={setItems} 
-        currentPatient={currentPatient} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
-      </View>
-
-      <EditSchedule
-        modalVisible={editModalVisible}
-        setModalVisible={setEditModalVisible}
-        submitForm={() => {}}
-        initialData={selectedItem}
-        setShouldRefreshAgenda={setShouldRefreshAgenda}
-        userId={user_id}
-        items={items}
-        setItems={setItems}
-      />
-    </View>
+    // </BackgroundComponent>
   );
 };
 
@@ -211,7 +300,7 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: "white",
-    borderRadius: 10,
+    borderRadius: 30,
     padding: 8, // Reduced padding
     marginRight: 10,
     marginTop: 10,
@@ -222,11 +311,12 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
+    width: 300,
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 3,
   },
-  itemText: {
+  timeText: {
     fontSize: 16, // Make text larger
     color: "#43515c",
     marginBottom: 3, // Add spacing between text elements
@@ -235,17 +325,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 1,
-    left: 5,
+    left: 65,
   },
   itemFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    // top: 5, // Adjust as necessary
-    left: 5, // Adjust as necessary
+    top: 3, // Adjust as necessary
+    left: 63, // Adjust as necessary
     // padding: 5,
   },
+  initialCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#007AFF', // 蓝色背景
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    // top: 10,
+    left: 10,
+    zIndex: 2,
+  },
+  initialText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 22
+  },
   icon: {
-    marginRight: 5,
+    marginRight: 2,
+    marginBottom: 1,
+  },
+  doseicon: {
+    left: 30,
+    marginBottom: 1,
+  },
+  doseText: {
+    fontSize: 16, // Make text larger
+    color: "#43515c",
+    marginBottom: 2, // Add spacing between text elements
+    marginLeft: 32,
   },
   itemTouchable: {
     position: 'absolute',

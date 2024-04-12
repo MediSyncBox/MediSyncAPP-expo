@@ -10,6 +10,7 @@ import {loadItemsApi} from '../api/schedule';
 import { useAuth } from '../AuthContext';
 // import { DeleteButton } from './DeleteButton';
 import DeleteButton from './DeleteButton';
+import BackgroundComponent from '../style/BackgroundComponent';
 
 const AgendaScreen = (props) => {
   const [items, setItems] = useState({});
@@ -97,7 +98,7 @@ const AgendaScreen = (props) => {
           setEditModalVisible(true);
         }}
       >
-        <View style={styles.item}>
+        <View style={styles.item} >
           <TouchableOpacity
             style={[styles.itemTouchable, { backgroundColor: 'white' }]}
             onPress={() => handleTakenToggle(reservation)}
@@ -142,43 +143,49 @@ const AgendaScreen = (props) => {
   // console.warn(currentPatient.length !== 1)
 
   return (
-    <View style={{ flex: 1 }}>
-      <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
-      <Agenda
-        key={agendaKey}
-        items={items}
-        loadItemsForMonth={loadItemsForMonth}
-        renderItem={renderItem}
-        renderEmptyDate={renderEmptyDate}
-        // rowHasChanged={rowHasChanged}
-        // onDayPress={({dateString}) => loadItemsForMonth(dateString)}
-        onDayPress={({dateString}) => loadFromDate(dateString)}
-        showClosingKnob={true}
-        refreshing={props.refreshing}
-        onRefresh={props.onRefresh}
-        renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}><Text>You don't have a schedule</Text></View> : null}
-      />
+    // <BackgroundComponent>
+      <View style={{ flex: 1 }}>
+        <CustomAppbar setShouldRefreshAgenda={setShouldRefreshAgenda} items={items} setItems={setItems}/>
+        <Agenda
+          key={agendaKey}
+          items={items}
+          loadItemsForMonth={loadItemsForMonth}
+          renderItem={renderItem}
+          renderEmptyDate={renderEmptyDate}
+          // rowHasChanged={rowHasChanged}
+          // onDayPress={({dateString}) => loadItemsForMonth(dateString)}
+          onDayPress={({dateString}) => loadFromDate(dateString)}
+          showClosingKnob={true}
+          refreshing={props.refreshing}
+          onRefresh={props.onRefresh}
+          theme={{
+            reservationsBackgroundColor: '#c6dcee',
+          }}
+          renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}>
+            <Text>You don't have a schedule</Text></View> : null}
+        />
 
-      <View>
-        <PlusButton items={items} setItems={setItems} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
+        <View>
+          <PlusButton items={items} setItems={setItems} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
+        </View>
+
+        <View>
+          <DeleteButton items={items} setItems={setItems} 
+          currentPatient={currentPatient} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
+        </View>
+
+        <EditSchedule
+          modalVisible={editModalVisible}
+          setModalVisible={setEditModalVisible}
+          submitForm={() => {}}
+          initialData={selectedItem}
+          setShouldRefreshAgenda={setShouldRefreshAgenda}
+          userId={user_id}
+          items={items}
+          setItems={setItems}
+        />
       </View>
-
-      <View>
-        <DeleteButton items={items} setItems={setItems} 
-        currentPatient={currentPatient} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
-      </View>
-
-      <EditSchedule
-        modalVisible={editModalVisible}
-        setModalVisible={setEditModalVisible}
-        submitForm={() => {}}
-        initialData={selectedItem}
-        setShouldRefreshAgenda={setShouldRefreshAgenda}
-        userId={user_id}
-        items={items}
-        setItems={setItems}
-      />
-    </View>
+    // </BackgroundComponent>
   );
 };
 

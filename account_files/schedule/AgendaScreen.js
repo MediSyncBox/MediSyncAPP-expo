@@ -93,12 +93,12 @@ const AgendaScreen = (props) => {
     // console.warn(agendaKey)
     const scheduleDateTime = new Date(reservation.time);
     return (
-      <LinearGradient
-      colors={['#c6dcee', '#ffffff']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{ borderRadius: 5, padding: 10, marginVertical: 5 }}
-    >
+    //   <LinearGradient
+    //   colors={['#c6dcee', '#ffffff']}
+    //   start={{ x: 0, y: 0 }}
+    //   end={{ x: 1, y: 1 }}
+    //   style={{ borderRadius: 5, padding: 10, marginVertical: 5 }}
+    // >
       <TouchableOpacity
         onPress={() => {
           setSelectedItem(reservation);
@@ -128,7 +128,7 @@ const AgendaScreen = (props) => {
           </View>
         </View>
       </TouchableOpacity>
-      </LinearGradient>
+      // </LinearGradient>
     );
   };
 

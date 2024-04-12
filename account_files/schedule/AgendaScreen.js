@@ -12,6 +12,8 @@ import { useAuth } from '../AuthContext';
 import DeleteButton from './DeleteButton';
 import BackgroundComponent from '../style/BackgroundComponent';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNotification } from '../NotificationContext';
+import * as Notifications from 'expo-notifications';
 
 const AgendaScreen = (props) => {
   const [items, setItems] = useState({});
@@ -21,6 +23,7 @@ const AgendaScreen = (props) => {
   const [shouldRefreshAgenda, setShouldRefreshAgenda] = useState(false);
   const { user_id } = props;
   const { currentPatient, setCurrentPatient } = useAuth();
+  const { token } = useNotification();
 
   const colors = [
     '#FFADAD', '#FFD6A5', '#584c3b', '#a9d0a1', '#237fbc', // pink, light brown, dark brown, green, blue
@@ -30,6 +33,23 @@ const AgendaScreen = (props) => {
   const isEmptyItems = () => {
     if (!items) return true;
     return Object.keys(items).every(key => items[key].length === 0);
+  };
+
+  const scheduleNotification = async (time, title, body) => {
+    console.warn(time)
+    const schedulingOptions = {
+      content: {
+        title: 'Eat pills!',
+        body: "pills!",
+        sound: true, // 可选，如果你希望通知有声音
+      },
+      trigger: {
+        date: time, // 确保time是一个JavaScript Date对象
+      },
+    };
+  
+    // 调用Notifications.scheduleNotificationAsync来安排通知
+    await Notifications.scheduleNotificationAsync(schedulingOptions);
   };
 
   // useEffect(() => {
@@ -50,9 +70,11 @@ const AgendaScreen = (props) => {
       setShouldRefreshAgenda(false);
     }
   }, [shouldRefreshAgenda]);
-
+  // call = 0;
   const loadItemsForMonth = async (fromDate) => {
     // setItems({});
+    // console.warn(items)
+    // call = call + 1;
     try {
       // 根据currentPatient是否为数组，获取所有用户ID
       if (currentPatient === null) {
@@ -66,7 +88,25 @@ const AgendaScreen = (props) => {
     } catch (error) {
       console.error('Failed to load items: ', error);
     }
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrowEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    Object.keys(items).forEach(date => {
+      const itemDate = new Date(date);
+      if (itemDate >= todayStart && itemDate < tomorrowEnd) {
+        items[date].forEach(item => {
+          const eventTime = new Date(item.time);
+          if (eventTime >= todayStart && eventTime < tomorrowEnd) {
+            scheduleNotification(eventTime, "日程提醒", `您有一个${item.name}的约会。`).catch(error => {
+              console.error("Failed to schedule notification:", error);
+            });
+          }
+        });
+      }
+    });
   };
+  
 
   const loadFromDate = async (fromDate) => {
     // setShouldRefreshAgenda(true);
@@ -181,6 +221,8 @@ const AgendaScreen = (props) => {
     return date.toISOString().split('T')[0];
   };
   // console.warn(currentPatient.length !== 1)
+
+  
 
   return (
     // <BackgroundComponent>

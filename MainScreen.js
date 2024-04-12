@@ -7,6 +7,8 @@ import PersonalScreen from './account_files/personal/PersonalScreen';
 import ScheduleScreen from './account_files/schedule/ScheduleScreen';
 import HomeScreen from './account_files/home/home';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import BackgroundComponent from './account_files/style/BackgroundComponent';
+import * as Notifications from 'expo-notifications';
 
 const MainScreen = () => {
   const { isLoggedIn } = useAuth();

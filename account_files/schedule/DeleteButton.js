@@ -9,7 +9,7 @@ export default function DeleteButton({items, setItems, currentPatient, setShould
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.button}>
-        <Ionicons name="trash-bin" size={24} color="white" />
+        <Ionicons name="trash" size={24} color="white" />
       </TouchableOpacity>
       <Modal
         animationType="slide"
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // width: 40,
     // bottom: 40,
-    backgroundColor: 'red',
+    backgroundColor: 'orange',
     borderRadius: 25,
     // left: 40, 
     // height: 40, 

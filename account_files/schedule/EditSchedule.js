@@ -9,22 +9,30 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
   const [taken, setTaken] = useState(initialData ? initialData.taken : false);
   const [time, setTime] = useState(initialData && initialData.time ? new Date(initialData.time) : new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [timeButtonText, setTimeButtonText] = useState('Select Time');
 
   useEffect(() => {
     if (initialData) {
       setMedicine(initialData.name);
-      setDose(initialData.dose.toString()); // Convert to string for consistency
+      setDose(initialData.dose.toString());
       setTaken(initialData.taken);
-      if (initialData.time) setTime(new Date(initialData.time)); // Set time if available
+      if (initialData.time) {
+        const initTime = new Date(initialData.time);
+        setTime(initTime);
+        setTimeButtonText(initTime.toLocaleTimeString());  // 设置初始按钮文本
+      }
     }
   }, [initialData]);
+  
 
   const handleTimeChange = (event, selectedTime) => {
-    setShowTimePicker(false); // Close the picker
+    setShowTimePicker(false); // 关闭时间选择器
     if (selectedTime) {
       setTime(selectedTime);
+      setTimeButtonText(selectedTime.toLocaleTimeString()); // 更新按钮文本为选择的时间
     }
   };
+  
 
   const handleDeleteSchedule = async () => {
     try {
@@ -33,7 +41,6 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
       const response = await fetch(`https://medisyncconnection.azurewebsites.net/api/singleDelete/${scheduleId}`, {
         method: 'DELETE',
       });
-      console.warn(initialData)
   
       if (response.ok) {
         Alert.alert("Delete Successful", "The schedule has been deleted.");
@@ -147,7 +154,7 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
             <Pressable
               style={styles.buttonOpen}
               onPress={() => setShowTimePicker(true)}>
-              <Text style={styles.textStyle}>Select Time</Text>
+              <Text style={styles.textStyle}>{timeButtonText}</Text>
             </Pressable>
 
             {showTimePicker && (
@@ -159,20 +166,6 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
                 onChange={handleTimeChange}
               />
             )}
-
-            <Text>Time: {time.toLocaleTimeString()}</Text>
-
-            {/* <View style={styles.switchContainer}>
-              <Text style={styles.switchLabel}>Taken: </Text>
-              <Text>{taken ? 'Yes' : 'No'}</Text>
-              <Switch
-                trackColor={{ false: "#767577", true: "#E8DEF8" }}
-                thumbColor={taken ? "#f4f3f4" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={setTaken}
-                value={taken}
-              />
-            </View> */}
 
             <View style={styles.buttonContainer}>
               <Pressable

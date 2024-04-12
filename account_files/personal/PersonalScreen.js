@@ -6,17 +6,16 @@ import ProfileEdit from './profileEdit';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import BackgroundComponent from '../style/BackgroundComponent';
+
 const PersonalScreen = () => {
     const { userInfo } = useAuth();
     const navigation = useNavigation();
     console.log('userInfo'); 
     console.log(userInfo); 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity
-                style={styles.header}
-                onPress={() => navigation.navigate('ProfileEdit')}
-                activeOpacity={1} >
+        <BackgroundComponent>
+            <View style={styles.container}>
                 <Avatar.Image
                     size={80}
                     source={require('../img/avatar.png')}
@@ -25,26 +24,34 @@ const PersonalScreen = () => {
                 <View style={styles.userInfo}>
                     <Text style={styles.userName}>{userInfo?.userName}</Text>
                 </View>
-            </TouchableOpacity>
-            <List.Section style={styles.selection}>
-                <List.Item
-                    title={'Email/Phone: ' + userInfo?.emailorPhone}
-                />
-                <List.Item
-                    title={'ID: ' + userInfo?.id}
-                />
-                <List.Item
-                    title="Check patient"
-                    onPress={() => navigation.navigate('CheckPatient')}
-                />
-            </List.Section>
-        </View>
+            </View>
+            <View style={styles.listContainer}>
+                <List.Section style={styles.selection}>
+                    <List.Item
+                        title={'Email/Phone: ' + userInfo?.emailorPhone}
+                    />
+                    <List.Item
+                        title={'ID: ' + userInfo?.id}
+                    />
+                    <List.Item
+                        title="Check patient"
+                        onPress={() => navigation.navigate('CheckPatient')}
+                    />
+                </List.Section>
+            </View>   
+        </BackgroundComponent>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        marginTop: 50,
+        alignItems: 'center',
+    },
+    listContainer: {
+        flex: 1,
+        marginBottom: 300,
     },
     header: {
         flexDirection: 'row',

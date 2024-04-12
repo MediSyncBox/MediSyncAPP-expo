@@ -110,7 +110,6 @@ const AgendaScreen = (props) => {
   const renderItem = (reservation) => {
     const scheduleDateTime = new Date(reservation.time);
     const isSelected = selectedItemsForDeletion.includes(reservation.id);
-    console.warn(isInDeleteMode)
 
     const handlePressItem = () => {
       if (isInDeleteMode) {

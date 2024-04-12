@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
-
+import BackgroundComponent from '../style/BackgroundComponent';
 const RegistrationScreen = () => {
   const { login } = useAuth();
   const [emailorPhone, setEmailorPhone] = useState('');
@@ -57,35 +57,37 @@ const RegistrationScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image
-        source={require('../img/logo.png')}
-        style={styles.logo}
-      />
-      <Text style={styles.title}>Register</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email or Phone"
-        onChangeText={setEmailorPhone}
-        value={emailorPhone}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        onChangeText={setUserName}
-        value={userName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={setPassword}
-        value={password}
-      />
-      <TouchableOpacity style={styles.button} onPress={registerUser}>
-        <Text style={styles.buttonText}>Register</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    <BackgroundComponent>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Image
+          source={require('../img/logo.png')}
+          style={styles.logo}
+        />
+        <Text style={styles.title}>Register</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email or Phone"
+          onChangeText={setEmailorPhone}
+          value={emailorPhone}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Username"
+          onChangeText={setUserName}
+          value={userName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          onChangeText={setPassword}
+          value={password}
+        />
+        <TouchableOpacity style={styles.button} onPress={registerUser}>
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </BackgroundComponent>
   );
 };
 
@@ -94,8 +96,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#ffffff', // Consistent background color
+    padding: 20, 
   },
   title: {
     fontSize: 24,
@@ -104,12 +105,12 @@ const styles = StyleSheet.create({
     color: '#1a2771', // Title color matched
   },
   logo: {
-    position: 'absolute', 
-    top: 100, 
+    position: 'absolute',
+    top: 100,
     alignSelf: 'center',
     width: 120,
-    height: undefined, 
-    aspectRatio: 1, 
+    height: undefined,
+    aspectRatio: 1,
     resizeMode: 'contain',
 
   },

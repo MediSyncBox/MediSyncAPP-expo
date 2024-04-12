@@ -4,6 +4,7 @@ import { ScrollView, View, Text, TextInput, TouchableOpacity, Button, StyleSheet
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 import { fetchPatientInfo } from '../api/patient';
+import BackgroundComponent from '../style/BackgroundComponent';
 
 const LoginScreen = () => {
   const { login, setPatientInfo } = useAuth();
@@ -77,32 +78,34 @@ const LoginScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Image
-        source={require('../img/logo.png')}
-        style={styles.logo}
-      />
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email or Phone"
-        onChangeText={setEmailorPhone}
-        value={emailorPhone}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={setPassword}
-        value={password}
-      />
-      <TouchableOpacity style={styles.button} onPress={loginUser}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.buttonText}>Go to Register</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    <BackgroundComponent>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Image
+          source={require('../img/logo.png')}
+          style={styles.logo}
+        />
+        <Text style={styles.title}>Login</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email or Phone"
+          onChangeText={setEmailorPhone}
+          value={emailorPhone}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          onChangeText={setPassword}
+          value={password}
+        />
+        <TouchableOpacity style={styles.button} onPress={loginUser}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.buttonText}>Go to Register</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </BackgroundComponent>
   );
 };
 
@@ -112,19 +115,18 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 10, 
+    paddingTop: 10,
     paddingBottom: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#ffffff',
   },
 
   logo: {
-    position: 'absolute', 
-    top: 100, 
+    position: 'absolute',
+    top: 100,
     alignSelf: 'center',
     width: 120,
-    height: undefined, 
-    aspectRatio: 1, 
+    height: undefined,
+    aspectRatio: 1,
     resizeMode: 'contain',
 
   },
@@ -133,7 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#1a2771', 
+    color: '#1a2771',
   },
   input: {
     width: '100%',

@@ -3,6 +3,27 @@ import { Button, FlatList, ScrollView, Modal, TextInput, View, TouchableOpacity,
 import { Text, Appbar } from 'react-native-paper';
 import { useAuth } from '../AuthContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import * as Notifications from 'expo-notifications';
+
+
+async function registerForPushNotificationsAsync() {
+  let token;
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+  if (finalStatus !== 'granted') {
+    alert('Failed to get push token for push notification!');
+    return;
+  }
+  token = (await Notifications.getExpoPushTokenAsync()).data;
+  console.log(token);
+
+  return token;
+}
+
 
 const HomeScreen = () => {
   const { userInfo, tankDetails, updateTankDetails } = useAuth();
@@ -16,7 +37,41 @@ const HomeScreen = () => {
 
   useEffect(() => {
     fetchUserBoxes();
+
+    async function setupNotifications() {
+      const token = await registerForPushNotificationsAsync();
+      console.log(`Token: ${token}`);
+      if (Platform.OS === 'android') {
+        Notifications.setNotificationChannelAsync('default', {
+          name: 'default',
+          importance: Notifications.AndroidImportance.MAX,
+        });
+      }
+
+      const notificationListener = Notifications.addNotificationReceivedListener(notification => {
+        console.log("Notification Received: ", notification);
+      });
+
+      const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+        console.log("Notification Clicked: ", response);
+      });
+
+      return () => {
+        Notifications.removeNotificationSubscription(notificationListener);
+        Notifications.removeNotificationSubscription(responseListener);
+      };
+    }
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      }),
+    });
+    setupNotifications();
   }, []);
+
+
 
   const handleSubmitBox = async () => {
     if (!boxId || !name) {
@@ -128,10 +183,24 @@ const HomeScreen = () => {
       }
       const details = await response.json();
       updateTankDetails(boxId, details);
+
+
+      details.forEach(tank => {
+        if (tank.pillNumber && parseInt(tank.pillNumber) < 5) {
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title: "Insufficient pill balance",
+              body: `You only got ${tank.pillNumber} of ${tank.pillName} left, please add them.`,
+            },
+            trigger: null,
+          });
+        }
+      });
+
     } catch (error) {
       console.error('Fetch error:', error);
-      return null;
       // setErrorMessage(error.toString());
+      return null;
     }
   };
 
@@ -208,6 +277,15 @@ const HomeScreen = () => {
       }
 
       // Handle success
+      if (pillNumber && parseInt(pillNumber) < 5) {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "Insufficient pill balance",
+            body: `You only got ${pillNumber} of ${pillName} left, please add them.`,
+          },
+          trigger: null,
+        });
+      }
       setPills([...pills, { name: pillName, number: pillNumber, tank: pillTank }]);
       setpillName('');
       setpillNumber('');
@@ -564,7 +642,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   editButtonText: {
-    color: '#ffffff', 
+    color: '#ffffff',
     fontWeight: 'bold',
   },
   boxItem: {

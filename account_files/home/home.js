@@ -222,6 +222,7 @@ const HomeScreen = () => {
     }
   };
 
+  console.warn(tankDetails)
 
   return (
 

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, StyleSheet, Text, TextInput, View, Switch, Pressable, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker'; // Ensure this is installed
+import {loadItemsApi} from '../api/schedule';
 
-export default function EditSchedule({ modalVisible, setModalVisible, initialData}) {
+export default function EditSchedule({ modalVisible, setModalVisible, initialData, setShouldRefreshAgenda, userId, items, setItems }) {
   const [medicine, setMedicine] = useState(initialData ? initialData.name : '');
   const [dose, setDose] = useState(initialData ? initialData.dose.toString() : '');
   const [taken, setTaken] = useState(initialData ? initialData.taken : false);
@@ -25,6 +26,30 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
     }
   };
 
+  const handleDeleteSchedule = async () => {
+    try {
+      // 假设 initialData 有一个 id 属性，用来唯一标识 schedule
+      const scheduleId = initialData.id;
+      const response = await fetch(`https://medisyncconnection.azurewebsites.net/api/singleDelete/${scheduleId}`, {
+        method: 'DELETE',
+      });
+      console.warn(initialData)
+  
+      if (response.ok) {
+        Alert.alert("Delete Successful", "The schedule has been deleted.");
+        await loadItemsApi([userId], items, setItems);
+        setModalVisible(false); // 关闭 modal
+        setShouldRefreshAgenda(true); // 刷新 agenda 视图
+      } else {
+        // 如果响应状态不是 ok，说明删除失败
+        Alert.alert("Delete Failed", "The schedule could not be deleted. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Delete Error", "An error occurred while deleting the schedule.");
+    }
+  };
+  
   
   const updateSchedule = async () => {
     // Prepare the data object from the state before sending it
@@ -51,21 +76,25 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
         const data = await response.json();
         if (data.success) {
           Alert.alert("Update Successful", "The schedule has been updated.");
+          await loadItemsApi([userId], items, setItems);
           setModalVisible(false); // Close the modal after successful update
           // reloadData(); // Call the passed callback function to reload data in AgendaScreen
         } else {
           Alert.alert("Update Failed", "The schedule update failed. Please try again.");
         }
+        
       } else {
         // If the response is not JSON, log the response to debug
         const text = await response.text();
-        console.warn("Received non-JSON response:", text);
+        console.error("Received non-JSON response:", text);
         Alert.alert("Update Error", "The response from the server was not in JSON format.");
       }
     } catch (error) {
       console.error(error);
       Alert.alert("Update Error", "An error occurred while updating the schedule.");
     }
+    setShouldRefreshAgenda(true);
+    
 };
   
 
@@ -133,7 +162,7 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
 
             <Text>Time: {time.toLocaleTimeString()}</Text>
 
-            <View style={styles.switchContainer}>
+            {/* <View style={styles.switchContainer}>
               <Text style={styles.switchLabel}>Taken: </Text>
               <Text>{taken ? 'Yes' : 'No'}</Text>
               <Switch
@@ -143,13 +172,19 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
                 onValueChange={setTaken}
                 value={taken}
               />
-            </View>
+            </View> */}
 
             <View style={styles.buttonContainer}>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={updateSchedule}>
                 <Text style={styles.textStyle}>Save</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={handleDeleteSchedule}>
+                <Text style={styles.textStyle}>Delete</Text>
               </Pressable>
 
               <Pressable

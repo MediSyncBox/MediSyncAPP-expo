@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
-import {Alert, Modal, StyleSheet, Text, Pressable, View} from 'react-native';
-import EditModal from './AddSchedule';
+import {Alert, Modal, StyleSheet, Text, Pressable, View, TouchableOpacity} from 'react-native';
+import AddModal from './AddSchedule';
 
-export default function PlusButton() {
+export default function PlusButton({items, setItems, setShouldRefreshAgenda}) {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
@@ -13,7 +13,8 @@ export default function PlusButton() {
         <Text style={styles.textStyle}>+</Text>
       </Pressable>
 
-      <EditModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      <AddModal modalVisible={modalVisible} setModalVisible={setModalVisible} 
+      items={items} setItems={setItems} setShouldRefreshAgenda={setShouldRefreshAgenda}/>
     </View>
   );
 }

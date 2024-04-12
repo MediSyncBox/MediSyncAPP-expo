@@ -1,26 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button } from 'react-native';
+import { Modal, TouchableOpacity, StyleSheet, Text, TextInput, Pressable, View, Button} from 'react-native';
+import { Menu, Portal } from 'react-native-paper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../AuthContext';
+import {loadItemsApi} from '../api/schedule';
+import { Picker } from '@react-native-picker/picker'; // 或者从 react-native 中导入
 
-export default function EditModal({ modalVisible, setModalVisible, mode, submitForm, initialData }) {
-  const [medicine, setMedicine] = useState(initialData ? initialData.name : '');
-  const [dose, setDose] = useState(initialData ? initialData.dose : '');
+
+export default function AddModal({ modalVisible, setModalVisible, items, setItems, setShouldRefreshAgenda }) {
+  const [medicine, setMedicine] = useState(undefined);
+  const [dose, setDose] = useState(undefined);
   const defaultTimesPerDay = 1;
-  const { userInfo } = useAuth();
+  const { userInfo, patientInfo } = useAuth();
   // initialise doseTimes avoid logic conflict
   const [doseTimes, setDoseTimes] = useState(() => {
-    if (initialData && Array.isArray(initialData.doseTimes)) {
-      return initialData.doseTimes;
-    }
     return Array(defaultTimesPerDay).fill(null);
   });
 
   const [showPickers, setShowPickers] = useState(() => doseTimes.map(() => false));
-  const [startDate, setStartDate] = useState(initialData ? initialData.startDate : new Date());
-  const [endDate, setEndDate] = useState(initialData ? initialData.endDate : new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const userId = userInfo?.id;
+  const [selectedPatientId, setSelectedPatientId] = useState(userId);
+  // const [selectedPatientId, setSelectedPatientId] = useState(patientInfo[0]?.id || '');
+
+
+  const [visible, setVisible] = useState(false);
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+
+  useEffect(() => {
+    // 如果patientInfo只有一个，则自动选择该patient
+    if (patientInfo && patientInfo.length === 1) {
+      setSelectedPatientId(patientInfo[0].id);
+    }
+  }, [patientInfo]);
+  const renderPatientPicker = () => (
+    <View style={styles.pickerContainer}>
+      <Picker
+        selectedValue={selectedPatientId}
+        onValueChange={(itemValue, itemIndex) => setSelectedPatientId(itemValue)}
+        style={styles.picker}
+      >
+        {patientInfo.map((patient) => (
+          <Picker.Item key={patient.id} label={patient.userName} value={patient.id} />
+        ))}
+      </Picker>
+    </View>
+  );
 
   useEffect(() => {
     setShowPickers(doseTimes.map(() => false));
@@ -58,50 +88,6 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     return date.toLocaleDateString();
   };
 
-  const renderDateInputs = () => {
-    // console.warn(initialData)
-    // if (!initialData || (!initialData.startDate && !initialData.endDate)) {
-      if (initialData == null) {
-      return (
-        <>
-          <View>
-            <TouchableOpacity style={styles.button} onPress={handleStartPress}>
-              <Text style={styles.textStyle}>Select Start Date</Text>
-            </TouchableOpacity>
-            {showStartDatePicker && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={startDate}
-                mode="date"
-                display="default"
-                onChange={handleStartDateChange}
-              />
-            )}
-            <Text>Start Date: {formatDate(startDate)}</Text>
-          </View>
-
-          <View>
-            <TouchableOpacity style={styles.button} onPress={handleEndPress}>
-              <Text style={styles.textStyle}>Select End Date</Text>
-            </TouchableOpacity>
-            {showEndDatePicker && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={endDate}
-                mode="date"
-                display="default"
-                onChange={handleEndDateChange}
-              />
-            )}
-            <Text>End Date: {formatDate(endDate)}</Text>
-          </View>
-        </>
-      );
-    }
-    return null; // Do not render date inputs if initialData with dates is provided
-  };
-
-
   // how many times per day for pills
   const handleTimesPerDayChange = (value) => {
     // empty input or 0 input
@@ -135,7 +121,6 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   };
   // the block for each time take pills
   const renderTimePickerControls = () => {
-    console.warn(showPickers[0])
     return doseTimes.map((time, index) => (
       <View key={index}>
         <TouchableOpacity style={styles.button} onPress={() => showTimePicker(index)}>
@@ -155,13 +140,21 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
     ));
   };
 
+  // useEffect(() => {
+  //   if (userId) {
+  //     loadItemsApi(userId, items, setItems);
+  //   }
+  // }, [loadItemsApi, userId]);
+
+  
   // manage form submit
-  const handleSubmit = () => {
-    // submitForm({ medicine, timesPerDay: doseTimes.length, dose, doseTimes, startDate, endDate });
+  console.warn(selectedPatientId)
+  const handleSubmit = async () => {
+    setIsLoading(true); 
     const scheduleEntries = [];
-    const userId = userInfo?.id;
     const start = new Date(startDate);
     const end = new Date(endDate);
+    
 
     for (let day = start; day <= end; day.setDate(day.getDate() + 1)) {
       doseTimes.forEach(time => {
@@ -172,7 +165,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
   
         // Add the schedule entry for this day and time
         scheduleEntries.push({
-          userId: userId, // Replace with the actual userId
+          userId: patientInfo.length <= 1 ? userId : selectedPatientId,
           medicine: medicine,
           dose: dose,
           time: entryTime,
@@ -181,10 +174,15 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
       });
     }
 
-    scheduleEntries.forEach(entry => {
-      submitSchedule(entry); // Assume submitSchedule is the function to POST the data to the server
-    });
-
+    try {
+      for (let entry of scheduleEntries) {
+        await submitSchedule(entry);
+      }
+    } catch (error) {
+      console.error('Failed to submit or refresh schedules:', error);
+    }
+    setShouldRefreshAgenda(true);
+    setIsLoading(false);
     setModalVisible(false);
   };
 
@@ -194,31 +192,18 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Include the 'Authorization' header if the request needs to be authenticated
         },
         body: JSON.stringify(scheduleEntry),
       });
   
-      // For debugging: log the response status and response text
       console.log('Response status:', response.status);
-      const text = await response.text(); // Read the text from the response
-      console.log('Response body:', text);
+      const text = await response.json(); // Read the text from the response
   
-      if (response.ok) {
-        // Attempt to parse the text as JSON
-        try {
-          const json = JSON.parse(text);
-          console.log('Schedule submitted:', json);
-          // Handle the parsed JSON as needed
-        } catch (e) {
-          throw new Error('Response was not valid JSON.');
-        }
-      } else {
-        throw new Error('Server responded with a status: ' + response.status);
-      }
+      if (!response.ok) throw new Error('Failed to submit schedule');
+      // return text;
+      await loadItemsApi([userId], items, setItems);
     } catch (error) {
       console.error('Error submitting schedule:', error);
-      // Handle the error appropriately in the UI
     }
   };
 
@@ -231,9 +216,47 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
         onRequestClose={() => {
           setModalVisible(!modalVisible);
         }}>
+          
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.titleText}>{mode === 'add' ? 'Add Schedule' : 'Edit Schedule'}</Text>
+          {/* <View style={styles.container}>
+      <Picker
+        selectedValue={selectedPatientId}
+        onValueChange={(itemValue, itemIndex) => setSelectedPatientId(itemValue)}
+        style={styles.picker} // 可选，如果你需要自定义样式
+      >
+        {patientInfo.map((patient) => (
+          <Picker.Item label={patient.userName} value={patient.id} key={patient.id} />
+        ))}
+      </Picker>
+    </View> */}
+              {patientInfo && patientInfo.length > 1 && renderPatientPicker()}
+              {/* <Menu
+                visible={visible}
+                onDismiss={closeMenu}
+                anchor={
+                // <Button title='Patient' onPress={openMenu}>Select Patient</Button>
+                <TouchableOpacity onPress={openMenu}>
+                  <Text>Select an Option</Text>
+                </TouchableOpacity>
+                }>
+                  
+                {patientInfo && patientInfo.map((patient) => (
+                  <Menu.Item
+                    key={patient.id}
+                    title={patient.userName}
+                    onPress={() => {
+                      setSelectedPatientId(patient.id);
+                      closeMenu();
+                    }}
+                  />
+                ))}
+              </Menu> */}
+
+            {/* {patientInfo && patientInfo.length > 1 && renderPatientPicker()} */}
+            
+
+            <Text style={styles.titleText}>{'Add Schedule'}</Text>
 
             <TextInput
               style={styles.input}
@@ -301,12 +324,18 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
                 </Text>
               </View>
             )}
+            {isLoading && (
+              <View style={styles.warningContainer}>
+                <Text>Loading...</Text>
+                {/* Or use a Spinner/ActivityIndicator component here */}
+              </View>
+            )}
 
             <View style={styles.buttonContainer}>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={handleSubmit}>
-                <Text style={styles.textStyle}>{mode === 'add' ? 'Add' : 'Save'}</Text>
+                <Text style={styles.textStyle}>{'Add'}</Text>
               </Pressable>
 
               <Pressable
@@ -314,6 +343,7 @@ export default function EditModal({ modalVisible, setModalVisible, mode, submitF
                 onPress={() => setModalVisible(!modalVisible)}>
                 <Text style={styles.textStyle}>Close</Text>
               </Pressable>
+              
             </View>
           </View>
         </View>
@@ -328,6 +358,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  picker: {
+    height: 50,
+    width: 100,
+    // 更多自定义样式
   },
   modalView: {
     margin: 20,
@@ -371,6 +406,16 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
+  // loadingContainer: {
+  //   position: 'absolute',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   backgroundColor: 'rgba(0,0,0,0.5)',
+  //   top: 0,
+  //   bottom: 0,
+  //   left: 0,
+  //   right: 0,
+  // },
   button: {
     backgroundColor: '#E8DEF8',
     borderRadius: 20,

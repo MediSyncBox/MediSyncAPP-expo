@@ -1,36 +1,6 @@
-// In AuthContext.js or similar
-// import React, { createContext, useContext, useState } from 'react';
 
-// const AuthContext = createContext();
-
-// export const useAuth = () => useContext(AuthContext);
-
-// export const AuthProvider = ({ children }) => {
-//   const [user, setUser] = useState(null);
-
-//   // Placeholder for your login logic
-//   const login = (credentials) => {
-//     // Perform login
-//     // If successful, set the user state
-//     setUser({ /* user data */ });
-//   };
-
-//   // Placeholder for your logout logic
-//   const logout = () => {
-//     // Perform logout
-//     setUser(null);
-//   };
-
-//   const isLoggedIn = () => user !== null;
-
-//   return (
-//     <AuthContext.Provider value={{ user, login, logout, isLoggedIn }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useCallback , useEffect} from 'react';
+import {fetchPatientInfo} from './api/patient';
 
 const AuthContext = createContext();
 
@@ -40,12 +10,23 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [boxInfo, setBoxInfo] = useState(null);
+  const [patientInfo, setPatientInfo] = useState([]);
+  const [currentPatient, setCurrentPatient] = useState(null);
   const [tankDetails, setTankDetails] = useState({});
 
-  const login = (userData) => {
+  const login = async (userData, token) => {
     setIsLoggedIn(true);
     setUserInfo(userData);
     console.log(userData);
+    // await fetchPatientInfo(userData.id, setPatientInfo);
+    try {
+      // const patientInfo = await fetchPatientInfo(userData.id);
+      // setPatientInfo(patientInfo);
+      await fetchPatientInfo(userData.id, setPatientInfo, setCurrentPatient);
+      // setCurrentPatient(patientInfo);
+    } catch (error) {
+        console.error("Failed to fetch patient info:", error);
+    }
   };
   const logout = () => {
     setIsLoggedIn(false);
@@ -60,19 +41,8 @@ export const AuthProvider = ({ children }) => {
     }));
   };
   return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn,
-        userInfo,
-        login,
-        logout,
-        boxInfo,
-        setBoxInfo,
-        tankDetails, 
-        setTankDetails,
-        updateTankDetails
-      }}
-    >
+    <AuthContext.Provider value={{ isLoggedIn, userInfo, patientInfo, setPatientInfo, 
+      currentPatient, setCurrentPatient, login, logout, updateTankDetails, tankDetails}}>
       {children}
     </AuthContext.Provider>
   );

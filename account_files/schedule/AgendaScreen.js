@@ -240,22 +240,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 30
   },
-  initialCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#007AFF', // 蓝色背景
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    zIndex: 2,
-  },
-  initialText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
   customDay: {
     margin: 10,
     fontSize: 24,
@@ -274,7 +258,7 @@ const styles = StyleSheet.create({
   },
   item: {
     backgroundColor: "white",
-    borderRadius: 20,
+    borderRadius: 30,
     padding: 8, // Reduced padding
     marginRight: 10,
     marginTop: 10,
@@ -295,32 +279,49 @@ const styles = StyleSheet.create({
     color: "#43515c",
     marginBottom: 3, // Add spacing between text elements
   },
-  doseText: {
-    fontSize: 16, // Make text larger
-    color: "#43515c",
-    marginBottom: 2, // Add spacing between text elements
-    marginLeft: 72,
-  },
   itemHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 1,
-    left: 18,
+    left: 65,
   },
   itemFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     top: 3, // Adjust as necessary
-    left: 16, // Adjust as necessary
+    left: 63, // Adjust as necessary
     // padding: 5,
+  },
+  initialCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#007AFF', // 蓝色背景
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    // top: 10,
+    left: 10,
+    zIndex: 2,
+  },
+  initialText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 22
   },
   icon: {
     marginRight: 2,
     marginBottom: 1,
   },
   doseicon: {
-    left: 70,
+    left: 30,
     marginBottom: 1,
+  },
+  doseText: {
+    fontSize: 16, // Make text larger
+    color: "#43515c",
+    marginBottom: 2, // Add spacing between text elements
+    marginLeft: 32,
   },
   itemTouchable: {
     position: 'absolute',

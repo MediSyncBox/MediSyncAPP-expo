@@ -36,7 +36,7 @@ const AgendaScreen = (props) => {
   };
 
   const scheduleNotification = async (time, title, body) => {
-    console.warn(time)
+    // console.warn(time)
     const schedulingOptions = {
       content: {
         title: 'Eat pills!',

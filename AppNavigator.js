@@ -18,13 +18,21 @@ function AppNavigator() {
     <Stack.Navigator initialRouteName={isLoggedIn ? "MainScreen" : "Login"}>
       {/* <Stack.Navigator> */}
       <Stack.Screen name="MainScreen" component={MainScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CheckPatient" component={CheckPatient} />
+      <Stack.Screen name="CheckPatient" component={CheckPatient} options={{
+        headerStyle: {
+          backgroundColor: '#DDEAF6', // Different color for another screen
+        },
+      }} />
       <Stack.Screen name="Login" component={Login} options={{
         headerStyle: {
           backgroundColor: '#DDEAF6', // Different color for another screen
         },
       }} />
-      <Stack.Screen name="PersonalScreen" component={PersonalScreen} />
+      <Stack.Screen name="PersonalScreen" component={PersonalScreen} options={{
+        headerStyle: {
+          backgroundColor: '#DDEAF6', // Different color for another screen
+        },
+      }} />
       <Stack.Screen name="Register" component={RegisterScreen} options={{
         headerStyle: {
           backgroundColor: '#DDEAF6', // Different color for another screen

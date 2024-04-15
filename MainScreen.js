@@ -21,6 +21,15 @@ const MainScreen = () => {
     { key: 'personal', title: 'Personal', icon: 'person' },
   ]);
 
+  const theme = {
+    colors: {
+      primary: '#1a2771', // color for the active tab icon and text
+      background: '#00A499', // background color of the bottom navigation bar
+      card: '#00A499', // color of the card behind the tabs, same as background color
+      text: '#ADB0C3', // color for the inactive tab icon and text
+    },
+  };
+
   const renderScene = BottomNavigation.SceneMap({
     home: HomeScreen,
     schedule: ScheduleScreen,

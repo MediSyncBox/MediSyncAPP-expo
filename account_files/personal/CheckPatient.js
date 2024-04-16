@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, TextInput, Button } from 'react-native';
 import { useAuth } from '../AuthContext'; // Make sure the path is correct
 import {fetchPatientInfo} from '../api/patient';
+import BackgroundComponent from '../style/BackgroundComponent';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const CheckPatient = () => {
   const { setPatientInfo, patientInfo, setCurrentPatient } = useAuth();
@@ -64,43 +66,57 @@ const CheckPatient = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {patientInfo ? (
-        <FlatList
-          data={patientInfo}
-          renderItem={renderPatient}
-          keyExtractor={item => item.id.toString()}
-          contentContainerStyle={styles.listContainer}
-        />
-      ) : (
-        <ActivityIndicator size="large" color="#0000ff" />
-      )}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => setIsAdding(true)}
-      >
-        <Text style={styles.addButtonText}>+</Text>
-      </TouchableOpacity>
-      {isAdding && (
-        <View style={styles.inputContainer}>
-          <TextInput
-            placeholder="Enter User ID"
-            value={newUserId}
-            onChangeText={setNewUserId}
-            keyboardType="numeric"
-            style={styles.input}
+      <View style={styles.container}>
+        {patientInfo ? (
+          <FlatList
+            data={patientInfo}
+            renderItem={renderPatient}
+            keyExtractor={item => item.id.toString()}
+            contentContainerStyle={styles.listContainer}
           />
-          <Button title="Add Patient" onPress={handleAddPatient} />
-        </View>
-      )}
-    </View>
+        ) : (
+          <ActivityIndicator size="large" color="#0000ff" />
+        )}
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => setIsAdding(true)}
+        >
+          <Ionicons name="person-add" size={24} style={styles.icon}/>
+        </TouchableOpacity>
+        {isAdding && (
+          <View style={styles.inputContainer}>
+            <TextInput
+              placeholder="Enter User ID"
+              value={newUserId}
+              onChangeText={setNewUserId}
+              keyboardType="numeric"
+              style={styles.input}
+              placeholderTextColor="#888" // Light grey color for the placeholder
+            />
+            <TouchableOpacity style={styles.button} onPress={handleAddPatient}>
+              <Text style={styles.buttonText}>Add Patient</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#e8f4fb',
+  },
+  button: {
+    backgroundColor: '#3784bc', // Blue background
+    padding: 10,
+    borderRadius: 25,
+    alignItems: 'center'
+  },
+  buttonText: {
+    color: '#ffffff', // White text
+    fontSize: 16,
+    fontWeight: 'bold'
   },
   addButton: {
     position: 'absolute',
@@ -109,25 +125,26 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#4f9acc',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 8,
   },
-  addButtonText: {
-    color: '#FFFFFF',
-    fontSize: 30,
-    lineHeight: 30, // Adjust the line height to be the same as the font size to vertically center the plus sign
-  },
   inputContainer: {
     padding: 20,
-    margin: 20,
+    // margin: 20,
+    marginBottom: 35,
+    marginLeft: 20,
+    justifyContent: 'space-between',
+    marginRight: 85
   },
   input: {
+    paddingHorizontal: 16, 
     height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+    borderColor: '#3784bc',
+    borderWidth: 2,
     marginBottom: 20,
+    borderRadius: 25,
   },
   header: {
     fontSize: 22,
@@ -138,23 +155,31 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   listItem: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#7d8896', // Light blue background
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 10,
-    borderRadius: 5,
-    elevation: 1, // Add shadow on Android
-    shadowOpacity: 0.1, // Add shadow on iOS
-    shadowRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 0 },
+    borderRadius: 25, // Rounded corners
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3, // Shadow depth on Android
+    shadowOpacity: 0.2, // Shadow opacity for iOS
+    shadowRadius: 6, // How blurred the shadow should be
+    shadowColor: '#000', // Shadow color
+    shadowOffset: { width: 0, height: 2 }, // The offset of shadow
   },
   patientName: {
     fontSize: 18,
+    color: 'white',
+    fontWeight: 'bold'
   },
   listContainer: {
     paddingBottom: 20, // Adds padding to the bottom of the list
   },
+  icon: {
+    color: 'white',
+    // backgroundColor: '#4f9acc'
+  }
 });
 
 export default CheckPatient;

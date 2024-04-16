@@ -193,9 +193,9 @@ const AgendaScreen = (props) => {
           <Text style={[styles.nameText, { fontSize: 18 }]}>{reservation.name}</Text>
         </View>
         <View style={styles.itemFooter}>
-          <Ionicons name="time" size={18} color="white" style={styles.icon} />
+          <Ionicons name="time" size={18} color="#43515c" style={styles.icon} />
           <Text style={styles.timeText}>{scheduleDateTime.toLocaleTimeString()}</Text>
-          <Ionicons name="water" size={18} color="white" style={styles.doseicon} />
+          <Ionicons name="water" size={18} color="#43515c" style={styles.doseicon} />
           <Text style={styles.doseText}>Dose: {reservation.dose || 'No dose info'}</Text>
         </View>
       </View>
@@ -245,10 +245,11 @@ const AgendaScreen = (props) => {
             // agendaDayNumColor: 'green',
             agendaTodayColor: '#3c80c4',
             agendaKnobColor: '#13296c',
-            calendarBackground: '#f7fbfe',
-            reservationsBackgroundColor: '#c0d8ec',
+            calendarBackground: '#7bb4d9',
+            reservationsBackgroundColor: '#e8f4fb',
             selectedDayBackgroundColor: '#3c80c4',
             dotColor: '#72bcef',
+            dayTextColor: 'white',
           }}
           renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}>
             <Text>You don't have a schedule</Text></View> : null}
@@ -298,7 +299,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   item: {
-    backgroundColor: "#2f3e6e",
+    backgroundColor: "white",
     borderRadius: 30,
     padding: 8, // Reduced padding
     marginRight: 10,
@@ -317,15 +318,15 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 16, // Make text larger
-    color: "#dbdddf",
-    // color: "#43515c",
+    // color: "#dbdddf",
+    color: "#43515c",
     marginBottom: 3, // Add spacing between text elements
     // fontWeight: 'bold',
   },
   nameText: {
     fontSize: 16, // Make text larger
     color: "#dbdddf",
-    // color: "#43515c",
+    color: "#43515c",
     marginBottom: 3, // Add spacing between text elements
     fontWeight: 'bold',
   },
@@ -369,7 +370,7 @@ const styles = StyleSheet.create({
   },
   doseText: {
     fontSize: 16, // Make text larger
-    color: "#dbdddf",
+    color: "#43515c",
     marginBottom: 2, // Add spacing between text elements
     marginLeft: 32,
   },

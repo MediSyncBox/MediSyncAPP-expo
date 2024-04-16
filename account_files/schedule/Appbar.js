@@ -65,10 +65,10 @@ const CustomAppbar = ({setShouldRefreshAgenda, items, setItems}) => {
 const styles = {
   appbar: {
     height: 45, // Adjust the height to make the Appbar thin
-    backgroundColor: '#f7fbfe',
+    backgroundColor: '#7bb4d9',
   },
   title: {
-    color: '#13296c', // Adjust the text color
+    color: 'white', // Adjust the text color
     fontSize: 21, // Adjust the text size
     fontWeight: 'bold',
     marginLeft: 20,
@@ -78,7 +78,7 @@ const styles = {
     // position: 'absolute',
   },
   icon: {
-    color: '#13296c', // Adjust the icon color
+    color: 'white', // Adjust the icon color
     // position: 'absolute',
     marginTop: 10
   },

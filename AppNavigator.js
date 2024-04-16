@@ -18,11 +18,20 @@ function AppNavigator() {
     <Stack.Navigator initialRouteName={isLoggedIn ? "MainScreen" : "Login"}>
       {/* <Stack.Navigator> */}
       <Stack.Screen name="MainScreen" component={MainScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CheckPatient" component={CheckPatient} options={{
-        headerStyle: {
-          backgroundColor: '#DDEAF6', // Different color for another screen
-        },
-      }} />
+      <Stack.Screen name="CheckPatient" 
+        component={CheckPatient} 
+        options={{
+          headerStyle: {
+            backgroundColor: '#ffffff', // Different color for the header background
+          },
+          headerTitle: "Patient Check", // Custom title text for the header
+          headerTitleStyle: {
+            fontWeight: 'bold', // Make the text bold
+            fontSize: 20,        // Increase font size
+            color: '#4d9ce8'        // Change the text color
+          }
+        }} 
+      />
       <Stack.Screen name="Login" component={Login} options={{
         headerStyle: {
           backgroundColor: '#DDEAF6', // Different color for another screen

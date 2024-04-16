@@ -53,8 +53,8 @@ const MainScreen = () => {
         // barStyle={{ backgroundColor: '#13296c'}}
         // activeColor="white"
         // inactiveColor="#3c80c4" 
-        barStyle={{ backgroundColor: '#f7fbfe'}}
-        activeColor="#13296c"
+        barStyle={{ backgroundColor: '#ffffff'}}
+        activeColor="#3c80c4"
         inactiveColor="#3c80c4" 
         
         // sceneColor="red"

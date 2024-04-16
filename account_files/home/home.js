@@ -4,26 +4,7 @@ import { Text, Appbar } from 'react-native-paper';
 import { useAuth } from '../AuthContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Notifications from 'expo-notifications';
-
-
-async function registerForPushNotificationsAsync() {
-  let token;
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-  if (finalStatus !== 'granted') {
-    alert('Failed to get push token for push notification!');
-    return;
-  }
-  token = (await Notifications.getExpoPushTokenAsync()).data;
-  console.log(token);
-
-  return token;
-}
-
+import BackgroundComponent from '../style/BackgroundComponent';
 
 const HomeScreen = () => {
   const { userInfo, tankDetails, updateTankDetails } = useAuth();
@@ -37,38 +18,6 @@ const HomeScreen = () => {
 
   useEffect(() => {
     fetchUserBoxes();
-
-    async function setupNotifications() {
-      const token = await registerForPushNotificationsAsync();
-      console.log(`Token: ${token}`);
-      if (Platform.OS === 'android') {
-        Notifications.setNotificationChannelAsync('default', {
-          name: 'default',
-          importance: Notifications.AndroidImportance.MAX,
-        });
-      }
-
-      const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-        console.log("Notification Received: ", notification);
-      });
-
-      const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-        console.log("Notification Clicked: ", response);
-      });
-
-      return () => {
-        Notifications.removeNotificationSubscription(notificationListener);
-        Notifications.removeNotificationSubscription(responseListener);
-      };
-    }
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-      }),
-    });
-    setupNotifications();
   }, []);
 
 
@@ -148,31 +97,6 @@ const HomeScreen = () => {
       return updatedOptions;
     });
   };
-
-  // const fetchBoxData = (boxId) => {
-  //   const boxData = getBoxData(boxId);
-  //   setTemperature(boxData.temperature);
-  //   setHumidity(boxData.humidity);
-  // };
-
-  // const handleSelectBox = (option) => {
-  //   setSelectedOption(option);
-  //   fetchBoxData(option.id);
-  // };
-
-  // const fetchBoxDetails = (boxName) => {
-  //   const { boxInfo } = useAuth();
-  //   const envCondition = JSON.parse(boxInfo.env_condition);
-
-  //   const boxDetails = {
-  //     temperature: '25',
-  //     humidity: '50',
-  //   };
-
-  //   setTemperature(envCondition.temperature);
-  //   setHumidity(envCondition.humidity);
-  // };
-
 
 
   const fetchBoxDetails = async (boxId) => {
@@ -301,195 +225,189 @@ const HomeScreen = () => {
   };
 
   return (
-
-    <View style={styles.container}>
-      <Appbar.Header>
-        <Appbar.Content title="Your Medical Boxes" />
-        <TouchableOpacity onPress={showModal} style={{ marginRight: 10 }}>
-          <Ionicons name="add-circle-outline" size={30} color="black" />
-        </TouchableOpacity>
-      </Appbar.Header>
-
-      <FlatList
-        data={boxes}
-        horizontal
-        keyExtractor={(box) => box.box_id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[styles.option, selectedOption === item.box_id && styles.selectedOption]}
-            onPress={() => {
-              setSelectedOption(item.box_id);
-              fetchBoxDetails(item.box_id); // 从后端获取盒子详情
-            }}
-          >
-            <Text style={styles.optionText}>{item.name}</Text>
+    <BackgroundComponent>
+      <View style={styles.container}>
+        <Appbar.Header>
+          <Appbar.Content title="Your Medical Boxes" options={{
+            headerStyle: {
+              backgroundColor: '#DDEAF6', // Different color for another screen
+            },
+          }} />
+          <TouchableOpacity onPress={showModal} style={{ marginRight: 10 }}>
+            <Ionicons name="add-circle-outline" size={30} color="black" />
           </TouchableOpacity>
-        )}
-        showsHorizontalScrollIndicator={false}
-      />
+        </Appbar.Header>
+
+        <FlatList
+          data={boxes}
+          horizontal
+          keyExtractor={(box) => box.box_id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[styles.option, selectedOption === item.box_id && styles.selectedOption]}
+              onPress={() => {
+                setSelectedOption(item.box_id);
+                fetchBoxDetails(item.box_id); // 从后端获取盒子详情
+              }}
+            >
+              <Text style={styles.optionText}>{item.name}</Text>
+            </TouchableOpacity>
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
 
 
-      {/* 显示所选 box 的 tank 信息 */}
+        {/* 显示所选 box 的 tank 信息 */}
 
-      <ScrollView style={styles.tankDetailsScroll}>
-        {selectedOption && tankDetails[selectedOption] && (
-          Object.entries(tankDetails[selectedOption]).map(([tankId, tankData]) => (
-            <View key={tankId} style={styles.tankCard}>
-              <Text style={styles.tankId}>{`Tank ID: ${tankId}`}</Text>
-              <View style={styles.tankInfo}>
-                <Text style={styles.temperature}>{`${tankData.temperature}°C`}</Text>
-                <Text style={styles.humidity}>{`${tankData.humidity}%`}</Text>
-              </View>
-              <View style={styles.pillsInfo}>
-                <Text style={styles.pillName}>{tankData.pillName || 'No pills'}</Text>
-                <View style={styles.quantityContainer}>
-                  <Text style={styles.quantityLabel}>Quantity:</Text>
-                  <Text style={styles.quantity}>{tankData.pillNumber || 'No pills'}</Text>
+        <ScrollView style={styles.tankDetailsScroll}>
+          {selectedOption && tankDetails[selectedOption] && (
+            Object.entries(tankDetails[selectedOption]).map(([tankId, tankData]) => (
+              <View key={tankId} style={styles.tankCard}>
+                <Text style={styles.tankId}>{`Tank ID: ${tankId}`}</Text>
+                <View style={styles.tankInfo}>
+                  <Text style={styles.temperature}>{`${tankData.temperature}°C`}</Text>
+                  <Text style={styles.humidity}>{`${tankData.humidity}%`}</Text>
                 </View>
-                <TouchableOpacity style={styles.editButton} onPress={showPillModal}>
-                  <Text style={styles.editButtonText}>{tankData.pillName ? 'Edit' : 'Add'} Pills</Text>
+                <View style={styles.pillsInfo}>
+                  <Text style={styles.pillName}>{tankData.pillName || 'No pills'}</Text>
+                  <View style={styles.quantityContainer}>
+                    <Text style={styles.quantityLabel}>Quantity:</Text>
+                    <Text style={styles.quantity}>{tankData.pillNumber || 'No pills'}</Text>
+                  </View>
+                  <TouchableOpacity style={styles.editButton} onPress={showPillModal}>
+                    <Text style={styles.editButtonText}>{tankData.pillName ? 'Edit' : 'Add'} Pills</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))
+          )}
+        </ScrollView>
+
+
+        <Modal
+          visible={visible}
+          onRequestClose={hideModal}
+          animationType="slide"
+          transparent={true}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <TouchableOpacity style={styles.closeButton} onPress={hideModal}>
+                <Text style={styles.closeButtonText}>x</Text>
+              </TouchableOpacity>
+              <View style={styles.inputGroup}>
+                <Text style={styles.textLabel}>BOX ID:</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Enter Box ID"
+                  value={boxId}
+                  onChangeText={setBoxId}
+                />
+              </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.textLabel}>Name:</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Enter Name"
+                  value={name}
+                  onChangeText={setName}
+                />
+              </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.textLabel}>Is Your Own Box:</Text>
+                <Switch
+                  value={isUserOwnBox}
+                  onValueChange={setIsUserOwnBox}
+                />
+              </View>
+
+
+              <View style={styles.buttonContainer}>
+                {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={handleSubmitBox}
+                >
+                  <Text style={styles.submitButtonText}>Submit</Text>
                 </TouchableOpacity>
               </View>
+
             </View>
-          ))
-        )}
-      </ScrollView>
-
-
-      {/* 选中盒子的详细信息
-      {selectedOption && tanksDetails.map((tank, index) => (
-        <View key={index} style={styles.tankDetail}>
-          <Text style={styles.text}>Tank {index + 1}:</Text>
-          <Text style={styles.text}>Temperature: {tank.temperature}°C</Text>
-          <Text style={styles.text}>Humidity: {tank.humidity}%</Text>
-        </View>
-      ))} */}
-
-
-      <Modal
-        visible={visible}
-        onRequestClose={hideModal}
-        animationType="slide"
-        transparent={true}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <TouchableOpacity style={styles.closeButton} onPress={hideModal}>
-              <Text style={styles.closeButtonText}>x</Text>
-            </TouchableOpacity>
-            <View style={styles.inputGroup}>
-              <Text style={styles.textLabel}>BOX ID:</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Enter Box ID"
-                value={boxId}
-                onChangeText={setBoxId}
-              />
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.textLabel}>Name:</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Enter Name"
-                value={name}
-                onChangeText={setName}
-              />
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.textLabel}>Is Your Own Box:</Text>
-              <Switch
-                value={isUserOwnBox}
-                onValueChange={setIsUserOwnBox}
-              />
-            </View>
-
-
-            <View style={styles.buttonContainer}>
-              {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={handleSubmitBox}
-              >
-                <Text style={styles.submitButtonText}>Submit</Text>
-              </TouchableOpacity>
-            </View>
-
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      <Modal
-        visible={pillvisible}
-        onRequestClose={hidePillModal}
-        animationType="slide"
-        transparent={true}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <TouchableOpacity style={styles.closeButton} onPress={hidePillModal}>
-              <Text style={styles.closeButtonText}>x</Text>
-            </TouchableOpacity>
-            <View style={styles.inputGroup}>
-              <Text style={styles.textLabel}>Name of Pills:</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Enter Name"
-                value={pillName}
-                onChangeText={setpillName}
-              />
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.textLabel}>Number of Pills:</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Enter Number"
-                value={pillNumber}
-                onChangeText={setpillNumber}
-              />
-            </View>
-            <View style={styles.inputGroup}>
-              <Text style={styles.textLabel}>Place of Pills:</Text>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Enter tank number (0, 1, or 2)"
-                value={pillTank}
-                onChangeText={setpillTank}
-              />
-            </View>
-
-            <View style={styles.buttonContainer}>
-              {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={addPill}
-              >
-                <Text style={styles.submitButtonText}>Submit</Text>
+        <Modal
+          visible={pillvisible}
+          onRequestClose={hidePillModal}
+          animationType="slide"
+          transparent={true}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <TouchableOpacity style={styles.closeButton} onPress={hidePillModal}>
+                <Text style={styles.closeButtonText}>x</Text>
               </TouchableOpacity>
+              <View style={styles.inputGroup}>
+                <Text style={styles.textLabel}>Name of Pills:</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Enter Name"
+                  value={pillName}
+                  onChangeText={setpillName}
+                />
+              </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.textLabel}>Number of Pills:</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Enter Number"
+                  value={pillNumber}
+                  onChangeText={setpillNumber}
+                />
+              </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.textLabel}>Place of Pills:</Text>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="Enter tank number (0, 1, or 2)"
+                  value={pillTank}
+                  onChangeText={setpillTank}
+                />
+              </View>
+
+              <View style={styles.buttonContainer}>
+                {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={addPill}
+                >
+                  <Text style={styles.submitButtonText}>Submit</Text>
+                </TouchableOpacity>
+              </View>
+
             </View>
-
           </View>
+        </Modal>
+
+
+
+        <View style={styles.scroll}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {options.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.option, selectedOption === option && styles.selectedOption]}
+                onPress={() => setSelectedOption(option)}
+              >
+                <Text style={styles.optionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
-      </Modal>
+        <View style={styles.information}>
 
 
-
-      <View style={styles.scroll}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {options.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[styles.option, selectedOption === option && styles.selectedOption]}
-              onPress={() => setSelectedOption(option)}
-            >
-              <Text style={styles.optionText}>{option}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-      <View style={styles.information}>
-
-
-        {/* {selectedOption && temperature && (
+          {/* {selectedOption && temperature && (
           <View>
             <Text variant="headlineSmall" style={styles.headline}>Temperature</Text>
             <View style={styles.textContainer}>
@@ -524,37 +442,56 @@ const HomeScreen = () => {
         <TouchableOpacity style={styles.button} onPress={showPillModal}>
           <Text style={styles.buttonText}>Add Pills</Text>
         </TouchableOpacity> */}
-      </View>
-    </View >
+        </View>
+      </View >
+    </BackgroundComponent>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    zIndex: -1, // Ensures the background is behind all other content
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff', // Or any other background color you prefer
+    zIndex: 1, // Ensures content is above the background
+  },
+  option: {
+    // Increase the width for each box
+    width: Dimensions.get('window').width * 0.2, // 80% of the screen width
+    padding: 10,
+    marginTop: 10,
+    marginHorizontal: 10, // Provide some space between the boxes
+    backgroundColor: '#ADB0C3', // Base color for options
+    justifyContent: 'center', // Center content horizontally
+    alignItems: 'center', // Center content vertically
+    borderRadius: 5,
+  },
+  selectedOption: {
+    backgroundColor: '#1a2771',
+  },
+  optionText: {
+    color: '#ffffff', // Text color for visibility against the background
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: 'bold',
   },
   tankDetailsScroll: {
     // If you have a tab bar or any other components, adjust the height accordingly
-    height: '80%', // Or you can use flex: 1 if it doesn't work
+    // height: '80%', // Or you can use flex: 1 if it doesn't work
   },
   // container: {
   //   paddingTop: 5
   // },
   scroll: {
     paddingTop: 10
-  },
-  option: {
-    padding: 20,
-    marginHorizontal: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 20,
-  },
-  selectedOption: {
-    backgroundColor: '#E8DEF8',
-  },
-  optionText: {
-    color: 'black',
   },
   textContainer: {
     width: '90%',
@@ -624,7 +561,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   submitButton: {
-    backgroundColor: '#00A9CE', // NHS Blue for primary buttons
+    backgroundColor: '#3d80cb', // NHS Blue for primary buttons
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -637,7 +574,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   editButton: {
-    backgroundColor: '#00A499', // A lighter NHS Blue variant for secondary buttons
+    backgroundColor: '#3d80cb', // A lighter NHS Blue variant for secondary buttons
     padding: 10,
     borderRadius: 20,
   },
@@ -672,11 +609,6 @@ const styles = StyleSheet.create({
     borderRadius: 25, // Rounded corners
     alignSelf: 'center',
     width: 100,
-  },
-  buttonText: {
-    color: '#FFFFFF', // White text color
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   pillContainer: {
     width: '90%',

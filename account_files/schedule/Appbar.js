@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Appbar, Menu } from 'react-native-paper';
+// import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useAuth } from '../AuthContext'; // 根据实际情况调整导入路径
 import {loadItemsApi} from '../api/schedule';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -32,16 +33,17 @@ const CustomAppbar = ({setShouldRefreshAgenda, items, setItems}) => {
   };
 
   return (
-    <Appbar.Header style={ {backgroundColor: 'white'}}>
-      <Appbar.Content title={currentPatient ? 
+    <Appbar.Header style={styles.appbar}>
+      <Appbar.Content titleStyle={styles.title}
+        title={currentPatient ? 
         (Array.isArray(currentPatient) ? "All Patients" : currentPatient.userName) : "Select a Patient"} />
       <TouchableOpacity onPress={() => setIsMenuVisible(true)}>
-        <Ionicons name="list" size={24}/>
+        <Ionicons name="list" size={24} style={styles.icon}/>
       </TouchableOpacity>
       <Menu
         visible={isMenuVisible}
         onDismiss={() => setIsMenuVisible(false)}
-        anchor={<Appbar.Action icon="dots-vertical" color="white" onPress={() => setIsMenuVisible(true)} />}
+        anchor={<Appbar.Action color="white" onPress={() => setIsMenuVisible(true)} />}
       >
         <Menu.Item
           key="all-patients"
@@ -59,5 +61,28 @@ const CustomAppbar = ({setShouldRefreshAgenda, items, setItems}) => {
     </Appbar.Header>
   );
 };
+
+const styles = {
+  appbar: {
+    height: 45, // Adjust the height to make the Appbar thin
+    backgroundColor: '#f7fbfe',
+  },
+  title: {
+    color: '#13296c', // Adjust the text color
+    fontSize: 21, // Adjust the text size
+    fontWeight: 'bold',
+    marginLeft: 20,
+    marginTop: 10
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // position: 'absolute',
+  },
+  icon: {
+    color: '#13296c', // Adjust the icon color
+    // position: 'absolute',
+    marginTop: 10
+  },
+};
+
 
 export default CustomAppbar;

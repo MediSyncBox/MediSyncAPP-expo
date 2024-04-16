@@ -179,23 +179,23 @@ const AgendaScreen = (props) => {
             </View>
           )}
         <TouchableOpacity
-          style={[styles.itemTouchable, { backgroundColor: 'white' }]}
+          style={[styles.itemTouchable, ]}
           onPress={() => handleTakenToggle(reservation)}
         >
           <Ionicons
             name="checkmark-circle"
             size={24}
-            color={reservation.taken ? "rgb(255, 92, 38)" : "rgb(128, 128, 128)"}
+            color={reservation.taken ? "orange" : "rgb(128, 128, 128)"}
             style={styles.tickIcon}
           />
         </TouchableOpacity>
         <View style={styles.itemHeader}>
-          <Text style={[styles.timeText, { fontSize: 18 }]}>{reservation.name}</Text>
+          <Text style={[styles.nameText, { fontSize: 18 }]}>{reservation.name}</Text>
         </View>
         <View style={styles.itemFooter}>
-          <Ionicons name="time" size={18} color="#43515c" style={styles.icon} />
+          <Ionicons name="time" size={18} color="white" style={styles.icon} />
           <Text style={styles.timeText}>{scheduleDateTime.toLocaleTimeString()}</Text>
-          <Ionicons name="water" size={18} color="#43515c" style={styles.doseicon} />
+          <Ionicons name="water" size={18} color="white" style={styles.doseicon} />
           <Text style={styles.doseText}>Dose: {reservation.dose || 'No dose info'}</Text>
         </View>
       </View>
@@ -241,7 +241,14 @@ const AgendaScreen = (props) => {
           refreshing={props.refreshing}
           onRefresh={props.onRefresh}
           theme={{
-            reservationsBackgroundColor: '#c6dcee',
+            // agendaDayTextColor: 'yellow',
+            // agendaDayNumColor: 'green',
+            agendaTodayColor: '#3c80c4',
+            agendaKnobColor: '#13296c',
+            calendarBackground: '#f7fbfe',
+            reservationsBackgroundColor: '#c0d8ec',
+            selectedDayBackgroundColor: '#3c80c4',
+            dotColor: '#72bcef',
           }}
           renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}>
             <Text>You don't have a schedule</Text></View> : null}
@@ -282,11 +289,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 30
   },
-  customDay: {
-    margin: 10,
-    fontSize: 24,
-    color: "green"
-  },
   dayItem: {
     marginLeft: 34
   },
@@ -295,11 +297,8 @@ const styles = StyleSheet.create({
     // marginBottom: 100,
     alignItems: 'center',
   },
-  selectedItem: {
-    backgroundColor: '#d3d3d3', // 一个示例高亮颜色
-  },
   item: {
-    backgroundColor: "white",
+    backgroundColor: "#2f3e6e",
     borderRadius: 30,
     padding: 8, // Reduced padding
     marginRight: 10,
@@ -318,8 +317,17 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 16, // Make text larger
-    color: "#43515c",
+    color: "#dbdddf",
+    // color: "#43515c",
     marginBottom: 3, // Add spacing between text elements
+    // fontWeight: 'bold',
+  },
+  nameText: {
+    fontSize: 16, // Make text larger
+    color: "#dbdddf",
+    // color: "#43515c",
+    marginBottom: 3, // Add spacing between text elements
+    fontWeight: 'bold',
   },
   itemHeader: {
     flexDirection: 'row',
@@ -361,7 +369,7 @@ const styles = StyleSheet.create({
   },
   doseText: {
     fontSize: 16, // Make text larger
-    color: "#43515c",
+    color: "#dbdddf",
     marginBottom: 2, // Add spacing between text elements
     marginLeft: 32,
   },
@@ -370,5 +378,6 @@ const styles = StyleSheet.create({
     top: 5, // Adjust as necessary
     right: 5, // Adjust as necessary
     padding: 5,
+    borderRadius: 25,
   },
 })

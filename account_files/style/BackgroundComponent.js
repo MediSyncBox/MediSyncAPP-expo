@@ -9,7 +9,7 @@ const BackgroundComponent = ({ children }) => {
       <LinearGradient
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        colors={['#c6dcee', '#ffffff', '#ffffff', '#c6dcee']}
+        colors={['#a7c9e5', '#ffffff', '#ffffff', '#c6dcee']}
         // colors={['#c6dcee', '#ffffff']}
         locations={[0, 0.5, 0.5, 1]}
         style={styles.background}

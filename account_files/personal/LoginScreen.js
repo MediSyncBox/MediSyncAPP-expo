@@ -84,7 +84,7 @@ const LoginScreen = () => {
           source={require('../img/logo.png')}
           style={styles.logo}
         />
-        <Text style={styles.title}>Login</Text>
+        {/* <Text style={styles.title}>Login</Text> */}
         <TextInput
           style={styles.input}
           placeholder="Email or Phone"
@@ -122,16 +122,17 @@ const styles = StyleSheet.create({
 
   logo: {
     position: 'absolute',
-    top: 100,
-    alignSelf: 'center',
-    width: 120,
-    height: undefined,
+    top: 10,
+    // alignSelf: 'center',
+    width: 200,
+    // height: 200,
     aspectRatio: 1,
     resizeMode: 'contain',
-
+    // marginTop: 10,
+    // marginBottom: 40,
   },
   title: {
-    marginTop: 20,
+    marginTop: 50,
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
@@ -140,11 +141,13 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 50,
+    top: 100,
     backgroundColor: '#ffffff',
     borderWidth: 1,
     borderColor: '#70bdf5',
     borderRadius: 5,
     paddingHorizontal: 10,
+    // marginBottom: 10,
     marginBottom: 10,
     color: '#1a2771'
   },
@@ -156,6 +159,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
     marginTop: 10,
+    top: 100, 
   },
   buttonText: {
     color: '#ffffff',

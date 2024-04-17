@@ -227,8 +227,8 @@ const HomeScreen = () => {
   return (
     <BackgroundComponent>
       <View style={styles.container}>
-        <Appbar.Header>
-          <Appbar.Content title="Your Medical Boxes" options={{
+        <Appbar.Header style={styles.appbar}>
+          <Appbar.Content title="Your Medical Boxes" titleStyle={styles.title} options={{
             headerStyle: {
               backgroundColor: '#DDEAF6', // Different color for another screen
             },
@@ -456,6 +456,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     zIndex: 1, // Ensures content is above the background
+  },
+  appbar: {
+    height: 60, // Adjust the height to make the Appbar thin
+    backgroundColor: 'white',
+  },
+  title: {
+    color: '#3c80c4', // Adjust the text color
+    fontSize: 21, // Adjust the text size
+    fontWeight: 'bold',
+    marginLeft: 20,
+    marginTop: 10
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // position: 'absolute',
   },
   option: {
     // width: Dimensions.get('window').width * 0.2, // Removed fixed width

@@ -308,7 +308,7 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
               <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>Close</Text>
+                <Text style={styles.closeText}>Close</Text>
               </Pressable>
             </View>
           </View>
@@ -356,7 +356,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   textStyle: {
-    color: 'black',
+    color: '#81cd48',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  closeText: {
+    color: '#2d6399',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -408,7 +414,7 @@ const styles = StyleSheet.create({
   },
   buttonAdd: {
     right: 50,
-    borderColor: '#2d6399',
+    borderColor: '#81cd48',
     borderRadius: 25,
     borderWidth: 2,
   },

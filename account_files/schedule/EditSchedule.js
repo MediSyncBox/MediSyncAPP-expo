@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, StyleSheet, Text, TextInput, View, Switch, Pressable, Alert } from 'react-native';
+import { Modal, StyleSheet, Text, TextInput, View, Switch, Pressable, Alert, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker'; // Ensure this is installed
 import {loadItemsApi} from '../api/schedule';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function EditSchedule({ modalVisible, setModalVisible, initialData, setShouldRefreshAgenda, userId, items, setItems }) {
   const [medicine, setMedicine] = useState(initialData ? initialData.name : '');
@@ -150,13 +151,10 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
               placeholder="Enter Dose"
               keyboardType="numeric"
             />
-
-            <Pressable
-              style={styles.buttonOpen}
-              onPress={() => setShowTimePicker(true)}>
+            <TouchableOpacity style={styles.button} onPress={() => setShowTimePicker(true)}>
+              <Ionicons name="calendar" size={20} color="#3c80c4"/>
               <Text style={styles.textStyle}>{timeButtonText}</Text>
-            </Pressable>
-
+            </TouchableOpacity>
             {showTimePicker && (
               <DateTimePicker
                 value={time}
@@ -169,15 +167,15 @@ export default function EditSchedule({ modalVisible, setModalVisible, initialDat
 
             <View style={styles.buttonContainer}>
               <Pressable
-                style={[styles.button, styles.buttonClose]}
+                style={[styles.button, styles.buttonAdd]}
                 onPress={updateSchedule}>
-                <Text style={styles.textStyle}>Save</Text>
+                <Text style={styles.textSave}>Save</Text>
               </Pressable>
 
               <Pressable
-                style={[styles.button, styles.buttonClose]}
+                style={[styles.button, styles.buttonDelete]}
                 onPress={handleDeleteSchedule}>
-                <Text style={styles.textStyle}>Delete</Text>
+                <Text style={styles.textDelete}>Delete</Text>
               </Pressable>
 
               <Pressable
@@ -206,30 +204,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    width: '80%',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+  textSave: {
+    color: '#81cd48',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
-  input: {
-    height: 40,
-    margin: 5,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
+  textDelete: {
+    color: 'orange',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  buttonAdd: {
+    // right: 20,
+    borderColor: '#81cd48',
+    borderRadius: 25,
+    borderWidth: 2,
+  },
+  buttonDelete: {
+    // right: 20,
+    borderColor: 'orange',
+    borderRadius: 25,
+    borderWidth: 2,
   },
   buttonOpen: {
     backgroundColor: '#E8DEF8',
@@ -237,16 +234,6 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
     marginTop: 15,
-  },
-  textStyle: {
-    color: "black",
-    fontWeight: "bold",
-    textAlign: "center"
-  },
-  buttonClose: {
-    backgroundColor: '#bbb0c7',
-    borderRadius: 20,
-    marginTop: 10,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -279,7 +266,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#f4f9fd',
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
@@ -296,18 +283,23 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     margin: 5,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
+    width: '95%',
+    // borderWidth: 1,
+    // borderColor: 'black',
     padding: 10,
-    borderRadius: 5,
+    // borderRadius: 5,
+    borderBottomColor: '#3c80c4', // Color of the separator line
+    borderBottomWidth: 1,
   },
   button: {
-    backgroundColor: '#E8DEF8',
-    borderRadius: 20,
+    backgroundColor: '#f4f9fd',
+    borderColor: '#3c80c4',
+    borderRadius: 25,
+    borderWidth: 2,
     padding: 10,
     elevation: 2,
     marginTop: 15,
+    flexDirection: 'row',
   },
   buttonTaken: {
     backgroundColor: 'green',
@@ -316,13 +308,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
   },
   textStyle: {
-    color: "black",
-    fontWeight: "bold",
-    textAlign: "center"
+    color: '#2d6399',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   buttonClose: {
-    backgroundColor: '#bbb0c7',
-    borderRadius: 20,
+    // backgroundColor: '#bbb0c7',
+    borderRadius: 25,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -333,5 +326,6 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: '#3c80c4'
   },
 });

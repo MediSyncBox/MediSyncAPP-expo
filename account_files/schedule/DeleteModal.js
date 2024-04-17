@@ -58,7 +58,7 @@ const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRef
             selectedValue={selectedPatient}
             onValueChange={(itemValue, itemIndex) => setSelectedPatient(itemValue)}
             style={styles.picker}>
-            <Picker.Item label="Who's schedule you want to delete?" value="" />
+            <Picker.Item label="Select users" value="" />
             {currentPatient.map((patient) => (
               <Picker.Item key={patient.id} label={patient.userName} value={patient.id} />
             ))}
@@ -75,10 +75,10 @@ const DeleteModal = ({ closeModal, items, setItems, currentPatient, setShouldRef
         </Picker>
 
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={[styles.button]} onPress={handleDelete}>
-            <Text style={styles.textStyle}>Delete</Text>
+          <TouchableOpacity style={[styles.deleteButton]} onPress={handleDelete}>
+            <Text style={styles.deleteText}>Delete</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.buttonClose]} onPress={closeModal}>
+          <TouchableOpacity style={[styles.buttonClose]} onPress={closeModal}>
             <Text style={styles.textStyle}>Close</Text>
           </TouchableOpacity>
         </View>
@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    backgroundColor: '#f4f9fd',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -122,11 +123,43 @@ const styles = StyleSheet.create({
     flex: 1,  // Allow buttons to grow
     backgroundColor: 'orange',
   },
+  deleteButton: {
+    bottom: 10,
+    right: 10,
+    backgroundColor: '#f4f9fd',
+    borderRadius: 25,
+    // padding: 10,
+    elevation: 2,
+    // margin: 10,
+    // flex: 1,  // Allow buttons to grow
+    borderColor: 'orange',
+    borderWidth: 2,
+    padding: 10,
+    elevation: 2,
+    marginTop: 15,
+  },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    left: 10,
+    bottom: 10,
+    backgroundColor: '#f4f9fd',
+    borderRadius: 25,
+    // padding: 10,
+    elevation: 2,
+    // margin: 10,
+    // flex: 1,  // Allow buttons to grow
+    borderColor: '#2d6399',
+    borderWidth: 2,
+    padding: 10,
+    elevation: 2,
+    marginTop: 15,
+  },
+  deleteText: {
+    color: 'orange',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   textStyle: {
-    color: 'white',
+    color: '#2d6399',
     fontWeight: 'bold',
     textAlign: 'center',
   },

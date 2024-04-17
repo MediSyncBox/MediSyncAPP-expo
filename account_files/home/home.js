@@ -257,8 +257,6 @@ const HomeScreen = () => {
         />
 
 
-        {/* 显示所选 box 的 tank 信息 */}
-
         <ScrollView style={styles.tankDetailsScroll}>
           {selectedOption && tankDetails[selectedOption] && (
             Object.entries(tankDetails[selectedOption]).map(([tankId, tankData]) => (
@@ -460,17 +458,18 @@ const styles = StyleSheet.create({
     zIndex: 1, // Ensures content is above the background
   },
   option: {
-    // Increase the width for each box
-    width: Dimensions.get('window').width * 0.2, // 80% of the screen width
+    // width: Dimensions.get('window').width * 0.2, // Removed fixed width
+    minWidth: 80, // Minimum width to ensure boxes are not too small
     height: 45,
-    padding: 10,
+    paddingHorizontal: 20, // Increase horizontal padding to provide space around text
     marginTop: 10,
-    marginHorizontal: 10, // Provide some space between the boxes
-    backgroundColor: '#ADB0C3', // Base color for options
-    justifyContent: 'center', // Center content horizontally
-    alignItems: 'center', // Center content vertically
+    marginHorizontal: 10,
+    backgroundColor: '#ADB0C3',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 5,
   },
+  
   selectedOption: {
     backgroundColor: '#1a2771',
   },
@@ -639,6 +638,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 10,
     marginHorizontal: 20,
+    marginBottom: 0,
     elevation: 3,
     shadowRadius: 3,
     shadowOpacity: 0.2,

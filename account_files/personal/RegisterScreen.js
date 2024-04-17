@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
+import { ScrollView, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 import BackgroundComponent from '../style/BackgroundComponent';
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 const RegistrationScreen = () => {
   const { login } = useAuth();
   const [emailorPhone, setEmailorPhone] = useState('');
@@ -63,28 +65,43 @@ const RegistrationScreen = () => {
           source={require('../img/logo.png')}
           style={styles.logo}
         />
-        <Text style={styles.title}>Register</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email or Phone"
-          onChangeText={setEmailorPhone}
-          value={emailorPhone}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          onChangeText={setUserName}
-          value={userName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          onChangeText={setPassword}
-          value={password}
-        />
-        <TouchableOpacity style={styles.button} onPress={registerUser}>
+        <View style={styles.inputContainer}>
+          <Ionicons name="mail-outline" size={20} color="#3c80c4" />
+          <TextInput
+            style={styles.input}
+            placeholder="Email or Phone"
+            onChangeText={setEmailorPhone}
+            value={emailorPhone}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#3c80c4" />
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            onChangeText={setUserName}
+            value={userName}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Ionicons name="key-outline" size={20} color="#3c80c4" />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            onChangeText={setPassword}
+            value={password}
+          />
+        </View>
+        
+        {/* <TouchableOpacity style={styles.button} onPress={registerUser}>
           <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity> */}
+        <TouchableOpacity style={styles.button} onPress={registerUser}>
+          <View flexDirection='row'>
+            <Ionicons name="log-out" size={20} color="#3c80c4"/>
+            <Text style={styles.buttonText}>REGISTER</Text>
+          </View>
         </TouchableOpacity>
       </ScrollView>
     </BackgroundComponent>
@@ -97,6 +114,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20, 
+    backgroundColor: 'white'
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 2,
+    borderColor: '#3c80c4',
+    padding: 10,
+    marginTop: 5,
+    width: 310,
+    top: 55
   },
   title: {
     fontSize: 24,
@@ -104,40 +132,65 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#1a2771', // Title color matched
   },
+  // logo: {
+  //   position: 'absolute',
+  //   top: 100,
+  //   alignSelf: 'center',
+  //   width: 120,
+  //   height: undefined,
+  //   aspectRatio: 1,
+  //   resizeMode: 'contain',
+
+  // },
   logo: {
     position: 'absolute',
-    top: 100,
-    alignSelf: 'center',
-    width: 120,
-    height: undefined,
+    top: 10,
+    // alignSelf: 'center',
+    width: 200,
+    // height: 200,
     aspectRatio: 1,
     resizeMode: 'contain',
-
+    // marginTop: 10,
+    // bottom: 800,
   },
+  // input: {
+  //   width: '100%',
+  //   height: 50,
+  //   backgroundColor: '#ffffff',
+  //   borderWidth: 1,
+  //   borderColor: '#70bdf5', // Input border color matched
+  //   borderRadius: 5,
+  //   paddingHorizontal: 10,
+  //   marginBottom: 10,
+  //   color: '#1a2771' // Input text color matched
+  // },
   input: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#70bdf5', // Input border color matched
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    color: '#1a2771' // Input text color matched
+    flex: 1,
+    marginLeft: 10,
+    // fontWeight: 'bold',
+    color: '#3c80c4',
+    // fontColor: '#3c80c4',
   },
   button: {
-    width: '40%', // Size adjustment for aesthetics
+    width: '40%',
     height: 50,
-    backgroundColor: '#3d80cb', // Button color matched
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
-    marginTop: 20, // Increased margin for separation
+    // borderRadius: 5,
+    // marginTop: 30,
+    top: 85,
+    // marginLeft: 10,
+    // borderRadius: 25,
+    // borderColor: '#3d80cb',
+    // borderBlockColor: '#3d80cb',
+    // borderWidth: 2,
   },
   buttonText: {
-    color: '#ffffff', // Button text color for readability
+    color: '#3d80cb',
     fontSize: 15,
     fontWeight: 'bold',
+    left: 5
   },
 });
 

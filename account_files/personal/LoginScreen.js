@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../AuthContext';
 import { fetchPatientInfo } from '../api/patient';
 import BackgroundComponent from '../style/BackgroundComponent';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const LoginScreen = () => {
   const { login, setPatientInfo } = useAuth();
@@ -85,24 +86,42 @@ const LoginScreen = () => {
           style={styles.logo}
         />
         {/* <Text style={styles.title}>Login</Text> */}
-        <TextInput
+        {/* <TextInput
           style={styles.input}
           placeholder="Email or Phone"
           onChangeText={setEmailorPhone}
           value={emailorPhone}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          onChangeText={setPassword}
-          value={password}
-        />
-        <TouchableOpacity style={styles.button} onPress={loginUser}>
-          <Text style={styles.buttonText}>Login</Text>
+        /> */}
+        <View style={styles.firstInputContainer}>
+          <Ionicons name="mail-outline" size={20} color="#3c80c4" />
+          <TextInput
+            style={styles.input}
+            placeholder="Email or Phone"
+            onChangeText={setEmailorPhone}
+            value={emailorPhone}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Ionicons name="key-outline" size={20} color="#3c80c4" />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            onChangeText={setPassword}
+            value={password}
+          />
+        </View>
+        <TouchableOpacity style={styles.firstButton} onPress={loginUser}>
+          <View flexDirection='row'>
+              <Ionicons name="log-in" size={20} color="#3c80c4"/>
+            <Text style={styles.buttonText}>LOGIN</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.buttonText}>Go to Register</Text>
+          <View flexDirection='row'>
+            <Ionicons name="log-out" size={20} color="#3c80c4"/>
+            <Text style={styles.buttonText}>REGISTER</Text>
+          </View>
         </TouchableOpacity>
       </ScrollView>
     </BackgroundComponent>
@@ -110,7 +129,6 @@ const LoginScreen = () => {
 };
 
 const styles = StyleSheet.create({
-
   container: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -118,8 +136,26 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 20,
     paddingHorizontal: 20,
+    backgroundColor: 'white'
   },
-
+  firstInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 2,
+    borderColor: '#3c80c4',
+    padding: 10,
+    marginTop: 180,
+    width: 310
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 2,
+    borderColor: '#3c80c4',
+    padding: 10,
+    marginTop: 5,
+    width: 310
+  },
   logo: {
     position: 'absolute',
     top: 10,
@@ -131,43 +167,64 @@ const styles = StyleSheet.create({
     // marginTop: 10,
     // marginBottom: 40,
   },
-  title: {
-    marginTop: 50,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#1a2771',
-  },
+  // input: {
+  //   width: '100%',
+  //   height: 50,
+  //   top: 100,
+  //   backgroundColor: '#ffffff',
+  //   // borderWidth: 1,
+  //   // borderColor: '#70bdf5',
+  //   // borderRadius: 5,
+  //   paddingHorizontal: 10,
+  //   // marginBottom: 10,
+  //   marginBottom: 10,
+  //   color: '#1a2771',
+  //   width: 300,
+  //   // borderRadius: 25,
+  //   paddingHorizontal: 16, 
+  // },
   input: {
-    width: '100%',
-    height: 50,
-    top: 100,
-    backgroundColor: '#ffffff',
-    borderWidth: 1,
-    borderColor: '#70bdf5',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    // marginBottom: 10,
-    marginBottom: 10,
-    color: '#1a2771'
+    flex: 1,
+    marginLeft: 10,
+    // fontWeight: 'bold',
+    color: '#3c80c4',
+    // fontColor: '#3c80c4',
   },
   button: {
     width: '40%',
     height: 50,
-    backgroundColor: '#3d80cb',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 5,
-    marginTop: 10,
-    top: 100, 
+    // borderRadius: 5,
+    // marginTop: 30,
+    top: 25,
+    // marginLeft: 10,
+    // borderRadius: 25,
+    // borderColor: '#3d80cb',
+    // borderBlockColor: '#3d80cb',
+    // borderWidth: 2,
+  },
+  firstButton: {
+    width: '40%',
+    height: 50,
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    // alignItems: 'left',
+    // borderRadius: 5,
+    // marginTop: 30,
+    marginLeft: 50,
+    top: 30, 
+    // borderRadius: 25,
+    // borderColor: '#3d80cb',
+    // borderBlockColor: '#3d80cb',
+    // borderWidth: 2,
   },
   buttonText: {
-    color: '#ffffff',
+    color: '#3d80cb',
     fontSize: 15,
     fontWeight: 'bold',
-  },
-  linkButton: {
-    marginTop: 15,
+    left: 5
   },
 
 });

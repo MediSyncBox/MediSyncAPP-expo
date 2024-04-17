@@ -251,6 +251,15 @@ const AgendaScreen = (props) => {
             selectedDayBackgroundColor: '#3c80c4',
             dotColor: '#72bcef',
             dayTextColor: 'white',
+            monthTextColor: 'white',
+            todayTextColor: '#13296c',
+            // selectedDayTextColor: 'red',
+            // agendaDayTextColor: 'red',
+            // textDayHeaderFontSize: 20,
+            textDayHeaderFontWeight: 'bold',
+            // dayHeaderTextColor: 'red',
+            // textMonthFontFamily: 'monospace',
+            textMonthFontSize: 18
           }}
           renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}>
             <Text>You don't have a schedule</Text></View> : null}

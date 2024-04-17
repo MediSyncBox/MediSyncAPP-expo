@@ -36,11 +36,11 @@ const AgendaScreen = (props) => {
   };
 
   const scheduleNotification = async (time, title, body) => {
-    // console.warn(time)
+    console.warn(body)
     const schedulingOptions = {
       content: {
-        title: 'Eat pills!',
-        body: "pills!",
+        title: title,
+        body: body,
         sound: true, // 可选，如果你希望通知有声音
       },
       trigger: {
@@ -98,7 +98,8 @@ const AgendaScreen = (props) => {
         items[date].forEach(item => {
           const eventTime = new Date(item.time);
           if (eventTime >= todayStart && eventTime < tomorrowEnd) {
-            scheduleNotification(eventTime, "日程提醒", `您有一个${item.name}的约会。`).catch(error => {
+            scheduleNotification(eventTime, "Time to take pills!", 
+            `Your have a ${item.name} schedule, with dose of ${item.dose}.`).catch(error => {
               console.error("Failed to schedule notification:", error);
             });
           }

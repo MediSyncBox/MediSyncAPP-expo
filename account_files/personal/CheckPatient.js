@@ -27,6 +27,7 @@ const CheckPatient = () => {
   };
 
   const handleAddPatient = async () => {
+    // await checkBox();
     // Validate and make sure the newUserId is not empty and is a number
     if (!newUserId.trim() || isNaN(newUserId)) {
       alert("Please enter a valid User ID");
@@ -36,12 +37,39 @@ const CheckPatient = () => {
     // Call your API to add the new patient, we'll define addPatientToCaregiver next
     try {
       await addPatientToCaregiver(newUserId);
+      
       setNewUserId(''); // Reset the input
       setIsAdding(false); // Close the input field
     } catch (error) {
       alert(error.message);
     }
   };
+
+  // const checkBox = async (userId) => {
+  //   // baseURL = 'https://medisyncconnection.azurewebsites.net/api/medicine-reminder'
+  //   const time = '11:20';
+  //   try {
+  //     const response = await fetch('https://medisyncconnection.azurewebsites.net/api/medicine-reminder/8', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({time}),
+  //     });
+      
+      
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+  
+  //     const data = await response.json();
+  //     console.warn(data)
+      
+  //   } catch (error) {
+  //     console.error('Error fetching patient info:', error);
+  //     // Optionally set some error state here
+  //   }
+  // };
 
   const addPatientToCaregiver = async (userId) => {
     try {

@@ -16,6 +16,8 @@ const PersonalScreen = () => {
     const email = userInfo?.emailorPhone || 'your.email@example.com';
     const userId = userInfo?.id || 'Your ID';
 
+    
+
     return (
         <BackgroundComponent>
             <View style={styles.container}>

@@ -5,7 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from '../AuthContext';
 import {loadItemsApi} from '../api/schedule';
 import { Picker } from '@react-native-picker/picker'; // 或者从 react-native 中导入
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function AddModal({ modalVisible, setModalVisible, items, setItems, setShouldRefreshAgenda }) {
   const [medicine, setMedicine] = useState(undefined);
@@ -38,6 +38,7 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
       setSelectedPatientId(patientInfo[0].id);
     }
   }, [patientInfo]);
+
   const renderPatientPicker = () => (
     <View style={styles.pickerContainer}>
       <Picker
@@ -126,7 +127,8 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
     return doseTimes.map((time, index) => (
       <View key={index}>
         <TouchableOpacity style={styles.button} onPress={() => showTimePicker(index)}>
-          <Text style={styles.textStyle}>{time ? time.toLocaleTimeString() : "Select time"}</Text>
+          <Ionicons name="time" size={20} color="#3c80c4"/>
+          <Text style={styles.timeTextStyle}>{time ? time.toLocaleTimeString() : "Select time"}</Text>
         </TouchableOpacity>
 
         {showPickers[index] && (
@@ -254,7 +256,8 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
 
             <View>
             <TouchableOpacity style={styles.button} onPress={handleStartPress}>
-              <Text style={styles.textStyle}>{startDateText}</Text>
+              <Ionicons name="calendar" size={20} color="#3c80c4"/>
+              <Text style={styles.dateTextStyle}>{startDateText}</Text>
             </TouchableOpacity>
             {showStartDatePicker && (
               <DateTimePicker
@@ -268,7 +271,8 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
 
             <View>
             <TouchableOpacity style={styles.button} onPress={handleEndPress}>
-              <Text style={styles.textStyle}>{endDateText}</Text>
+              <Ionicons name="calendar" size={20} color="#3c80c4"/>
+              <Text style={styles.dateTextStyle}>{endDateText}</Text>
             </TouchableOpacity>
             {showEndDatePicker && (
               <DateTimePicker
@@ -289,16 +293,16 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
             )}
             {isLoading && (
               <View style={styles.warningContainer}>
-                <Text>Loading...</Text>
+                <Text style={styles.loadingText}>Loading...</Text>
                 {/* Or use a Spinner/ActivityIndicator component here */}
               </View>
             )}
 
             <View style={styles.buttonContainer}>
               <Pressable
-                style={[styles.button, styles.buttonClose]}
+                style={[styles.button, styles.buttonAdd]}
                 onPress={handleSubmit}>
-                <Text style={styles.textStyle}>{'Add'}</Text>
+                <Text style={styles.textStyle}>{' Add '}</Text>
               </Pressable>
 
               <Pressable
@@ -306,7 +310,6 @@ export default function AddModal({ modalVisible, setModalVisible, items, setItem
                 onPress={() => setModalVisible(!modalVisible)}>
                 <Text style={styles.textStyle}>Close</Text>
               </Pressable>
-              
             </View>
           </View>
         </View>
@@ -322,6 +325,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  pickerContainer: {
+    // backgroundColor: 'red'
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#3c80c4'
+  },
   picker: {
     height: 50,
     width: 200,
@@ -330,7 +341,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#f4f9fd',
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
@@ -350,25 +361,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-
-  warningContainer: {
-    backgroundColor: '#FFCCCC',
-    borderRadius: 5,
-    padding: 10,
-    marginTop: 20,
+  dateTextStyle: {
+    left: 3,
+    color: '#3c80c4',
+    fontSize: 15,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
-  warningText: {
-    color: '#CC0000',
+  timeTextStyle: {
+    left: 3,
+    color: '#3c80c4',
+    fontSize: 16,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
   input: {
     height: 40,
     margin: 5,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ccc',
+    width: '95%',
+    // borderWidth: 1,
+    // borderColor: 'black',
     padding: 10,
-    borderRadius: 5,
+    // borderRadius: 5,
+    borderBottomColor: '#3c80c4', // Color of the separator line
+    borderBottomWidth: 1,
   },
   // loadingContainer: {
   //   position: 'absolute',
@@ -381,29 +397,40 @@ const styles = StyleSheet.create({
   //   right: 0,
   // },
   button: {
-    backgroundColor: '#E8DEF8',
-    borderRadius: 20,
+    backgroundColor: '#f4f9fd',
+    borderColor: '#3c80c4',
+    borderRadius: 25,
+    borderWidth: 2,
     padding: 10,
     elevation: 2,
     marginTop: 15,
+    flexDirection: 'row',
+  },
+  buttonAdd: {
+    right: 50,
+    borderColor: '#2d6399',
+    borderRadius: 25,
+    borderWidth: 2,
   },
   buttonClose: {
-    backgroundColor: '#bbb0c7',
-    borderRadius: 20,
-  },
-  textStyle: {
-    color: "black",
-    fontWeight: "bold",
-    textAlign: "center"
+    left: 50,
+    borderColor: '#2d6399',
+    borderRadius: 25,
+    borderWidth: 2,
+    right: 50,
   },
   warningContainer: {
-    backgroundColor: '#FFCCCC',
+    // backgroundColor: '#FFCCCC',
     borderRadius: 5,
     padding: 10,
     marginTop: 20,
   },
   warningText: {
     color: '#CC0000',
+    textAlign: 'center',
+  },
+  loadingText: {
+    color: '#3c80c4',
     textAlign: 'center',
   },
   buttonContainer: {

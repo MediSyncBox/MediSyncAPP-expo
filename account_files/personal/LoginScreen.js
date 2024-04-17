@@ -12,6 +12,9 @@ const LoginScreen = () => {
   const [emailorPhone, setEmailorPhone] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
+  const [isFocused, setIsFocused] = useState(false);
+  const handleFocus = () => setIsFocused(true);
+  const handleBlur = () => setIsFocused(false);
 
   const loginUser = async () => {
     try {
@@ -83,7 +86,7 @@ const LoginScreen = () => {
       <ScrollView contentContainerStyle={styles.container}>
         <Image
           source={require('../img/logo.png')}
-          style={styles.logo}
+          style={isFocused ? styles.logoSmall : styles.logo}
         />
         {/* <Text style={styles.title}>Login</Text> */}
         {/* <TextInput
@@ -99,6 +102,8 @@ const LoginScreen = () => {
             placeholder="Email or Phone"
             onChangeText={setEmailorPhone}
             value={emailorPhone}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
         </View>
         <View style={styles.inputContainer}>
@@ -109,17 +114,19 @@ const LoginScreen = () => {
             secureTextEntry
             onChangeText={setPassword}
             value={password}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
         </View>
         <TouchableOpacity style={styles.firstButton} onPress={loginUser}>
           <View flexDirection='row'>
-              <Ionicons name="log-in" size={20} color="#3c80c4"/>
+            <Ionicons name="log-in" size={20} color="#3c80c4" />
             <Text style={styles.buttonText}>LOGIN</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Register')}>
           <View flexDirection='row'>
-            <Ionicons name="log-out" size={20} color="#3c80c4"/>
+            <Ionicons name="log-out" size={20} color="#3c80c4" />
             <Text style={styles.buttonText}>REGISTER</Text>
           </View>
         </TouchableOpacity>
@@ -166,6 +173,13 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     // marginTop: 10,
     // marginBottom: 40,
+  },
+  logoSmall: { 
+    position: 'absolute',
+    top: 10,
+    width: 100, 
+    aspectRatio: 1,
+    resizeMode: 'contain',
   },
   // input: {
   //   width: '100%',
@@ -214,7 +228,7 @@ const styles = StyleSheet.create({
     // borderRadius: 5,
     // marginTop: 30,
     marginLeft: 50,
-    top: 30, 
+    top: 30,
     // borderRadius: 25,
     // borderColor: '#3d80cb',
     // borderBlockColor: '#3d80cb',

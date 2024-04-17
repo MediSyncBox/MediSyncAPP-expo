@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BottomNavigation } from 'react-native-paper';
+import { BottomNavigation,DefaultTheme, Provider as PaperProvider  } from 'react-native-paper';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -11,6 +11,20 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import BackgroundComponent from './account_files/style/BackgroundComponent';
 import * as Notifications from 'expo-notifications';
 // import BackgroundComponent from './account_files/style/BackgroundComponent';
+
+
+// Create a custom theme by overriding the DefaultTheme colors
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#3c80c4', // Your chosen color for the active tab
+    accent: '#DDEAF6', // Your chosen color for the active tab background or indicator
+    // Add other color overrides if necessary
+  },
+  // If needed, override additional theme properties here
+};
+
 
 const MainScreen = () => {
   const { isLoggedIn } = useAuth();
@@ -40,7 +54,7 @@ const MainScreen = () => {
   );
 
   return (
-    
+    <PaperProvider theme={theme}> 
     <SafeAreaProvider>
       <BottomNavigation
         navigationState={{ index, routes }}
@@ -49,6 +63,10 @@ const MainScreen = () => {
         }}
         renderScene={renderScene}
         renderIcon={renderIcon}
+        activeColor="#ffffff" // Text and icon color for active tab
+        inactiveColor="#3c80c4" // Text and icon color for inactive tab
+        barStyle={{ backgroundColor: '#694fad' }} // Background color of the bottom bar
+        activeIndicatorStyle={{ backgroundColor: 'blue' }}
         // theme={theme}
         // barStyle={{ backgroundColor: '#13296c'}}
         // activeColor="white"
@@ -60,6 +78,7 @@ const MainScreen = () => {
         // sceneColor="red"
       />
     </SafeAreaProvider>
+    </PaperProvider>
   );
 };
 

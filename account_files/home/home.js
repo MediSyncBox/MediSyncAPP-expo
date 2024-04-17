@@ -247,7 +247,7 @@ const HomeScreen = () => {
               style={[styles.option, selectedOption === item.box_id && styles.selectedOption]}
               onPress={() => {
                 setSelectedOption(item.box_id);
-                fetchBoxDetails(item.box_id); // 从后端获取盒子详情
+                fetchBoxDetails(item.box_id); 
               }}
             >
               <Text style={styles.optionText}>{item.name}</Text>
@@ -462,6 +462,7 @@ const styles = StyleSheet.create({
   option: {
     // Increase the width for each box
     width: Dimensions.get('window').width * 0.2, // 80% of the screen width
+    height: 45,
     padding: 10,
     marginTop: 10,
     marginHorizontal: 10, // Provide some space between the boxes
@@ -485,7 +486,7 @@ const styles = StyleSheet.create({
   },
   tankDetailsScroll: {
     // If you have a tab bar or any other components, adjust the height accordingly
-    // height: '80%', // Or you can use flex: 1 if it doesn't work
+    height: '80%', // Or you can use flex: 1 if it doesn't work
   },
   // container: {
   //   paddingTop: 5

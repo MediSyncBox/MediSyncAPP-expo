@@ -63,10 +63,10 @@ const MainScreen = () => {
         }}
         renderScene={renderScene}
         renderIcon={renderIcon}
-        activeColor="#ffffff" // Text and icon color for active tab
-        inactiveColor="#3c80c4" // Text and icon color for inactive tab
-        barStyle={{ backgroundColor: '#694fad' }} // Background color of the bottom bar
-        activeIndicatorStyle={{ backgroundColor: 'blue' }}
+        // activeColor="#ffffff" // Text and icon color for active tab
+        // inactiveColor="#3c80c4" // Text and icon color for inactive tab
+        // barStyle={{ backgroundColor: '#694fad' }} // Background color of the bottom bar
+        activeIndicatorStyle={{ backgroundColor: '#407bb6' }}
         // theme={theme}
         // barStyle={{ backgroundColor: '#13296c'}}
         // activeColor="white"

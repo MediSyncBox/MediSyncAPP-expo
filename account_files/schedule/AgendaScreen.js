@@ -152,10 +152,12 @@ const AgendaScreen = (props) => {
   };
 
   const renderItem = (reservation) => {
+    
     const scheduleDateTime = new Date(reservation.time);
     // const patient = currentPatient && currentPatient.find(p => p.id === reservation.user);
-    const patient = Array.isArray(currentPatient) ? currentPatient.find(p => p.id === reservation.user) : null;
-    const userName = patient && patient.userName ? patient.userName : '';
+    const patient = Array.isArray(currentPatient) ? currentPatient.find(p => p.id === reservation.user) : currentPatient.userName;
+    
+    const userName = patient && patient.userName ? patient.userName : patient;
     // const initial = patient && patient.userName ? patient.userName.charAt(0).toUpperCase() : '?';
     const initials = getInitials(userName);
     const initialColor = getColorForUserId(userName);
@@ -174,11 +176,14 @@ const AgendaScreen = (props) => {
       }}
     >
       <View style={styles.item} >
-        {userName !== '' && (
+        {/* {userName !== '' && (
             <View style={[styles.initialCircle, { backgroundColor: initialColor }]}>
               <Text style={styles.initialText}>{initials}</Text>
             </View>
-          )}
+          )} */}
+        <View style={[styles.initialCircle, { backgroundColor: initialColor }]}>
+          <Text style={styles.initialText}>{initials}</Text>
+        </View>
         <TouchableOpacity
           style={[styles.itemTouchable, ]}
           onPress={() => handleTakenToggle(reservation)}
@@ -223,8 +228,6 @@ const AgendaScreen = (props) => {
   };
   // console.warn(currentPatient.length !== 1)
 
-  
-
   return (
     // <BackgroundComponent>
       <View style={{ flex: 1 }}>
@@ -246,20 +249,23 @@ const AgendaScreen = (props) => {
             // agendaDayNumColor: 'green',
             agendaTodayColor: '#3c80c4',
             agendaKnobColor: '#13296c',
-            calendarBackground: '#7bb4d9',
-            reservationsBackgroundColor: '#e8f4fb',
+            calendarBackground: 'white',
+            reservationsBackgroundColor: '#dceffa',
+            agendaTodayColor: '#3c80c4',
             selectedDayBackgroundColor: '#3c80c4',
-            dotColor: '#72bcef',
-            dayTextColor: 'white',
-            monthTextColor: 'white',
+            dotColor: '#13296c',
+            dayTextColor: '#72b4e2',
+            monthTextColor: '#3c80c4',
             todayTextColor: '#13296c',
             // selectedDayTextColor: 'red',
             // agendaDayTextColor: 'red',
-            // textDayHeaderFontSize: 20,
+            textDayFontWeight: 'bold',
+            textMonthFontWeight: 'bold',
             textDayHeaderFontWeight: 'bold',
             // dayHeaderTextColor: 'red',
             // textMonthFontFamily: 'monospace',
-            textMonthFontSize: 18
+            textMonthFontSize: 18,
+            // todayButtonTextColor: 'red'
           }}
           renderEmptyData={() => isEmptyItems() ? <View style={styles.emptyData}>
             <Text>You don't have a schedule</Text></View> : null}

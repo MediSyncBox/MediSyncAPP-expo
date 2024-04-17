@@ -43,18 +43,25 @@ const CustomAppbar = ({setShouldRefreshAgenda, items, setItems}) => {
       <Menu
         visible={isMenuVisible}
         onDismiss={() => setIsMenuVisible(false)}
-        anchor={<Appbar.Action color="white" onPress={() => setIsMenuVisible(true)} />}
+        anchor={<Appbar.Action 
+          color="white" 
+          onPress={() => setIsMenuVisible(true)} 
+          />}
       >
         <Menu.Item
           key="all-patients"
-          title="All"
+          title="All Patients"
           onPress={() => handleSetCurrentPatient(patientInfo)}
+          style={{ minWidth: 150, borderRadius: 20}} // Background color of the menu item
+          titleStyle={{ color: '#3c80c4', alignItems: 'center', marginLeft: 12, fontWeight: 'bold'}}
         />
         {patientInfo && patientInfo.map((patient) => (
           <Menu.Item
             key={patient.id}
             title={patient.userName}
             onPress={() => handleSetCurrentPatient(patient)}
+            style={{ minWidth: 150, borderRadius: 20}} // Background color of the menu item
+            titleStyle={{ color: '#3c80c4', alignItems: 'center', marginLeft: 12, fontWeight: 'bold'}}
           />
         ))}
       </Menu>
@@ -65,10 +72,10 @@ const CustomAppbar = ({setShouldRefreshAgenda, items, setItems}) => {
 const styles = {
   appbar: {
     height: 45, // Adjust the height to make the Appbar thin
-    backgroundColor: '#7bb4d9',
+    backgroundColor: 'white',
   },
   title: {
-    color: 'white', // Adjust the text color
+    color: '#3c80c4', // Adjust the text color
     fontSize: 21, // Adjust the text size
     fontWeight: 'bold',
     marginLeft: 20,
@@ -78,7 +85,7 @@ const styles = {
     // position: 'absolute',
   },
   icon: {
-    color: 'white', // Adjust the icon color
+    color: '#3c80c4', // Adjust the icon color
     // position: 'absolute',
     marginTop: 10
   },

@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
   roundButton: {
     borderWidth: 1, 
-    borderColor: '#f7fbfe', 
+    borderColor: '#3c80c4', 
     alignItems: 'center', 
     justifyContent: 'center', 
     width: 40, 
@@ -37,10 +37,10 @@ const styles = StyleSheet.create({
     left: 140, 
     height: 40, 
     borderRadius: 100, 
-    backgroundColor: '#f7fbfe',
+    backgroundColor: '#3c80c4',
   },
   icon: {
-    color: '#13296c', // Adjust the icon color
+    color: 'white', // Adjust the icon color
     // position: 'absolute',
     // marginTop: 10
   },

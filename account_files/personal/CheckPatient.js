@@ -183,11 +183,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   listItem: {
-    backgroundColor: '#7d8896', // Light blue background
+    backgroundColor: '#e8f4fb', // Light blue background
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 10,
-    borderRadius: 25, // Rounded corners
+    borderRadius: 30, // Rounded corners
+    borderColor: '#7d8896', 
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 3, // Shadow depth on Android
@@ -195,10 +197,11 @@ const styles = StyleSheet.create({
     shadowRadius: 6, // How blurred the shadow should be
     shadowColor: '#000', // Shadow color
     shadowOffset: { width: 0, height: 2 }, // The offset of shadow
+    width: 330
   },
   patientName: {
     fontSize: 18,
-    color: 'white',
+    color: '#7d8896', 
     fontWeight: 'bold'
   },
   listContainer: {

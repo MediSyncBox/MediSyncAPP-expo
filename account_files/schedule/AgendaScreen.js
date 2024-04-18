@@ -55,7 +55,6 @@ const AgendaScreen = (props) => {
     const identifier = await Notifications.scheduleNotificationAsync(schedulingOptions);
     scheduledNotifications.push({ time, body }); 
     // await Notifications.scheduleNotificationAsync(schedulingOptions);
-    // console.warn(identifier)
     // return identifier;
   };
 
@@ -101,13 +100,18 @@ const AgendaScreen = (props) => {
     await Notifications.cancelAllScheduledNotificationsAsync();
     Object.keys(items).forEach(date => {
       const itemDate = new Date(date);
+      // console.warn(itemDate)
+      // console.warn(new Date(now))
+      // console.warn(itemDate >= new Date(now))
       if (itemDate >= todayStart && itemDate < todayEnd) {
+        // console.warn('ww')
         items[date].forEach(async item => {
+          
           const eventTime = new Date(item.time);
-          const checkTime = new Date(eventTime.getTime() + 1 * 60 * 1000);
+          const checkTime = new Date(eventTime.getTime() + 3 * 60 * 1000);
           const currentTime = new Date();
           const delayTime = checkTime - currentTime; 
-          const resendTime = new Date(eventTime.getTime() + 2 * 60 * 1000);
+          const resendTime = new Date(eventTime.getTime() + 4 * 60 * 1000);
           if (eventTime >= todayStart && eventTime < todayEnd) {
             const title = "Time to take pills!";
             const body = `Your have a ${item.name} schedule, with dose of ${item.dose}.`;
@@ -117,28 +121,21 @@ const AgendaScreen = (props) => {
             // });
             await scheduleNotification(eventTime, title, body)
             .then(identifier => {
-              // console.warn(`Notification scheduled with ID: ${identifier}`);
-
-              // Set timeout for 15 minutes after the event time to check if it's taken
               setTimeout(async () => {
                 const checkItem = items[date].find(i => i.id === item.id);
-                // console.warn(checkItem)
                 if (checkItem && !checkItem.taken) {
-                  // If the item has not been taken, resend the notification
                   await scheduleNotification(resendTime, title, body)
                     .then(reId => {
-                      console.warn(resendTime);
+                      // console.warn(resendTime);
                     })
                     .catch(error => console.error("Failed to reschedule notification:", error));
-                    console.warn(scheduledNotifications)
                 }
-              }, delayTime); // 15 minutes later
+              }, delayTime); // 4
             })
             .catch(error => {
               console.error("Failed to schedule notification:", error);
             });
-              
-            console.warn(scheduledNotifications)
+            // console.warn(scheduledNotifications)
           }
         });
       }

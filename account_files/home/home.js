@@ -268,7 +268,7 @@ const HomeScreen = () => {
             },
           }} />
           <TouchableOpacity onPress={showModal} style={{ marginRight: 10 }}>
-            <Ionicons name="add-circle-outline" size={30} color="black" />
+            <Ionicons name="create-outline" size={30} color="black" />
           </TouchableOpacity>
         </Appbar.Header>
 
@@ -305,7 +305,7 @@ const HomeScreen = () => {
                   <Text style={styles.pillName}>{tankData.pillName || 'No pills'}</Text>
                   <View style={styles.quantityContainer}>
                     <Text style={styles.quantityLabel}>Quantity:</Text>
-                    <Text style={styles.quantity}>{tankData.pillNumber || 'No pills'}</Text>
+                    <Text style={styles.quantity}>{tankData.pillNumber || '0'}</Text>
                   </View>
                   <TouchableOpacity style={styles.editButton} onPress={showPillModal}>
                     <Text style={styles.editButtonText}>{tankData.pillName ? 'Edit' : 'Add'} Pills</Text>
@@ -748,7 +748,7 @@ const styles = StyleSheet.create({
   },
   pillName: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 20,
     color: '#4CAF50',
     marginBottom: 4,
   },

@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   logoSmall: { 
     position: 'absolute',
     top: 10,
-    width: 100, 
+    width: 60, 
     aspectRatio: 1,
     resizeMode: 'contain',
   },

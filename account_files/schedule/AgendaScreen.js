@@ -24,6 +24,8 @@ const AgendaScreen = (props) => {
   const { user_id } = props;
   const { currentPatient, setCurrentPatient } = useAuth();
   const { token } = useNotification();
+  // const [scheduledNotifications, setScheduledNotifications] = useState({});
+  let scheduledNotifications = [];
 
   const colors = [
     '#FFADAD', '#FFD6A5', '#584c3b', '#a9d0a1', '#237fbc', // pink, light brown, dark brown, green, blue
@@ -47,9 +49,14 @@ const AgendaScreen = (props) => {
         date: time, // 确保time是一个JavaScript Date对象
       },
     };
+    
   
     // 调用Notifications.scheduleNotificationAsync来安排通知
-    await Notifications.scheduleNotificationAsync(schedulingOptions);
+    const identifier = await Notifications.scheduleNotificationAsync(schedulingOptions);
+    scheduledNotifications.push({ time, body }); 
+    // await Notifications.scheduleNotificationAsync(schedulingOptions);
+    // console.warn(identifier)
+    // return identifier;
   };
 
   // useEffect(() => {
@@ -90,18 +97,48 @@ const AgendaScreen = (props) => {
     }
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const tomorrowEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2);
+    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
     await Notifications.cancelAllScheduledNotificationsAsync();
     Object.keys(items).forEach(date => {
       const itemDate = new Date(date);
-      if (itemDate >= todayStart && itemDate < tomorrowEnd) {
-        items[date].forEach(item => {
+      if (itemDate >= todayStart && itemDate < todayEnd) {
+        items[date].forEach(async item => {
           const eventTime = new Date(item.time);
-          if (eventTime >= todayStart && eventTime < tomorrowEnd) {
-            scheduleNotification(eventTime, "Time to take pills!", 
-            `Your have a ${item.name} schedule, with dose of ${item.dose}.`).catch(error => {
+          const checkTime = new Date(eventTime.getTime() + 1 * 60 * 1000);
+          const currentTime = new Date();
+          const delayTime = checkTime - currentTime; 
+          const resendTime = new Date(eventTime.getTime() + 2 * 60 * 1000);
+          if (eventTime >= todayStart && eventTime < todayEnd) {
+            const title = "Time to take pills!";
+            const body = `Your have a ${item.name} schedule, with dose of ${item.dose}.`;
+            // await scheduleNotification(eventTime, title, body)
+            // .catch(error => {
+            //   console.error("Failed to schedule notification:", error);
+            // });
+            await scheduleNotification(eventTime, title, body)
+            .then(identifier => {
+              // console.warn(`Notification scheduled with ID: ${identifier}`);
+
+              // Set timeout for 15 minutes after the event time to check if it's taken
+              setTimeout(async () => {
+                const checkItem = items[date].find(i => i.id === item.id);
+                // console.warn(checkItem)
+                if (checkItem && !checkItem.taken) {
+                  // If the item has not been taken, resend the notification
+                  await scheduleNotification(resendTime, title, body)
+                    .then(reId => {
+                      console.warn(resendTime);
+                    })
+                    .catch(error => console.error("Failed to reschedule notification:", error));
+                    console.warn(scheduledNotifications)
+                }
+              }, delayTime); // 15 minutes later
+            })
+            .catch(error => {
               console.error("Failed to schedule notification:", error);
             });
+              
+            console.warn(scheduledNotifications)
           }
         });
       }

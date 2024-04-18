@@ -20,7 +20,41 @@ const HomeScreen = () => {
     fetchUserBoxes();
   }, []);
 
+  const [deleteVisible, setDeleteVisible] = useState(false);
+  const [selectedBoxForDeletion, setSelectedBoxForDeletion] = useState(null);
 
+  const showDeleteModal = (boxId) => {
+    setSelectedBoxForDeletion(boxId);
+    setDeleteVisible(true);
+  };
+
+  const hideDeleteModal = () => {
+    setDeleteVisible(false);
+    setSelectedBoxForDeletion(null);
+  };
+
+  const deleteBox = async () => {
+    if (selectedBoxForDeletion) {
+      try {
+        const response = await fetch(`https://medisyncconnection.azurewebsites.net/api/deleteBox`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId, boxId: selectedBoxForDeletion }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete box');
+        }
+        hideDeleteModal();
+        fetchUserBoxes();
+      } catch (error) {
+        console.error('Delete error:', error);
+        setErrorMessage(error.toString());
+      }
+    }
+  };
 
   const handleSubmitBox = async () => {
     if (!boxId || !name) {
@@ -247,8 +281,9 @@ const HomeScreen = () => {
               style={[styles.option, selectedOption === item.box_id && styles.selectedOption]}
               onPress={() => {
                 setSelectedOption(item.box_id);
-                fetchBoxDetails(item.box_id); 
+                fetchBoxDetails(item.box_id);
               }}
+              onLongPress={() => showDeleteModal(item.box_id)}
             >
               <Text style={styles.optionText}>{item.name}</Text>
             </TouchableOpacity>
@@ -387,6 +422,32 @@ const HomeScreen = () => {
           </View>
         </Modal>
 
+        <Modal
+          visible={deleteVisible}
+          onRequestClose={hideDeleteModal}
+          animationType="slide"
+          transparent={true}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text>Are you sure you want to delete this box?</Text>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={deleteBox}
+                >
+                  <Text style={styles.submitButtonText}>Delete</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={hideDeleteModal}
+                >
+                  <Text style={styles.submitButtonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
 
 
         <View style={styles.scroll}>
@@ -483,7 +544,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
   },
-  
+
   selectedOption: {
     backgroundColor: '#1a2771',
   },
